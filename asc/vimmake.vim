@@ -225,29 +225,6 @@ function! RunClever()
 endfunc
 
 
-" global settings
-let s:winopen = 0
-set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
-set laststatus=1
-
-function! ToggleQuickFix()
-	if s:winopen == 0
-		exec "copen 6"
-		exec "wincmd k"
-		set number
-		set laststatus=2
-		let s:winopen = 2
-	elsei s:winopen == 1
-		exec "copen 6"
-		exec "wincmd k"
-		let s:winopen = 2
-	else
-		exec "cclose"
-		let s:winopen = 1
-	endif
-endfunc
-
-
 noremap <silent><F5> :call RunClever()<CR>
 inoremap <silent><F5> <C-o>:call RunClever()<CR>
 
@@ -263,8 +240,6 @@ inoremap <silent><F8> <C-o>:call ExecuteEmake()<CR>
 noremap <silent><F9> :call CompileGcc()<CR>
 inoremap <silent><F9> <C-o>:call CompileGcc()<CR>
 
-noremap <silent><F10> :call ToggleQuickFix()<cr>
-inoremap <silent><F10> <C-o>:call ToggleQuickFix()<cr>
 
 noremap <silent><F11> :cp<cr>
 noremap <silent><F12> :cn<cr>
@@ -287,7 +262,8 @@ endfor
 
 
 " grep code
-let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'm', 'mm', 'py', 'js']
+let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
+let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java']
 
 function! s:GrepCode(text)
 	let l:inc = ''
