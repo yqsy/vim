@@ -23,6 +23,6 @@ inoremap <silent><F10> <C-o>:call ToggleQuickFix()<cr>
 
 " open tools
 noremap <silent><space>od :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
-
-
+noremap <silent><space>om :!man -S 3:2:1 "<C-R>expand("<cword>")<CR><CR>
+noremap <silent><space>oh :call Open_HeaderFile()<cr>
 

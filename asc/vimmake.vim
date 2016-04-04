@@ -356,29 +356,4 @@ if has("cscope")
 endif
 
 
-" switch header
-function! Vimmake_Switch_Header()
-	let l:main = expand('%:p:r')
-	let l:fext = expand('%:e')
-	if index(['c', 'cpp', 'm', 'mm', 'cc'], l:fext) >= 0
-		let l:altnames = ['h', 'hpp', 'hh']
-	elseif index(['h', 'hh', 'hpp'], l:fext) >= 0
-		let l:altnames = ['c', 'cpp', 'cc', 'm', 'mm']
-	else
-		echo 'switch failed, not a c/c++ source'
-		return
-	endif
-	for l:next in l:altnames
-		let l:newname = l:main . '.' . l:next
-		if filereadable(l:newname)
-			exec 'vs ' . fnameescape(l:newname)
-			return
-		endif
-	endfor
-	echo 'switch failed, can not find another part of c/c++ source'
-endfunc
-
-noremap <leader>ch :call Vimmake_Switch_Header()<cr>
-noremap <leader>cw :!man -S 3:2:1 <C-R>=expand("<cword>")<CR><CR>
-
 
