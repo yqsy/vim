@@ -3,6 +3,6 @@ source ~/.vim/asc/vimmake.vim
 
 source ~/.vim/asc/backup.vim
 source ~/.vim/asc/ignores.vim
-source ~/.vim/asc/hotkeys.vim
+source ~/.vim/asc/keymaps.vim
 
 
