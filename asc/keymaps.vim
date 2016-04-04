@@ -17,11 +17,12 @@ noremap <space>st :!svn st<cr>
 " toggle plugins
 noremap <space>tt :TagbarToggle<cr>
 noremap <space>tq :call ToggleQuickFix()<cr>
-noremap <silent><F10> :call ToggleQuickFix()<cr>
-inoremap <silent><F10> <C-o>:call ToggleQuickFix()<cr>
+noremap <silent><F10> :call Toggle_QuickFix()<cr>
+inoremap <silent><F10> <C-o>:call Toggle_QuickFix()<cr>
+noremap <space>tn :call Toggle_Number()<cr>
 
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
-noremap <silent><space>fm :!man -S 3:2:1 "<C-R>expand("<cword>")<CR><CR>
+noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile()<cr>
 

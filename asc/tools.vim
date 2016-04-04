@@ -5,7 +5,9 @@ set laststatus=1
 set splitright
 let g:vimmake_save = 1
 
-function! ToggleQuickFix()
+
+" open quickfix
+function! Toggle_QuickFix()
 	if s:winopen == 0
 		exec "copen 6"
 		exec "wincmd k"
@@ -22,22 +24,41 @@ function! ToggleQuickFix()
 	endif
 endfunc
 
+" toggle number
+function! Toggle_Number()
+	if &number == 0
+		set number
+	else
+		set nonumber
+	endif
+endfunc
+
+" show content in a new vertical split window
 function! s:Show_Content(title, width, content)
-	exec '' . a:width . 'vnew '. a:title
+	let l:width = a:width
+	if l:width == 0
+		let l:width = winwidth(0) / 2
+		if l:width < 25 | let l:width = 25 | endif
+	endif
+	exec '' . l:width . 'vnew '. a:title
 	setlocal buftype=nofile bufhidden=delete noswapfile winfixwidth
 	setlocal noshowcmd nobuflisted wrap nonumber
 	if has('syntax')
 		sy clear
-		sy match ShowCmd /<press enter to close>/
+		sy match ShowCmd /<press q to close>/
 		hi clear ShowCmd
 		hi def ShowCmd ctermfg=green
 	endif
 	1s/^/\=a:content/g
-	call append(line('.') - 1, '<press enter to close>')
+	call append(line('.') - 1, '')
+	call append(line('.') - 1, '<press q to close>')
+	"call append(0, '<press q to close>')
 	setlocal nomodifiable
 	noremap <silent><buffer> <space> :close!<cr>
 	noremap <silent><buffer> <cr> :close!<cr>
 	noremap <silent><buffer> <tab> :close!<cr>
+	noremap <silent><buffer> q :close!<cr>
+	noremap <silent><buffer> c :close!<cr>
 endfunc
 
 function! Open_Dictionary(word)
@@ -45,6 +66,11 @@ function! Open_Dictionary(word)
 	call s:Show_Content('[StarDict]', 28, l:expl)
 endfunc
 
+function! Open_Manual(what)
+	let l:text = system('man -S 3:2:1 -P cat "'.a:what.'" | col -b')
+	call s:Show_Content("[man]", 0, l:text)
+	call cursor(1, 1)
+endfunc
 
 " switch header
 function! Open_HeaderFile()
