@@ -15,6 +15,7 @@ let s:winopen = 0
 set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
 set laststatus=1
 set splitright
+let g:vimmake_save = 1
 
 function! ToggleQuickFix()
 	if s:winopen == 0

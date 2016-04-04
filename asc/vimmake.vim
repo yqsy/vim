@@ -48,6 +48,17 @@ if !exists("g:vimmake_home")
 	let g:vimmake_home = "~/.vim"
 endif
 
+" don't save file by default
+if !exists("g:vimmake_save")
+	let g:vimmake_save = 0
+endif
+
+" default gcc cflags
+if !exists("g:vimmake_cflags")
+	let g:vimmake_cflags = ""
+endif
+
+
 " Execute current filename directly
 function! ExecuteFile()
 	exec '!' . shellescape(expand("%:p"))
@@ -76,7 +87,6 @@ function! s:MakeRestore()
 endfunc
 
 
-
 " Execute command in both quickfix and non-quickfix mode
 function! ExecuteCommand(command, quickfix)
 	let $VIM_FILEPATH = expand("%:p")
@@ -88,6 +98,9 @@ function! ExecuteCommand(command, quickfix)
 	let $VIM_RELDIR = expand("%:h")
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CWORD = expand("<cword>")
+	if g:vimmake_save
+		exec 'w'
+	endif
 	if (!a:quickfix) || (!has("quickfix"))
 		exec '!' . shellescape(a:command)
 	else
@@ -99,10 +112,6 @@ function! ExecuteCommand(command, quickfix)
 	endif
 endfunc
 
-
-" global CFLAGS to be passed to gcc
-let g:vimmake_cflags = ''
-let g:vimmake_save = 0
 
 " join two path
 function! s:PathJoin(home, name)
@@ -126,8 +135,10 @@ endfunc
 
 " Execute ~/.vim/vimmake.{command} 
 function! s:VimMake(bang, command)
-	if g:vimmake_save
+	if g:vimmake_save == 1
 		exec "w"
+	elseif g:vimmake_save == 2
+		exec "wa"
 	endif
 	let l:home = expand(g:vimmake_home)
 	let l:fullname = "vimmake." . a:command
@@ -144,8 +155,10 @@ command! -bang -nargs=1 Vimmake call s:VimMake('<bang>', <f-args>)
 
 " build via gcc
 function! CompileGcc()
-	if g:vimmake_save
+	if g:vimmake_save == 1
 		exec "w"
+	elseif g:vimmake_save == 2
+		exec "wa"
 	endif
 	let l:compileflag = g:vimmake_cflags
 	let l:extname = expand("%:e")
@@ -168,8 +181,10 @@ endfunc
 
 " build via emake (http://skywind3000.github.io/emake/emake.py)
 function! BuildEmake(filename, ininame, quickfix)
-	if g:vimmake_save
+	if g:vimmake_save == 1
 		exec "w"
+	elseif g:vimmake_save == 2
+		exec "wa"
 	endif
 	if (!a:quickfix) || (!has("quickfix"))
 		if a:ininame == ''
@@ -195,8 +210,10 @@ endfunc
 
 " run current file by detecting file extname
 function! RunClever()
-	if g:vimmake_save
+	if g:vimmake_save == 1
 		exec "w"
+	elseif g:vimmake_save == 2
+		exec "wa"
 	endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
