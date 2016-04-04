@@ -16,7 +16,7 @@ noremap <space>st :!svn st<cr>
 
 " toggle plugins
 noremap <space>tt :TagbarToggle<cr>
-noremap <space>tq :call ToggleQuickFix()<cr>
+noremap <space>tq :call Toggle_QuickFix()<cr>
 noremap <silent><F10> :call Toggle_QuickFix()<cr>
 inoremap <silent><F10> <C-o>:call Toggle_QuickFix()<cr>
 noremap <space>tn :call Toggle_Number()<cr>
