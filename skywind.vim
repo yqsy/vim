@@ -14,7 +14,7 @@ let g:winManagerWindowLayout = "FileExplorer|TagList"
 "let g:winManagerWindowLayout = "FileExplorer|Tagbar"
 let g:winManagerWidth=26
 
-let g:bufferhint_KeepWindow = 1
+"let g:bufferhint_KeepWindow = 1
 set completeopt=menu
 
 let g:Tagbar_title = "[Tagbar]"
