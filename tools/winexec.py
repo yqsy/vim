@@ -17,6 +17,9 @@ class configure (object):
 		return path.replace('\'', '\\\'')
 		
 	def darwin_osascript (self, script):
+		for line in script:
+			print line
+			pass
 		if type(script) == type([]):
 			script = '\n'.join(script)
 		p = subprocess.Popen(['/usr/bin/osascript'], shell = False,
@@ -30,44 +33,42 @@ class configure (object):
 		code = p.wait()
 		return code, text
 
-	def darwin_open_terminal (self, title, lines, pwd = None):
-		if pwd == None:
-			pwd = os.getcwd()
-		script = []
+	def darwin_open_terminal (self, title, script):
+		osascript = []
 		command = []
-		for line in lines:
-			command.append(line.replace('"', '\\"').replace("'", "\\'"))
-		command = '; '.join(command)
-		pwd = self.escape(pwd).replace(' ', '\\ ')
-		script.append('tell application "Terminal"')
-		script.append('     do script "cd %s; %s; exit"'%(pwd, command))
-		script.append('     activate')
-		script.append('end tell')
-		return self.darwin_osascript(script)
-
-	def darwin_open_iterm2 (self, title, lines, pwd = None):
-		if pwd == None:
-			pwd = os.getcwd()
-		script = []
-		command = []
-		for line in lines:
-			command.append(line.replace('"', '\\"').replace("'", "\\'"))
-		command = '; '.join(command)
-		pwd = self.escape(pwd).replace(' ', '\\ ')
-		script.append('tell application "iTerm"')
-		script.append('set myterm to (make new terminal)')
-		script.append('tell myterm')
-		script.append('set mss to (make new session at the end of sessions)')
-		script.append('talk mss')
-		script.append('     set name to "%s"'%self.escape(title))
-		script.append('     activate')
-		script.append('     exec command "/bin/bash -c \'cd %s; %s;\'"'%(pwd, command))
-		script.append('end tell')
-		script.append('end tell')
-		script.append('end tell')
 		for line in script:
-			print line
-		return self.darwin_osascript(script)
+			line = line.replace('\\', '\\\\')
+			line = line.replace('"', '\\"')
+			line = line.replace("'", "\\'")
+			command.append(line)
+		command = '; '.join(command)
+		osascript.append('tell application "Terminal"')
+		osascript.append('     do script "%s; exit"'%command)
+		osascript.append('     activate')
+		osascript.append('end tell')
+		return self.darwin_osascript(osascript)
+
+	def darwin_open_iterm2 (self, title, script):
+		osascript = []
+		command = []
+		for line in script:
+			line = line.replace('\\', '\\\\\\\\')
+			line = line.replace('"', '\\\\\\"')
+			line = line.replace("'", "\\\\\\'")
+			command.append(line)
+		command = '; '.join(command)
+		osascript.append('tell application "iTerm"')
+		osascript.append('set myterm to (make new terminal)')
+		osascript.append('tell myterm')
+		osascript.append('set mss to (make new session at the end of sessions)')
+		osascript.append('tell mss')
+		osascript.append('     set name to "%s"'%self.escape(title))
+		osascript.append('     activate')
+		osascript.append('     exec command "/bin/bash -c \\"%s\\""'%command)
+		osascript.append('end tell')
+		osascript.append('end tell')
+		osascript.append('end tell')
+		return self.darwin_osascript(osascript)
 
 
 #----------------------------------------------------------------------
@@ -76,11 +77,11 @@ class configure (object):
 if __name__ == '__main__':
 	def test1():
 		cfg = configure()
-		cfg.darwin_open_terminal('111', ['ls -la /'])
+		cfg.darwin_open_terminal('111', ['ls -la /', 'read -n1 -rsp press\\ any\\ key\\ to\\ continue\\ ...', 'echo "fuck you"'])
 	
 	def test2():
 		cfg = configure()
-		cfg.darwin_open_iterm2('11111', ['ls -la /'])
+		cfg.darwin_open_iterm2('11111', ['sleep 2', 'read -n1 -rsp press\\ any\\ key\\ to\\ continue...', 'echo "fuck you"', 'sleep 10'])
 
 	test2()
 
