@@ -19,6 +19,8 @@
 "     $VIM_RELDIR    - File path relativize to current directory
 "     $VIM_RELNAME   - File name relativize to current directory 
 "     $VIM_CWORD     - Current word in the buffer
+"     $VIM_GUI       - Is running under gui ?
+"     $VIM_VERSION   - Value of v:version
 "
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
@@ -60,17 +62,17 @@ endif
 
 
 " Execute current filename directly
-function! ExecuteFile()
+function! Vimmake_ExecuteFile()
 	exec '!' . shellescape(expand("%:p"))
 endfunc
 
 " Execute current filename without extname
-function! ExecuteMain()
+function! Vimmake_ExecuteMain()
 	exec '!' . shellescape(expand("%:p:r"))
 endfunc
 
 " Execute executable of current emake project
-function! ExecuteEmake()
+function! Vimmake_ExecuteEmake()
 	exec '!emake -e ' . shellescape(expand("%"))
 endfunc
 
@@ -88,7 +90,7 @@ endfunc
 
 
 " Execute command in both quickfix and non-quickfix mode
-function! ExecuteCommand(command, quickfix)
+function! Vimmake_ExecuteCommand(command, quickfix)
 	let $VIM_FILEPATH = expand("%:p")
 	let $VIM_FILENAME = expand("%:t")
 	let $VIM_FILEDIR = expand("%:p:h")
@@ -98,8 +100,13 @@ function! ExecuteCommand(command, quickfix)
 	let $VIM_RELDIR = expand("%:h")
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CWORD = expand("<cword>")
+	let $VIM_VERSION = ''.v:version
+	let $VIM_GUI = '0'
 	if g:vimmake_save
 		exec 'w'
+	endif
+	if has("gui_running")
+		let $VIM_GUI = '1'
 	endif
 	if (!a:quickfix) || (!has("quickfix"))
 		exec '!' . shellescape(a:command)
@@ -144,9 +151,9 @@ function! s:VimMake(bang, command)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
 	if a:bang == ''
-		call ExecuteCommand(l:fullname, 0)
+		call Vimmake_ExecuteCommand(l:fullname, 0)
 	else
-		call ExecuteCommand(l:fullname, 1)
+		call Vimmake_ExecuteCommand(l:fullname, 1)
 	endif
 endfunc
 
@@ -154,7 +161,7 @@ endfunc
 command! -bang -nargs=1 Vimmake call s:VimMake('<bang>', <f-args>)
 
 " build via gcc
-function! CompileGcc()
+function! Vimmake_CompileGcc()
 	if g:vimmake_save == 1
 		exec "w"
 	elseif g:vimmake_save == 2
@@ -180,7 +187,7 @@ endfunc
 
 
 " build via emake (http://skywind3000.github.io/emake/emake.py)
-function! BuildEmake(filename, ininame, quickfix)
+function! Vimmake_BuildEmake(filename, ininame, quickfix)
 	if g:vimmake_save == 1
 		exec "w"
 	elseif g:vimmake_save == 2
@@ -209,7 +216,7 @@ endfunc
 
 
 " run current file by detecting file extname
-function! RunClever()
+function! Vimmake_RunClever()
 	if g:vimmake_save == 1
 		exec "w"
 	elseif g:vimmake_save == 2
@@ -217,11 +224,11 @@ function! RunClever()
 	endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
-		exec "call ExecuteMain()"
+		exec "call Vimmake_ExecuteMain()"
 	elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 		exec '!python ' . fnameescape(expand("%"))
 	elseif index(['mak', 'emake'], l:ext) >= 0
-		exec "call ExecuteEmake()"
+		exec "call Vimmake_ExecuteEmake()"
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
 	elseif l:ext  == "js"
@@ -237,25 +244,25 @@ function! RunClever()
 	elseif l:ext == 'php'
 		exec '!php ' . shellescape(expand("%"))
 	else
-		call ExecuteFile()
+		call Vimmake_ExecuteFile()
 	endif
 endfunc
 
 
-noremap <silent><F5> :call RunClever()<CR>
-inoremap <silent><F5> <C-o>:call RunClever()<CR>
+noremap <silent><F5> :call Vimmake_RunClever()<CR>
+inoremap <silent><F5> <C-o>:call Vimmake_RunClever()<CR>
 
-noremap <silent><F6> :call ExecuteFile()<CR>
-inoremap <silent><F6> <C-o>:call ExecuteFile()<CR>
+noremap <silent><F6> :call Vimmake_ExecuteFile()<CR>
+inoremap <silent><F6> <C-o>:call Vimmake_ExecuteFile()<CR>
 
-noremap <silent><F7> :call BuildEmake(expand("%"), "", 1)<CR>
-inoremap <silent><F7> <C-o>:call BuildEmake(expand("%"), "", 1)<CR>
+noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
+inoremap <silent><F7> <C-o>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 
-noremap <silent><F8> :call ExecuteEmake()<CR>
-inoremap <silent><F8> <C-o>:call ExecuteEmake()<CR>
+noremap <silent><F8> :call Vimmake_ExecuteEmake()<CR>
+inoremap <silent><F8> <C-o>:call Vimmake_ExecuteEmake()<CR>
 
-noremap <silent><F9> :call CompileGcc()<CR>
-inoremap <silent><F9> <C-o>:call CompileGcc()<CR>
+noremap <silent><F9> :call Vimmake_CompileGcc()<CR>
+inoremap <silent><F9> <C-o>:call Vimmake_CompileGcc()<CR>
 
 
 noremap <silent><F11> :cp<cr>
