@@ -1,6 +1,4 @@
 " keymaps is more personality with using <space> leader
-
-
 for s:index in range(10)
 	let s:key = '' . s:index
 	if s:index == 10 | let s:key = '0' | endif
@@ -26,3 +24,4 @@ noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<c
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile()<cr>
 
+noremap <silent><leader>e :BufferClose<cr>

@@ -13,5 +13,5 @@ ln -s $DIR/autoload ~/.vim/autoload
 ln -s $DIR/doc ~/.vim/doc
 ln -s $DIR/colors ~/.vim/colors
 ln -s $DIR/syntax ~/.vim/syntax
-
+ln -s $DIR/tools ~/.vim/tools
 
