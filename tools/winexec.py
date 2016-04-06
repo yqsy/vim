@@ -12,7 +12,7 @@ class configure (object):
 		self.dirhome = os.path.abspath(os.path.dirname(__file__))
 		self.diruser = os.path.abspath(os.path.expanduser('~'))
 		self.unix = sys.platform[:3] != 'win' and True or False
-		self.temp = os.environ.get('temp', os.environ.get('tmp', '/'))
+		self.temp = os.environ.get('temp', os.environ.get('tmp', '/tmp'))
 		self.tick = long(time.time()) % 100
 		self.temp = os.path.join(self.temp, 'winex_%02d.cmd'%self.tick)
 		self.GetShortPathName = None
@@ -38,7 +38,7 @@ class configure (object):
 		code = p.wait()
 		return code, text
 
-	def darwin_open_terminal (self, title, script):
+	def darwin_open_terminal (self, title, script, profile = None):
 		osascript = []
 		command = []
 		for line in script:
@@ -53,7 +53,7 @@ class configure (object):
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
 
-	def darwin_open_iterm2 (self, title, script):
+	def darwin_open_iterm (self, title, script, profile = None):
 		osascript = []
 		command = []
 		for line in script:
@@ -129,7 +129,7 @@ class configure (object):
 			return ''
 		return shortpath
 
-	def win32_open_console (self, title, script):
+	def win32_open_console (self, title, script, profile = None):
 		fp = open(self.temp, 'w')
 		fp.write('@echo off\n')
 		for line in script:
@@ -138,6 +138,31 @@ class configure (object):
 		fp = None
 		pathname = self.win32_path_short(self.temp)
 		os.system('start "%s" cmd /C %s'%(title, pathname))
+		return 0
+
+	def linux_open_xterm (self, title, script, profile = None):
+		command = []
+		for line in script:
+			command.append(line)
+		command = '; '.join(command)
+		subprocess.call(['xterm', '-T', title, '-e', command])
+		return 0
+
+	def linux_open_gnome (self, title, script, profile = None):
+		command = []
+		for line in script:
+			line = line.replace('\\', '\\\\')
+			line = line.replace('"', '\\"')
+			line = line.replace("'", "\\'")
+			command.append(line)
+		command = '; '.join(command)
+		command = 'bash -c \"%s\"'%command
+		title = self.escape(title)
+		if profile == None:
+			os.system('gnome-terminal -t "%s" --command=\'%s\''%(title, command))
+		else:
+			profile = self.escape(profile)
+			os.system('gnome-terminal -t "%s" --window-with-profile="%s" --command=\'%s\''%(title, profile, command))
 		return 0
 
 
@@ -157,8 +182,18 @@ if __name__ == '__main__':
 		cfg = configure()
 		cfg.win32_open_console('11111', ['d:', 'cd /acm/github/vim/tools', 'dir', 'pause' ])
 		return 0
+	
+	def test4():
+		cfg = configure()
+		cfg.linux_open_xterm('1111', ['sleep 2', 'read -n1 -rsp press\\ any\\ key\\ to\\ continue...', 'echo "fuck you"', 'sleep 10'])
+		return 0
 
-	test3()
+	def test5():
+		cfg = configure()
+		cfg.linux_open_gnome('1111', ['sleep 2', 'read -n1 -rsp sdf\\ sdf', 'echo "fuck you"', 'sleep 5'], 'Linwei')
+		return 0
+
+	test5()
 
 
 
