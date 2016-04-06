@@ -18,7 +18,7 @@ set fenc=utf-8
 set enc=utf-8
 set showtabline=1
 set winaltkeys=no
-set hidden 
+set nohidden 
 set nowrap
 set wildignore=*.swp,*.bak,*.pyc,*.obj,*.o,*.class
 set backspace=eol,start,indent
