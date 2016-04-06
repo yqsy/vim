@@ -21,7 +21,7 @@
 "     $VIM_CWORD     - Current word in the buffer
 "     $VIM_GUI       - Is running under gui ?
 "     $VIM_VERSION   - Value of v:version
-"     $VIM_QUICKFIX  - Is running in quickfix mode ?
+"     $VIM_MODE      - Execute via 0:!, 1:makeprg, 2:system()
 "
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
@@ -102,16 +102,14 @@ function! Vimmake_ExecuteCommand(command, mode)
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CWORD = expand("<cword>")
 	let $VIM_VERSION = ''.v:version
-	let $VIM_QUICKFIX = '0'
-	let $VIM_GUI = '0'
 	let $VIM_MODE = ''. a:mode
+	let $VIM_GUI = '0'
 	if has("gui_running")
 		let $VIM_GUI = '1'
 	endif
-	if (!a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
+	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
 		exec '!' . shellescape(a:command)
 	elseif (a:mode == 1)
-		let $VIM_QUICKFIX = '1'
 		call s:MakeSave()
 		setlocal errorformat=%f:%l:%m
 		exec "setlocal makeprg=" . fnameescape(a:command)
@@ -159,11 +157,22 @@ function! s:VimMake(bang, command)
 		call Vimmake_ExecuteCommand(l:fullname, 1)
 	else
 		call Vimmake_ExecuteCommand(l:fullname, 2)
+		echom 'exec: '.l:fullname
+	endif
+endfunc
+
+" Execute ~/.vim/vimmake.{command}
+function! s:VimExec(bang, command)
+	if a:bang == ''
+		call s:VimMake('', a:command)
+	else
+		call s:VimMake('?', a:command)
 	endif
 endfunc
 
 " command definition
-command! -bang -nargs=1 Vimmake call s:VimMake('<bang>', <f-args>)
+command! -bang -nargs=1 VimMake call s:VimMake('<bang>', <f-args>)
+command! -bang -nargs=1 VimExec call s:VimExec('<bang>', <f-args>)
 
 " build via gcc
 function! Vimmake_CompileGcc()
@@ -285,8 +294,8 @@ for s:i in range(10)
 	if s:i == 0
 		let s:name = '<F10>'
 	endif
-	exec 'noremap <silent><leader>' . s:name . ' :Vimmake ' . s:i . '<cr>'
-	exec 'noremap <silent><tab>' . s:name . ' :Vimmake! ' . s:i . '<cr>'
+	exec 'noremap <silent><leader>' . s:name . ' :VimMake ' . s:i . '<cr>'
+	exec 'noremap <silent><tab>' . s:name . ' :VimMake! ' . s:i . '<cr>'
 endfor
 
 

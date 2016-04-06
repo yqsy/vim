@@ -1,3 +1,12 @@
+" viminit.vim - Vim initialize script
+"
+" Maintainer: skywind3000 (at) gmail.com
+" Last change: 2016.4.6
+"
+" Tiny script which makes vim become neat and handy, supports vim.tiny
+"
+
+" initialize basic settings
 set nocompatible
 
 set shiftwidth=4
