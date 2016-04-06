@@ -71,34 +71,9 @@ noremap <silent><leader>0 :tabn 10<cr>
 noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
-" cmd+N to switch table quickly in macvim
-if has("gui_macvim")
-	noremap <silent><c-tab> :tabprev<CR>
-	inoremap <silent><c-tab> <ESC>:tabprev<CR>
-	noremap <silent><d-1> :tabn 1<cr>
-	noremap <silent><d-2> :tabn 2<cr>
-	noremap <silent><d-3> :tabn 3<cr>
-	noremap <silent><d-4> :tabn 4<cr>
-	noremap <silent><d-5> :tabn 5<cr>
-	noremap <silent><d-6> :tabn 6<cr>
-	noremap <silent><d-7> :tabn 7<cr>
-	noremap <silent><d-8> :tabn 8<cr>
-	noremap <silent><d-9> :tabn 9<cr>
-	noremap <silent><d-0> :tabn 10<cr>
-	inoremap <silent><d-1> <ESC>:tabn 1<cr>
-	inoremap <silent><d-2> <ESC>:tabn 2<cr>
-	inoremap <silent><d-3> <ESC>:tabn 3<cr>
-	inoremap <silent><d-4> <ESC>:tabn 4<cr>
-	inoremap <silent><d-5> <ESC>:tabn 5<cr>
-	inoremap <silent><d-6> <ESC>:tabn 6<cr>
-	inoremap <silent><d-7> <ESC>:tabn 7<cr>
-	inoremap <silent><d-8> <ESC>:tabn 8<cr>
-	inoremap <silent><d-9> <ESC>:tabn 9<cr>
-	inoremap <silent><d-0> <ESC>:tabn 10<cr>
-endif
 
 " Alt+N to switch table quickly in windows
-if has("windows") || has("win32") || has("win64") || has("win16")
+if has('gui_running') && (has("windows") || has("win32") || has("win64"))
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
 	noremap <silent><A-1> :tabn 1<cr>
@@ -123,7 +98,38 @@ if has("windows") || has("win32") || has("win64") || has("win16")
 	inoremap <silent><A-0> <ESC>:tabn 10<cr>
 	noremap <silent><A-w> :tabclose<cr>
 	inoremap <silent><A-w> <ESC>:tabclose<cr>
+	noremap <silent><A-o> :browse tabnew<cr>
+	inoremap <silent><A-o> <ESC>:browse tabnew<cr>
 endif
+
+" cmd+N to switch table quickly in macvim
+if has("gui_macvim")
+	noremap <silent><c-tab> :tabprev<CR>
+	inoremap <silent><c-tab> <ESC>:tabprev<CR>
+	noremap <silent><d-1> :tabn 1<cr>
+	noremap <silent><d-2> :tabn 2<cr>
+	noremap <silent><d-3> :tabn 3<cr>
+	noremap <silent><d-4> :tabn 4<cr>
+	noremap <silent><d-5> :tabn 5<cr>
+	noremap <silent><d-6> :tabn 6<cr>
+	noremap <silent><d-7> :tabn 7<cr>
+	noremap <silent><d-8> :tabn 8<cr>
+	noremap <silent><d-9> :tabn 9<cr>
+	noremap <silent><d-0> :tabn 10<cr>
+	inoremap <silent><d-1> <ESC>:tabn 1<cr>
+	inoremap <silent><d-2> <ESC>:tabn 2<cr>
+	inoremap <silent><d-3> <ESC>:tabn 3<cr>
+	inoremap <silent><d-4> <ESC>:tabn 4<cr>
+	inoremap <silent><d-5> <ESC>:tabn 5<cr>
+	inoremap <silent><d-6> <ESC>:tabn 6<cr>
+	inoremap <silent><d-7> <ESC>:tabn 7<cr>
+	inoremap <silent><d-8> <ESC>:tabn 8<cr>
+	inoremap <silent><d-9> <ESC>:tabn 9<cr>
+	inoremap <silent><d-0> <ESC>:tabn 10<cr>
+	noremap <silent><d-o> :browse tabnew<cr>
+	inoremap <silent><d-o> <ESC>:browse tabnew<cr>
+endif
+
 
 " miscs
 set scrolloff=3
