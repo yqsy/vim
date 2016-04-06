@@ -259,9 +259,9 @@ endfunc
 " run current file by detecting file extname
 function! Vimmake_RunClever()
 	if g:vimmake_save == 1
-		exec "w"
+		silent exec "w"
 	elseif g:vimmake_save == 2
-		exec "wa"
+		silent exec "wa"
 	endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
