@@ -25,10 +25,13 @@
 "
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
-"     :Vimmake {name}
+"     :VimMake {name}
 "
 " Execute customize tools: ~/.vim/vimmake.{name} in quickfix mode:
-"     :Vimmake! {name}
+"     :VimMake! {name}
+"
+" Execute customize tools: ~/.vim/vimmake.{name} in silent mode:
+"     :VimExec! {name}
 "
 " Support:
 "     <F5>  Run current file by detecting file type
@@ -61,6 +64,10 @@ if !exists("g:vimmake_cflags")
 	let g:vimmake_cflags = ""
 endif
 
+" default modes
+if !exists("g:vimmake_mode")
+	let g:vimmake_mode = {}
+endif
 
 " Execute current filename directly
 function! Vimmake_ExecuteFile()
@@ -144,9 +151,9 @@ endfunc
 " Execute ~/.vim/vimmake.{command} 
 function! s:VimMake(bang, command)
 	if g:vimmake_save == 1
-		exec "w"
+		silent exec "w"
 	elseif g:vimmake_save == 2
-		exec "wa"
+		silent exec "wa"
 	endif
 	let l:home = expand(g:vimmake_home)
 	let l:fullname = "vimmake." . a:command
@@ -157,22 +164,42 @@ function! s:VimMake(bang, command)
 		call Vimmake_ExecuteCommand(l:fullname, 1)
 	else
 		call Vimmake_ExecuteCommand(l:fullname, 2)
-		echom 'exec: '.l:fullname
 	endif
+	return l:fullname
 endfunc
 
 " Execute ~/.vim/vimmake.{command}
 function! s:VimExec(bang, command)
 	if a:bang == ''
-		call s:VimMake('', a:command)
+		return s:VimMake('', a:command)
 	else
-		call s:VimMake('?', a:command)
+		return s:VimMake('?', a:command)
+	endif
+endfunc
+
+" Execute ~/.vim/vimmake.{command} with mode in g:vimmake_mode
+function! s:VimTool(command)
+	let s:value = get(g:vimmake_mode, a:command, '')
+	let s:mode = ''
+	if type(s:value) == 0 
+		let s:mode = string(s:value) 
+	else
+		let s:mode = s:value
+	endif
+	if index(['1', 'quickfix', 'make', 'makeprg'], s:mode) >= 0
+		call s:VimMake('!', a:command)
+	elseif index(['2', 'system', 'silent'], s:mode) >= 0
+		let l:text = s:VimMake('?', a:command)
+		echom "VimTool: ".l:text
+	else
+		call s:VimMake('', a:command)
 	endif
 endfunc
 
 " command definition
 command! -bang -nargs=1 VimMake call s:VimMake('<bang>', <f-args>)
 command! -bang -nargs=1 VimExec call s:VimExec('<bang>', <f-args>)
+command! -nargs=1 VimTool call s:VimTool(<f-args>)
 
 " build via gcc
 function! Vimmake_CompileGcc()

@@ -2,8 +2,7 @@
 for s:index in range(10)
 	let s:key = '' . s:index
 	if s:index == 10 | let s:key = '0' | endif
-	exec 'noremap <space>'.s:key.' :Vimmake ' . s:key . '<cr>'
-	exec 'noremap ,'.s:key.' :Vimmake! ' . s:key . '<cr>'
+	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
 endfor
 
 
