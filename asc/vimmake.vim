@@ -284,6 +284,8 @@ function! Vimmake_RunClever()
 		exec '!ruby ' . shellescape(expand("%"))
 	elseif l:ext == 'php'
 		exec '!php ' . shellescape(expand("%"))
+	elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
+		exec '!osascript '. shellescape(expand('%'))
 	else
 		call Vimmake_ExecuteFile()
 	endif
