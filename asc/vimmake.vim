@@ -21,6 +21,7 @@
 "     $VIM_CWORD     - Current word in the buffer
 "     $VIM_GUI       - Is running under gui ?
 "     $VIM_VERSION   - Value of v:version
+"     $VIM_QUICKFIX  - Is running in quickfix mode ?
 "
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
@@ -101,6 +102,7 @@ function! Vimmake_ExecuteCommand(command, quickfix)
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CWORD = expand("<cword>")
 	let $VIM_VERSION = ''.v:version
+	let $VIM_QUICKFIX = '0'
 	let $VIM_GUI = '0'
 	if g:vimmake_save
 		exec 'w'
@@ -111,6 +113,7 @@ function! Vimmake_ExecuteCommand(command, quickfix)
 	if (!a:quickfix) || (!has("quickfix"))
 		exec '!' . shellescape(a:command)
 	else
+		let $VIM_QUICKFIX = '1'
 		call s:MakeSave()
 		setlocal errorformat=%f:%l:%m
 		exec "setlocal makeprg=" . fnameescape(a:command)

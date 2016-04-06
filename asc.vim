@@ -6,5 +6,5 @@ source ~/.vim/asc/ignores.vim
 source ~/.vim/asc/tools.vim
 source ~/.vim/asc/keymaps.vim
 
-let g:vimmake_home = "~/.vim/tools"
+"let g:vimmake_home = "~/.vim/tools"
 

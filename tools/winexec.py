@@ -2,6 +2,7 @@
 import sys, os, time
 import subprocess
 
+
 #----------------------------------------------------------------------
 # configure
 #----------------------------------------------------------------------
@@ -70,9 +71,13 @@ class configure (object):
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
 
+	def win32_open_console (self, title, script):
+
+		return 0
+
 
 #----------------------------------------------------------------------
-# testing case
+# testing casen
 #----------------------------------------------------------------------
 if __name__ == '__main__':
 	def test1():
