@@ -90,8 +90,8 @@ function! s:MakeRestore()
 endfunc
 
 
-" Execute command in both quickfix and non-quickfix mode
-function! Vimmake_ExecuteCommand(command, quickfix)
+" Execute command in normal(0), quickfix(1), system(2) mode
+function! Vimmake_ExecuteCommand(command, mode)
 	let $VIM_FILEPATH = expand("%:p")
 	let $VIM_FILENAME = expand("%:t")
 	let $VIM_FILEDIR = expand("%:p:h")
@@ -104,21 +104,21 @@ function! Vimmake_ExecuteCommand(command, quickfix)
 	let $VIM_VERSION = ''.v:version
 	let $VIM_QUICKFIX = '0'
 	let $VIM_GUI = '0'
-	if g:vimmake_save
-		exec 'w'
-	endif
+	let $VIM_MODE = ''. a:mode
 	if has("gui_running")
 		let $VIM_GUI = '1'
 	endif
-	if (!a:quickfix) || (!has("quickfix"))
+	if (!a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
 		exec '!' . shellescape(a:command)
-	else
+	elseif (a:mode == 1)
 		let $VIM_QUICKFIX = '1'
 		call s:MakeSave()
 		setlocal errorformat=%f:%l:%m
 		exec "setlocal makeprg=" . fnameescape(a:command)
 		exec "make!"
 		call s:MakeRestore()
+	else
+		call system("" . shellescape(a:command))
 	endif
 endfunc
 
@@ -155,8 +155,10 @@ function! s:VimMake(bang, command)
 	let l:fullname = s:PathJoin(l:home, l:fullname)
 	if a:bang == ''
 		call Vimmake_ExecuteCommand(l:fullname, 0)
-	else
+	elseif a:bang == '!'
 		call Vimmake_ExecuteCommand(l:fullname, 1)
+	else
+		call Vimmake_ExecuteCommand(l:fullname, 2)
 	endif
 endfunc
 
