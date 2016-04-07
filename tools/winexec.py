@@ -143,6 +143,17 @@ class configure (object):
 		pathname = self.win32_path_short(self.temp)
 		os.system('start "%s" cmd /C %s'%(title, pathname))
 		return 0
+	
+	def darwin_open_xterm (self, title, script, profile = None):
+		command = []
+		for line in script:
+			line = line.strip('\\', '\\\\')
+			line = line.strip('"', '\\"')
+			line = line.strip("'", "\\'")
+			command.append(line)
+		command = '; '.join(command)
+		os.system('xterm -T "%s" -e "%s"'%(title, command))
+		return 0
 
 	def linux_open_xterm (self, title, script, profile = None):
 		command = []

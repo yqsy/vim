@@ -94,13 +94,40 @@ function! Open_HeaderFile()
 	echo 'switch failed, can not find another part of c/c++ source'
 endfunc
 
+if !exists('g:netrw_liststyle_save')
+	let g:netrw_liststyle_save = 1
+endif
+
 " Open Explore in new tab with current directory
 function! Open_ExploreInTab()
 	let l:path = expand("%:p:h")
 	if l:path == ''
 		let l:path = getcwd()
 	endif
-	exec 'Texplore '.l:path
+	let g:netrw_liststyle = g:netrw_liststyle_save
+	exec 'tabnew'
+	exec 'Explore '.l:path
+endfunc
+
+" Open Explore in vertical split window
+function! Open_ExploreInRight()
+	let l:path = expand("%:p:h")
+	if l:path == ''
+		let l:path = getcwd()
+	endif
+	exec 'vnew'
+	let g:netrw_liststyle = g:netrw_liststyle_save
+	exec 'Explore '.l:path
+endfunc
+
+" Open Explore here
+function! Open_ExploreHere()
+	let l:path = expand("%:p:h")
+	if l:path == ''
+		let l:path = getcwd()
+	endif
+	let g:netrw_liststyle = g:netrw_liststyle_save
+	exec 'Explore '.l:path
 endfunc
 
 " delete buffer keep window
@@ -194,6 +221,7 @@ function! s:BufferClose(bang, buffer)
 endfunction
 
 command! -bang -nargs=? BufferClose call s:BufferClose('<bang>', '<args>')
+
 
 
 
