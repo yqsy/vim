@@ -97,6 +97,9 @@ endfunc
 " Open Explore in new tab with current directory
 function! Open_ExploreInTab()
 	let l:path = expand("%:p:h")
+	if l:path == ''
+		let l:path = getcwd()
+	endif
 	exec 'Texplore '.l:path
 endfunc
 
