@@ -147,12 +147,13 @@ class configure (object):
 	def darwin_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
-			line = line.strip('\\', '\\\\')
-			line = line.strip('"', '\\"')
-			line = line.strip("'", "\\'")
+			line = line.replace('\\', '\\\\')
+			line = line.replace('"', '\\"')
+			line = line.replace("'", "\\'")
 			command.append(line)
 		command = '; '.join(command)
-		os.system('xterm -T "%s" -e "%s"'%(title, command))
+		command = 'xterm -T "%s" -e "%s" &'%(title, command)
+		subprocess.call(['/bin/sh', '-c', command])
 		return 0
 
 	def linux_open_xterm (self, title, script, profile = None):
@@ -182,6 +183,69 @@ class configure (object):
 
 
 #----------------------------------------------------------------------
+# die
+#----------------------------------------------------------------------
+def die(message):
+	sys.stderr.write('%s\n'%message)
+	sys.stderr.flush()
+	sys.exit(0)
+	return 0
+
+
+#----------------------------------------------------------------------
+# open terminal and run script
+#----------------------------------------------------------------------
+def open(terminal, title, script, profile = None):
+	cfg = configure()
+	if sys.platform[:3] == 'win':
+		cfg.win32_open_console(title, script)
+		return 0
+	if terminal == None:
+		terminal = ''
+	terminal = terminal.lower()
+	if sys.platform == 'darwin':
+		if terminal in ('terminal', 'system', '', 'default'):
+			cfg.darwin_open_terminal(title, script, profile)
+		elif terminal in ('iterm', 'iterm2'):
+			cfg.darwin_open_iterm(title, script, profile)
+		elif terminal in ('xterm'):
+			cfg.darwin_open_xterm(title, script, profile)
+		else:
+			die('bad terminal name: %s'%terminal)
+			return -1
+		return 0
+	else:
+		if terminal in ('xterm', '', 'default', 'system'):
+			cfg.linux_open_xterm(title, script, profile)
+		elif terminal in ('gnome', 'gnome-terminal'):
+			cfg.linux_open_gnome(title, script, profile)
+		else:
+			die('bad terminal name: %s'%terminal)
+			return -1
+		return 0
+	return 0
+
+
+#----------------------------------------------------------------------
+# execute
+#----------------------------------------------------------------------
+def execute(terminal, title, command, cwd, hold, profile = None, post = ''):
+	script = []
+	if sys.platform[:3] == 'win' and cwd[1:2] == ':':
+		script.append(cwd[:2])
+	script.append('cd "%s"'%cwd)
+	script.append(command)
+	if hold:
+		if sys.platform[:3] == 'win':
+			script.append('pause')
+		else:
+			script.append('read -n1 -rsp "press any key to continue ..."')
+	if post:
+		script.append(post)
+	return open(terminal, title, script, profile)
+
+
+#----------------------------------------------------------------------
 # testing casen
 #----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -208,7 +272,16 @@ if __name__ == '__main__':
 		cfg.linux_open_gnome('1111', ['sleep 2', 'read -n1 -rsp sdf\\ sdf', 'echo "fuck you"', 'sleep 5'], 'Linwei')
 		return 0
 
-	test1()
+	def test6():
+		cfg = configure()
+		cfg.darwin_open_xterm('1111', ['sleep 2', 'read -n1 -rsp press\\ any\\ key\\ to\\ continue...', 'echo "fuck you"', 'sleep 10'])
+		return 0
+
+	def test7():
+		execute('', 'test', 'ls .', '~', True)
+		return 0
+
+	test7()
 
 
 
