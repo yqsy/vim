@@ -97,8 +97,7 @@ endfunc
 " Open Explore in new tab with current directory
 function! Open_ExploreInTab()
 	let l:path = expand("%:p:h")
-	exec 'tabnew'
-	exec 'Explore '.l:path
+	exec 'Texplore '.l:path
 endfunc
 
 " delete buffer keep window
