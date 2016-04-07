@@ -25,10 +25,17 @@ noremap <silent><space>fh :call Open_HeaderFile()<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 
-
+" keymap for macvim
 if has('gui_macvim')
 	noremap <silent><D-O> :browse tabedit<cr>
+	for s:index in range(10)
+		let s:key = ''. s:index
+		if s:index == 10 | let s:key = '0' | endif
+		exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
+		exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
+	endfor
 endif
 
-
+" fast open file
+noremap <space>hr :tabnew ~/.vimrc<cr>
 
