@@ -94,6 +94,12 @@ function! Open_HeaderFile()
 	echo 'switch failed, can not find another part of c/c++ source'
 endfunc
 
+" Open Explore in new tab with current directory
+function! Open_ExploreInTab()
+	let l:path = expand("%:p:h")
+	exec 'tabnew'
+	exec 'Explore '.l:path
+endfunc
 
 " delete buffer keep window
 function! s:BufferClose(bang, buffer)

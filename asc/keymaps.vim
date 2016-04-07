@@ -50,6 +50,8 @@ noremap <space>tn :call Toggle_Number()<cr>
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile()<cr>
+noremap <silent><space>fe :Explore<cr>
+noremap <silent><space>fo :call Open_ExploreInTab()<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 
@@ -59,7 +61,6 @@ if has('windows') || has('win32') || has('win64')
 else
 	noremap <space>hr :tabnew ~/.vimrc<cr>
 endif
-
 
 
 
