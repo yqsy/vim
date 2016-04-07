@@ -5,24 +5,16 @@ for s:index in range(10)
 	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
 endfor
 
-" keymap for windows gvim
-if has('gui_running') && (has('windows') || has('win32') || has('win64'))
+" keymap for VimTool in windows gvim
+if has('gui_running') && (has('win32') || has('win64'))
 	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for s:index in range(10)
 		exec 'noremap <silent><A-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
 		exec 'inoremap <silent><A-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
 	endfor
-	noremap <A-c> :tabclose<cr>
-	inoremap <A-c> <ESC>:tabclose<cr>
-	noremap <silent><A-o> :browse tabnew<cr>
-	inoremap <silent><A-o> <ESC>:browse tabnew<cr>
-	noremap <a-s> :w<cr>
-	inoremap <a-s> <esc>:w<cr>
-	noremap <c-s> :w<cr>
-	inoremap <c-s> <esc>:w<cr>
 endif
 
-" keymap for macvim
+" keymap for VimTool in macvim
 if has('gui_macvim')
 	noremap <silent><D-O> :browse tabedit<cr>
 	for s:index in range(10)
@@ -44,6 +36,14 @@ if has('gui_running')
 	noremap <M--> :resize -3<cr>
 	noremap <M-,> :vertical resize -3<cr>
 	noremap <M-.> :vertical resize +3<cr>
+	noremap <A-c> :tabclose<cr>
+	inoremap <A-c> <ESC>:tabclose<cr>
+	noremap <silent><A-o> :call Open_BrowseInTab()<cr>
+	inoremap <silent><A-o> <ESC>:call Open_BrowseInTab()<cr>
+	noremap <a-s> :w<cr>
+	inoremap <a-s> <esc>:w<cr>
+	noremap <c-s> :w<cr>
+	inoremap <c-s> <esc>:w<cr>
 endif
 
 
@@ -71,7 +71,7 @@ noremap <silent><space>ft :call Open_ExploreHere()<cr>
 noremap <silent><leader>e :BufferClose<cr>
 
 " fast open file
-if has('windows') || has('win32') || has('win64')
+if has('win32') || has('win64')
 	noremap <space>hr :tabnew ~/_vimrc<cr>
 else
 	noremap <space>hr :tabnew ~/.vimrc<cr>

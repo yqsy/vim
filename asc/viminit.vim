@@ -82,7 +82,7 @@ inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 
 " Alt+N to switch table quickly in windows
-if has('gui_running') && (has("windows") || has("win32") || has("win64"))
+if has('gui_running') && (has("win32") || has("win64"))
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
 	noremap <silent><A-1> :tabn 1<cr>

@@ -135,7 +135,7 @@ function! s:PathJoin(home, name)
     let l:size = strlen(a:home)
     if l:size == 0 | return a:name | endif
     let l:last = strpart(a:home, l:size - 1, 1)
-    if has("win32") || has("win64") || has("win16") || has("windows")
+    if has("win32") || has("win64") || has("win16") 
         if l:last == "/" || l:last == "\\"
             return a:home . a:name
         else

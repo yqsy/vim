@@ -106,7 +106,7 @@ function! Open_ExploreInTab()
 	endif
 	let g:netrw_liststyle = g:netrw_liststyle_save
 	exec 'tabnew'
-	exec 'Explore '.l:path
+	exec 'Explore '.fnameescape(l:path)
 endfunc
 
 " Open Explore in vertical split window
@@ -117,7 +117,7 @@ function! Open_ExploreInRight()
 	endif
 	exec 'vnew'
 	let g:netrw_liststyle = g:netrw_liststyle_save
-	exec 'Explore '.l:path
+	exec 'Explore '.fnameescape(l:path)
 endfunc
 
 " Open Explore here
@@ -127,7 +127,13 @@ function! Open_ExploreHere()
 		let l:path = getcwd()
 	endif
 	let g:netrw_liststyle = g:netrw_liststyle_save
-	exec 'Explore '.l:path
+	exec 'Explore '.fnameescape(l:path)
+endfunc
+
+function! Open_BrowseInTab()
+	let l:path = expand("%:p:h")
+	if l:path == '' | let l:path = getcwd() | endif
+	exec 'browse tabnew '.fnameescape(l:path)
 endfunc
 
 " delete buffer keep window
