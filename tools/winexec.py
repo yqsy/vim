@@ -23,7 +23,7 @@ class configure (object):
 		
 	def darwin_osascript (self, script):
 		for line in script:
-			print line
+			#print line
 			pass
 		if type(script) == type([]):
 			script = '\n'.join(script)
@@ -49,6 +49,10 @@ class configure (object):
 		command = '; '.join(command)
 		osascript.append('tell application "Terminal"')
 		osascript.append('     do script "%s; exit"'%command)
+		x = '     set current settings of selected tab of '
+		x += 'window 1 to settings set "%s"'
+		if profile != None:
+			osascript.append(x%profile)
 		osascript.append('     activate')
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
@@ -193,7 +197,7 @@ if __name__ == '__main__':
 		cfg.linux_open_gnome('1111', ['sleep 2', 'read -n1 -rsp sdf\\ sdf', 'echo "fuck you"', 'sleep 5'], 'Linwei')
 		return 0
 
-	test5()
+	test1()
 
 
 
