@@ -24,3 +24,11 @@ noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile()<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
+
+
+if has('gui_macvim')
+	noremap <silent><D-O> :browse tabedit<cr>
+endif
+
+
+

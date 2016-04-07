@@ -113,6 +113,7 @@ endif
 
 " cmd+N to switch table quickly in macvim
 if has("gui_macvim")
+	set macmeta
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
 	noremap <silent><d-1> :tabn 1<cr>

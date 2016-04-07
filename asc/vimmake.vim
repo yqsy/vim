@@ -70,17 +70,17 @@ if !exists("g:vimmake_mode")
 endif
 
 " Execute current filename directly
-function! Vimmake_ExecuteFile()
+function! Vimmake_ExeFile()
 	exec '!' . shellescape(expand("%:p"))
 endfunc
 
 " Execute current filename without extname
-function! Vimmake_ExecuteMain()
+function! Vimmake_ExeMain()
 	exec '!' . shellescape(expand("%:p:r"))
 endfunc
 
 " Execute executable of current emake project
-function! Vimmake_ExecuteEmake()
+function! Vimmake_ExeEmake()
 	exec '!emake -e ' . shellescape(expand("%"))
 endfunc
 
@@ -98,7 +98,7 @@ endfunc
 
 
 " Execute command in normal(0), quickfix(1), system(2) mode
-function! Vimmake_ExecuteCommand(command, mode)
+function! Vimmake_Execute(command, mode)
 	let $VIM_FILEPATH = expand("%:p")
 	let $VIM_FILENAME = expand("%:t")
 	let $VIM_FILEDIR = expand("%:p:h")
@@ -111,6 +111,7 @@ function! Vimmake_ExecuteCommand(command, mode)
 	let $VIM_VERSION = ''.v:version
 	let $VIM_MODE = ''. a:mode
 	let $VIM_GUI = '0'
+	let l:text = ''
 	if has("gui_running")
 		let $VIM_GUI = '1'
 	endif
@@ -123,8 +124,9 @@ function! Vimmake_ExecuteCommand(command, mode)
 		exec "make!"
 		call s:MakeRestore()
 	else
-		call system("" . shellescape(a:command))
+		let l:text = system("" . shellescape(a:command))
 	endif
+	return l:text
 endfunc
 
 
@@ -159,11 +161,11 @@ function! s:VimMake(bang, command)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
 	if a:bang == ''
-		call Vimmake_ExecuteCommand(l:fullname, 0)
+		call Vimmake_Execute(l:fullname, 0)
 	elseif a:bang == '!'
-		call Vimmake_ExecuteCommand(l:fullname, 1)
+		call Vimmake_Execute(l:fullname, 1)
 	else
-		call Vimmake_ExecuteCommand(l:fullname, 2)
+		call Vimmake_Execute(l:fullname, 2)
 	endif
 	return l:fullname
 endfunc
@@ -265,11 +267,11 @@ function! Vimmake_RunClever()
 	endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
-		exec "call Vimmake_ExecuteMain()"
+		exec "call Vimmake_ExeMain()"
 	elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 		exec '!python ' . fnameescape(expand("%"))
 	elseif index(['mak', 'emake'], l:ext) >= 0
-		exec "call Vimmake_ExecuteEmake()"
+		exec "call Vimmake_ExeEmake()"
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
 	elseif l:ext  == "js"
@@ -287,7 +289,7 @@ function! Vimmake_RunClever()
 	elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
 		exec '!osascript '. shellescape(expand('%'))
 	else
-		call Vimmake_ExecuteFile()
+		call Vimmake_ExeFile()
 	endif
 endfunc
 
@@ -295,14 +297,14 @@ endfunc
 noremap <silent><F5> :call Vimmake_RunClever()<CR>
 inoremap <silent><F5> <C-o>:call Vimmake_RunClever()<CR>
 
-noremap <silent><F6> :call Vimmake_ExecuteFile()<CR>
-inoremap <silent><F6> <C-o>:call Vimmake_ExecuteFile()<CR>
+noremap <silent><F6> :call Vimmake_ExeFile()<CR>
+inoremap <silent><F6> <C-o>:call Vimmake_ExeFile()<CR>
 
 noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 inoremap <silent><F7> <C-o>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 
-noremap <silent><F8> :call Vimmake_ExecuteEmake()<CR>
-inoremap <silent><F8> <C-o>:call Vimmake_ExecuteEmake()<CR>
+noremap <silent><F8> :call Vimmake_ExeEmake()<CR>
+inoremap <silent><F8> <C-o>:call Vimmake_ExeEmake()<CR>
 
 noremap <silent><F9> :call Vimmake_CompileGcc()<CR>
 inoremap <silent><F9> <C-o>:call Vimmake_CompileGcc()<CR>
