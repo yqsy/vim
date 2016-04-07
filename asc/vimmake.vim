@@ -206,9 +206,9 @@ command! -nargs=1 VimTool call s:VimTool(<f-args>)
 " build via gcc
 function! Vimmake_CompileGcc()
 	if g:vimmake_save == 1
-		exec "w"
+		silent exec "w"
 	elseif g:vimmake_save == 2
-		exec "wa"
+		silent exec "wa"
 	endif
 	let l:compileflag = g:vimmake_cflags
 	let l:extname = expand("%:e")
@@ -232,9 +232,9 @@ endfunc
 " build via emake (http://skywind3000.github.io/emake/emake.py)
 function! Vimmake_BuildEmake(filename, ininame, quickfix)
 	if g:vimmake_save == 1
-		exec "w"
+		silent exec "w"
 	elseif g:vimmake_save == 2
-		exec "wa"
+		silent exec "wa"
 	endif
 	if (!a:quickfix) || (!has("quickfix"))
 		if a:ininame == ''

@@ -5,6 +5,34 @@ for s:index in range(10)
 	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
 endfor
 
+" keymap for windows gvim
+if has('gui_running') && (has('windows') || has('win32') || has('win64'))
+	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
+	for s:index in range(10)
+		exec 'noremap <silent><A-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
+		exec 'inoremap <silent><A-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
+	endfor
+	noremap <A-c> :tabclose<cr>
+	inoremap <A-c> <ESC>:tabclose<cr>
+	noremap <silent><A-o> :browse tabnew<cr>
+	inoremap <silent><A-o> <ESC>:browse tabnew<cr>
+	noremap <a-s> :w<cr>
+	inoremap <a-s> <esc>:w<cr>
+	noremap <c-s> :w<cr>
+	inoremap <c-s> <esc>:w<cr>
+endif
+
+" keymap for macvim
+if has('gui_macvim')
+	noremap <silent><D-O> :browse tabedit<cr>
+	for s:index in range(10)
+		let s:key = ''. s:index
+		if s:index == 10 | let s:key = '0' | endif
+		exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
+		exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
+	endfor
+endif
+
 
 " svn shortcut
 noremap <space>sc :!svn co -m "update from vim"<cr>
@@ -25,17 +53,14 @@ noremap <silent><space>fh :call Open_HeaderFile()<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 
-" keymap for macvim
-if has('gui_macvim')
-	noremap <silent><D-O> :browse tabedit<cr>
-	for s:index in range(10)
-		let s:key = ''. s:index
-		if s:index == 10 | let s:key = '0' | endif
-		exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
-		exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
-	endfor
+" fast open file
+if has('windows') || has('win32') || has('win64')
+	noremap <space>hr :tabnew ~/_vimrc<cr>
+else
+	noremap <space>hr :tabnew ~/.vimrc<cr>
 endif
 
-" fast open file
-noremap <space>hr :tabnew ~/.vimrc<cr>
+
+
+
 
