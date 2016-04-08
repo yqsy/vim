@@ -30,18 +30,10 @@ set nopaste
 "set nowritebackup
 "set noswapfile
 
-if has('syntax')
-	syntax enable
-	syntax on
-endif
+if has('syntax') | syntax enable | syntax on | endif
+if has('mouse') | set mouse=c | endif
+if has('autocmd') | filetype plugin indent on | endif
 
-if has('mouse')
-	set mouse=c
-endif
-
-if has('autocmd')
-	filetype plugin indent on
-endif
 
 " map CTRL_HJKL to move cursor in all mode
 noremap <C-h> <left>
@@ -52,6 +44,7 @@ inoremap <C-h> <left>
 inoremap <C-j> <down>
 inoremap <C-k> <up>
 inoremap <C-l> <right>
+
 
 " use hotkey to change buffer
 noremap <silent><F1> :bp<CR>
