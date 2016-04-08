@@ -380,19 +380,40 @@ def die(message):
 #----------------------------------------------------------------------
 # open terminal and run script
 #----------------------------------------------------------------------
-def openterm(terminal, title, script, profile = None):
+def open_terminal(terminal, title, script, profile = None):
 	cfg = configure()
 	if sys.platform[:3] == 'win':
 		if script == None:
-			return ['cmd']
-		cfg.win32_open_console(title, script)
+			return ['cmd', 'cygwin', 'cygwin-mintty']
+		if terminal in ['', 'system', 'dos', 'win', 'cmd', 'command']:
+			cfg.win32_open_console(title, script)
+		elif terminal.lower() in ['cygwin', 'bash', 'mintty', 'cygwin-mintty']:
+			if profile == None:
+				die('please give cygwin path in profile')
+				return -1
+			if not os.path.exists(profile):
+				die('can not find cygwin in: %s'%profile)
+				return -2
+			if not os.path.exists(os.path.join(profile, 'bin/sh.exe')):
+				die('can not find cygwin in: %s'%profile)
+				return -3
+			cfg.cygwin = os.path.abspath(profile)
+			if terminal.lower() in ['cygwin', 'bash']:
+				login = terminal in ['CYGWIN', 'BASH'] and 'login' or ''
+				cfg.win32_open_cygwin_bash(title, script, login)
+			elif terminal.lower() in ['mintty', 'cygwin-mintty']:
+				login = terminal in ['MINTTY', 'CYGWIN-MINTTY'] and 'login' or ''
+				cfg.win32_open_cygwin_mintty(title, script, login)
+		else:
+			die('don\'t support terminal: %s'%terminal)
+			return -4
 		return 0
-	if terminal == None:
-		terminal = ''
-	terminal = terminal.lower()
 	if sys.platform == 'darwin':
-		if script == None:
+		if script == None or terminal == None:
 			return ['terminal', 'iterm', 'xterm']
+		if terminal == None: 
+			terminal = ''
+		terminal = terminal.lower()
 		if terminal in ('terminal', 'system', '', 'default'):
 			cfg.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
@@ -403,8 +424,15 @@ def openterm(terminal, title, script, profile = None):
 			die('bad terminal name: %s'%terminal)
 			return -1
 		return 0
+	elif sys.platform == 'cygwin':
+		if script == None or terminal == None:
+			return ['cmd', 'bash', 'mintty']
+		if terminal == None:
+			terminal = ''
+		if terminal in ['dos', 'win', 'cmd', 'command']:
+			return 0
 	else:
-		if script == None:
+		if script == None or terminal == None:
 			return ['xterm', 'gnome']
 		if terminal in ('xterm', '', 'default', 'system'):
 			cfg.linux_open_xterm(title, script, profile)
@@ -435,7 +463,7 @@ def execute(terminal, title, command, cwd, wait, profile = None, post = ''):
 			script.append('read -n1 -rsp "press any key to continue ..."')
 	if post:
 		script.append(post)
-	return openterm(terminal, title, script, profile)
+	return open_terminal(terminal, title, script, profile)
 
 
 #----------------------------------------------------------------------
