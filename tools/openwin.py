@@ -79,6 +79,12 @@ class configure (object):
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
 	
+	def unix_escape (self, argument, force = False):
+		argument = argument.replace('\\', '\\\\')
+		argument = argument.replace('"', '\\"')
+		argument = argument.replace("'", "\\'")
+		return argument.replace(' ', '\\ ')
+
 	def win32_escape (self, argument, force = False):
 		if force == False and argument:
 			clear = True
@@ -195,15 +201,19 @@ def die(message):
 #----------------------------------------------------------------------
 # open terminal and run script
 #----------------------------------------------------------------------
-def open(terminal, title, script, profile = None):
+def openterm(terminal, title, script, profile = None):
 	cfg = configure()
 	if sys.platform[:3] == 'win':
+		if script == None:
+			return ['cmd']
 		cfg.win32_open_console(title, script)
 		return 0
 	if terminal == None:
 		terminal = ''
 	terminal = terminal.lower()
 	if sys.platform == 'darwin':
+		if script == None:
+			return ['terminal', 'iterm', 'xterm']
 		if terminal in ('terminal', 'system', '', 'default'):
 			cfg.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
@@ -215,6 +225,8 @@ def open(terminal, title, script, profile = None):
 			return -1
 		return 0
 	else:
+		if script == None:
+			return ['xterm', 'gnome']
 		if terminal in ('xterm', '', 'default', 'system'):
 			cfg.linux_open_xterm(title, script, profile)
 		elif terminal in ('gnome', 'gnome-terminal'):
@@ -242,7 +254,7 @@ def execute(terminal, title, command, cwd, wait, profile = None, post = ''):
 			script.append('read -n1 -rsp "press any key to continue ..."')
 	if post:
 		script.append(post)
-	return open(terminal, title, script, profile)
+	return openterm(terminal, title, script, profile)
 
 
 #----------------------------------------------------------------------
@@ -252,13 +264,41 @@ def main(argv = None):
 	if argv == None:
 		argv = sys.argv
 	argv = [ n for n in argv ]
+	args = []
+	cmds = []
+	skip = ['-h', '--help', '-w']
+	index = 1
+	if len(argv) > 0:
+		args.append(argv[0])
+	while index < len(argv):
+		data = argv[index]
+		if data[:2] == '--':
+			args.append(data)
+			index += 1
+		elif data in skip:
+			args.append(data)
+			index += 1
+		elif data[:1] == '-':
+			args.append(data)
+			index += 1
+			if index >= len(argv):
+				break
+			args.append(argv[index])
+			index += 1
+		else:
+			cmds = argv[index:]
+			break
 	import optparse
+	if len(cmds) == 0 and len(args) > 1:
+		args.append('--help')
 	desc = 'Execute program in a new terminal window'
 	parser = optparse.OptionParser( \
-			usage = 'usage: %prog [options] program [parameters]',
+			usage = 'usage: %prog [options] command [args ...]',
 			version = '0.0.0',
 			description = desc)
-	parser.add_option('-t', '--terminal', dest = 'terminal', default = None, 
+	parser.add_option('-t', '--title', dest = 'title', default = None,
+			help = 'title of new window')
+	parser.add_option('-m', '--terminal', dest = 'terminal', default = None, 
 			help = 'terminal name to open')
 	parser.add_option('-p', '--profile', dest = 'profile', default = None,
 			help = 'terminal profile')
@@ -268,10 +308,22 @@ def main(argv = None):
 			action = 'store_true', help = 'wait before exit')
 	parser.add_option('-o', '--post', dest = 'post', default = '',
 			help = 'post action')
-	opts, args = parser.parse_args(argv)
-	print argv
-	print opts
-	print args
+	opts, _ = parser.parse_args(args)
+	if opts.title == None:
+		opts.title = cmds[0]
+	if not opts.cwd:
+		opts.cwd = os.getcwd()
+	command = []
+	cfg = configure()
+	for n in cmds:
+		if sys.platform[:3] == 'win':
+			n = cfg.win32_escape(n)
+		else:
+			n = cfg.unix_escape(n)
+		command.append(n)
+	command = ' '.join(command)
+	execute(opts.terminal, opts.title, command, opts.cwd, opts.wait, 
+			opts.profile, opts.post)
 	return 0
 
 
@@ -316,7 +368,7 @@ if __name__ == '__main__':
 		return 0
 
 	def test8():
-		args = [ __file__, '--post=123', '--profile=123', 't', '456', '--post=444', '--profile=334', '-h' ]
+		args = [ __file__, '-p', '123', '-w', '--profile=123', '-c', 'e:/lab', 'dir', '/w' ]
 		main(args)
 		return 0
 
