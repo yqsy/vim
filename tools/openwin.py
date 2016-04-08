@@ -154,6 +154,7 @@ class configure (object):
 			return ''
 		return shortpath
 
+	# start cmd.exe in a new window and execute script
 	def win32_open_console (self, title, script, profile = None):
 		fp = open(self.temp, 'w')
 		fp.write('@echo off\n')
@@ -256,12 +257,32 @@ class configure (object):
 		if not title:
 			title = 'Cygwin MinTTY'
 		command += ['-t', title]
+		command += ['-i', '/Cygwin-Terminal.ico']
 		command += ['-e', 'bash']
 		if profile == 'login':
 			command.append('--login')
 		self.call(command + ['-i', scriptname])
 		return 0
 
+	# convert windows path to cygwin path
+	def win2cyg (self, path):
+		path = os.path.abspath(path)
+		return '/cygdrive/%s%s'%(path[0], path[2:].replace('\\', '/'))
+
+	# convert cygwin path to windows path
+	def cyg2win (self, path):
+		if path[1:2] == ':':
+			return os.path.abspath(path)
+		if path.lower().startswith('/cygdrive/'):
+			path = path[10] + ':' + path[11:]
+			return os.path.abspath(path)
+		if not path.startswith('/'):
+			raise Exception('cannot convert path: %s'%path)
+		if not self.cygwin:
+			raise Exception('cannot find cygwin root')
+		return os.path.abspath(os.path.join(self.cygwin, path[1:]))
+	
+	# use bash in cygwin to execute script and return output
 	def win32_cygwin_execute (self, script, login = False):
 		if not self.cygwin:
 			return -1, None
@@ -274,6 +295,8 @@ class configure (object):
 		tempfile = os.path.join(self.cygwin, 'tmp/' + filename)
 		fp = open(tempfile, 'wb')
 		fp.write('#! /bin/sh\n')
+		path = self.win2cyg(os.getcwd())
+		fp.write('cd %s\n'%self.unix_escape(path))
 		for line in script:
 			fp.write('%s\n'%line)
 		fp.close()
@@ -287,6 +310,61 @@ class configure (object):
 		p.stdout.close()
 		code = p.wait()
 		return code, text
+
+	# open bash of cygwin in a new window and execute script
+	def win32_cygwin_open_bash (self, title, script, profile = None):
+		if not self.cygwin:
+			return -1, None
+		if not os.path.exists(self.cygwin):
+			return -2, None
+		if not os.path.exists(os.path.join(self.cygwin, 'bin/sh.exe')):
+			return -3, None
+		bash = os.path.join(self.cygwin, 'bin/bash.exe')
+		filename = os.path.split(self.temp)[-1]
+		tempfile = os.path.join(self.cygwin, 'tmp/' + filename)
+		fp = open(tempfile, 'wb')
+		fp.write('#! /bin/sh\n')
+		path = self.win2cyg(os.getcwd())
+		fp.write('cd %s\n'%self.unix_escape(path))
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		short_bash = self.win32_path_short(bash)
+		command = 'start %s '%short_bash
+		command += '--login -i /tmp/' + filename
+		os.system(command)
+		return 0
+
+	# open mintty of cygwin in a new window and execute script
+	def win32_cygwin_open_mintty (self, title, script, profile = None):
+		if not self.cygwin:
+			return -1, None
+		if not os.path.exists(self.cygwin):
+			return -2, None
+		if not os.path.exists(os.path.join(self.cygwin, 'bin/sh.exe')):
+			return -3, None
+		mintty = os.path.join(self.cygwin, 'bin/mintty.exe')
+		filename = os.path.split(self.temp)[-1]
+		tempfile = os.path.join(self.cygwin, 'tmp/' + filename)
+		fp = open(tempfile, 'wb')
+		fp.write('#! /bin/sh\n')
+		path = self.win2cyg(os.getcwd())
+		fp.write('cd %s\n'%self.unix_escape(path))
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		shortname = self.win32_path_short(mintty)
+		command = 'start %s '%shortname
+		if not title:
+			title = 'Cygwin MinTTY'
+		command += '-i /Cygwin-Terminal.ico '
+		command += '-t "%s" -e /usr/bin/bash '%title
+		if profile == 'login' or True:
+			command += '--login '
+		command += '-i /tmp/' + filename
+		print command
+		os.system(command)
+		return 0
 
 
 #----------------------------------------------------------------------
@@ -492,10 +570,20 @@ if __name__ == '__main__':
 	def testc():
 		cfg = configure()
 		cfg.cygwin = 'd:/linux'
-		code, text = cfg.win32_cygwin_execute(['pwd', 'ls -la'], False)
+		code, text = cfg.win32_cygwin_execute(['pwd', 'ls -la'], True)
 		print text
 
-	testc()
+	def testd():
+		cfg = configure()
+		cfg.cygwin = 'd:/linux'
+		cfg.win32_cygwin_open_bash('fuck', ['pwd', 'ls -la', 'sleep 10'], True)
+
+	def teste():
+		cfg = configure()
+		cfg.cygwin = 'd:/linux'
+		cfg.win32_cygwin_open_mintty('fuck', ['pwd', 'ls -la', 'sleep 30'], True)
+		
+	testb()
 
 
 
