@@ -377,6 +377,18 @@ def die(message):
 	return 0
 
 
+
+#----------------------------------------------------------------------
+# terminal class
+#----------------------------------------------------------------------
+class cterminal (object):
+
+	def __init__ (self):
+		self.config = configure()
+		self.unix = sys.platform[:3] != 'win' and True or False
+
+
+
 #----------------------------------------------------------------------
 # open terminal and run script
 #----------------------------------------------------------------------
@@ -429,8 +441,17 @@ def open_terminal(terminal, title, script, profile = None):
 			return ['cmd', 'bash', 'mintty']
 		if terminal == None:
 			terminal = ''
-		if terminal in ['dos', 'win', 'cmd', 'command']:
-			return 0
+		if terminal.lower() in ['dos', 'win', 'cmd', 'command']:
+			cfg.cygwin_open_cmd(title, script, profile)
+		elif terminal.lower() in ['bash', 'sh']:
+			if not profile:
+				profile = terminal.isupper() and 'login' or ''
+			cfg.cygwin_open_bash(title, script, profile)
+		else:
+			if not profile:
+				profile = terminal.isupper() and 'login' or ''
+			cfg.cygwin_open_mintty(title, script, profile)
+		return 0
 	else:
 		if script == None or terminal == None:
 			return ['xterm', 'gnome']
