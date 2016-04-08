@@ -142,12 +142,14 @@ class configure (object):
 	def win32_open_console (self, title, script, profile = None):
 		fp = open(self.temp, 'w')
 		fp.write('@echo off\n')
+		if title:
+			fp.write('title %s\n'%self.win32_escape(title))
 		for line in script:
 			fp.write(line + '\n')
 		fp.close()
 		fp = None
 		pathname = self.win32_path_short(self.temp)
-		os.system('start "%s" cmd /C %s'%(title, pathname))
+		os.system('start cmd /C %s'%(pathname))
 		return 0
 	
 	def darwin_open_xterm (self, title, script, profile = None):
@@ -185,6 +187,24 @@ class configure (object):
 		else:
 			profile = self.escape(profile)
 			os.system('gnome-terminal -t "%s" --window-with-profile="%s" --command=\'%s\''%(title, profile, command))
+		return 0
+
+	def cygwin_open_cmd (self, title, script, profile = None):
+		temp = os.environ.get('TEMP', os.environ.get('TMP', '/tmp'))
+		filename = os.path.split(self.temp)[-1]
+		cwd = os.getcwd()
+		fp = open(os.path.join(temp, filename), 'w')
+		fp.write('@echo off\n')
+		if title:
+			fp.write('title %s\n'%self.win32_escape(title))
+		for line in script:
+			fp.write(line + '\n')
+		fp.close()
+		fp = None
+		command = 'cygstart cmd /C %s'%(filename)
+		p = subprocess.Popen(['cygstart', 'cmd', '/C', filename], cwd = temp)
+		p.wait()
+		p = None
 		return 0
 
 
@@ -249,6 +269,8 @@ def execute(terminal, title, command, cwd, wait, profile = None, post = ''):
 	script.append(command)
 	if wait:
 		if sys.platform[:3] == 'win':
+			script.append('pause')
+		elif sys.platform == 'cygwin' and terminal in ('cmd', 'dos', 'win'):
 			script.append('pause')
 		else:
 			script.append('read -n1 -rsp "press any key to continue ..."')
@@ -318,6 +340,8 @@ def main(argv = None):
 	for n in cmds:
 		if sys.platform[:3] == 'win':
 			n = cfg.win32_escape(n)
+		elif sys.platform == 'cygwin' and opts.terminal in ('dos', 'win', 'cmd'):
+			n = cfg.win32_escape(n)
 		else:
 			n = cfg.unix_escape(n)
 		command.append(n)
@@ -372,7 +396,11 @@ if __name__ == '__main__':
 		main(args)
 		return 0
 
-	test8()
+	def test9():
+		cfg = configure()
+		cfg.cygwin_open_cmd('fuck', ['e:', 'cd lab', 'dir', 'pause'])
+
+	test9()
 
 
 
