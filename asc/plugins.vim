@@ -1,6 +1,4 @@
-if !exists('g:netrw_liststyle_save')
-	let g:netrw_liststyle_save = 1
-endif
+let g:netrw_liststyle = 1
 
 " fixed netrw underline bug in vim 7.3 and below
 if v:version < 704

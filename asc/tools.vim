@@ -94,17 +94,12 @@ function! Open_HeaderFile()
 	echo 'switch failed, can not find another part of c/c++ source'
 endfunc
 
-if !exists('g:netrw_liststyle_save')
-	let g:netrw_liststyle_save = 1
-endif
-
 " Open Explore in new tab with current directory
 function! Open_ExploreInTab()
 	let l:path = expand("%:p:h")
 	if l:path == ''
 		let l:path = getcwd()
 	endif
-	let g:netrw_liststyle = g:netrw_liststyle_save
 	exec 'tabnew'
 	exec 'Explore '.fnameescape(l:path)
 endfunc
@@ -116,7 +111,6 @@ function! Open_ExploreInRight()
 		let l:path = getcwd()
 	endif
 	exec 'vnew'
-	let g:netrw_liststyle = g:netrw_liststyle_save
 	exec 'Explore '.fnameescape(l:path)
 endfunc
 
@@ -126,7 +120,6 @@ function! Open_ExploreHere()
 	if l:path == ''
 		let l:path = getcwd()
 	endif
-	let g:netrw_liststyle = g:netrw_liststyle_save
 	exec 'Explore '.fnameescape(l:path)
 endfunc
 

@@ -5,7 +5,6 @@ highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE gui
 noremap <silent><leader>bl :ls<cr>
 
 let s:enter = 0
-let g:netrw_liststyle = 3
 let g:netrw_winsize = 25
 let g:netrw_list_hide= '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn'
 
