@@ -15,7 +15,22 @@ class configure (object):
 		self.temp = os.environ.get('temp', os.environ.get('tmp', '/tmp'))
 		self.tick = long(time.time()) % 100
 		self.temp = os.path.join(self.temp, 'winex_%02d.cmd'%self.tick)
+		self.cygwin = ''
 		self.GetShortPathName = None
+	
+	def call (self, args, stdin = None):
+		p = subprocess.Popen(args, shell = False,
+				stdin = subprocess.PIPE,
+				stdout = subprocess.PIPE, 
+				stderr = subprocess.PIPE)
+		if stdin != None:
+			p.stdin.write(stdin)
+			p.stdin.flush()
+		p.stdin.close()
+		stdout = p.stdout.read()
+		stderr = p.stderr.read()
+		code = p.wait()
+		return code, stdout, stderr
 	
 	def escape (self, path):
 		path = path.replace('\\', '\\\\').replace('"', '\\"')
@@ -204,8 +219,74 @@ class configure (object):
 		command = 'cygstart cmd /C %s'%(filename)
 		p = subprocess.Popen(['cygstart', 'cmd', '/C', filename], cwd = temp)
 		p.wait()
-		p = None
 		return 0
+
+	def cygwin_write_script (self, filename, script):
+		fp = open(filename, 'w')
+		fp.write('#! /bin/sh\n')
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		fp = None
+		return 0
+
+	def cygwin_win_path (self, path):
+		code, stdout, stderr = self.call(['cygpath', '-w', path])
+		return stdout.strip('\r\n')
+
+	def cygwin_open_bash (self, title, script, profile = None):
+		filename = os.path.split(self.temp)[-1]
+		scriptname = os.path.join('/tmp', filename)
+		script = [ n for n in script ]
+		script.insert(0, 'cd %s'%self.unix_escape(os.getcwd()))
+		self.cygwin_write_script(scriptname, script)
+		command = ['cygstart', 'bash']
+		if profile == 'login':
+			command.append('--login')
+		self.call(command + ['-i', scriptname])
+		return 0
+	
+	def cygwin_open_mintty (self, title, script, profile = None):
+		filename = os.path.split(self.temp)[-1]
+		scriptname = os.path.join('/tmp', filename)
+		script = [ n for n in script ]
+		script.insert(0, 'cd %s'%self.unix_escape(os.getcwd()))
+		self.cygwin_write_script(scriptname, script)
+		command = ['cygstart', 'mintty']
+		if not title:
+			title = 'Cygwin MinTTY'
+		command += ['-t', title]
+		command += ['-e', 'bash']
+		if profile == 'login':
+			command.append('--login')
+		self.call(command + ['-i', scriptname])
+		return 0
+
+	def win32_cygwin_execute (self, script, login = False):
+		if not self.cygwin:
+			return -1, None
+		if not os.path.exists(self.cygwin):
+			return -2, None
+		if not os.path.exists(os.path.join(self.cygwin, 'bin/sh.exe')):
+			return -3, None
+		bash = os.path.join(self.cygwin, 'bin/bash')
+		filename = os.path.split(self.temp)[-1]
+		tempfile = os.path.join(self.cygwin, 'tmp/' + filename)
+		fp = open(tempfile, 'wb')
+		fp.write('#! /bin/sh\n')
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		command = [bash]
+		if login:
+			command.append('--login')
+		command.extend(['-i', '/tmp/' + filename])
+		p = subprocess.Popen(command, shell = False,
+				stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+		text = p.stdout.read()
+		p.stdout.close()
+		code = p.wait()
+		return code, text
 
 
 #----------------------------------------------------------------------
@@ -400,7 +481,21 @@ if __name__ == '__main__':
 		cfg = configure()
 		cfg.cygwin_open_cmd('fuck', ['e:', 'cd lab', 'dir', 'pause'])
 
-	test9()
+	def testa():
+		cfg = configure()
+		cfg.cygwin_open_bash('fuck', ['pwd', 'ls -la', 'sleep 10'])
+
+	def testb():
+		cfg = configure()
+		cfg.cygwin_open_mintty('fuck', ['pwd', 'ls -la', 'sleep 10'])
+	
+	def testc():
+		cfg = configure()
+		cfg.cygwin = 'd:/linux'
+		code, text = cfg.win32_cygwin_execute(['pwd', 'ls -la'], False)
+		print text
+
+	testc()
 
 
 
