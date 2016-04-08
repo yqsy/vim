@@ -39,6 +39,10 @@ if has('mouse')
 	set mouse=c
 endif
 
+if has('autocmd')
+	filetype plugin indent on
+endif
+
 " map CTRL_HJKL to move cursor in all mode
 noremap <C-h> <left>
 noremap <C-j> <down>
