@@ -2,7 +2,6 @@ let &tags .= ',.tags,' . expand('~/.vim/tags/standard.tags')
 
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
 
-noremap <silent><leader>bl :ls<cr>
 
 let s:enter = 0
 let g:netrw_winsize = 25

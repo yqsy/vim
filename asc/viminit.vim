@@ -10,12 +10,11 @@
 set nocompatible
 
 set shiftwidth=4
+set softtabstop=4
+set noexpandtab
 set tabstop=4
 set cindent
 set autoindent
-set fileencodings=utf-8,gb2312,gbk,gb18030,big5
-set fenc=utf-8
-set enc=utf-8
 set showtabline=1
 set winaltkeys=no
 set nohidden 
@@ -26,13 +25,28 @@ set cmdheight=1
 set ruler
 set nopaste
 
+if has('multi_byte')
+	set fileencodings=utf-8,gb2312,gbk,gb18030,big5
+	set fenc=utf-8
+	set enc=utf-8
+endif
+
+if has('syntax')  
+	syntax enable 
+	syntax on 
+endif
+
+if has('autocmd') 
+	filetype plugin indent on 
+endif
+
+if has('mouse')
+	set mouse=c
+endif
+
 "set nobackup
 "set nowritebackup
 "set noswapfile
-
-if has('syntax') | syntax enable | syntax on | endif
-if has('mouse') | set mouse=c | endif
-if has('autocmd') | filetype plugin indent on | endif
 
 
 " map CTRL_HJKL to move cursor in all mode
@@ -47,23 +61,19 @@ inoremap <C-l> <right>
 
 
 " use hotkey to change buffer
-noremap <silent><F1> :bp<CR>
-noremap <silent><F2> :bn<CR>
-inoremap <silent><F1> <C-o>:bp<CR>
-inoremap <silent><F2> <C-o>:bn<CR>
-noremap <silent><tab>n :bn<cr>
-noremap <silent><tab>p :bp<cr>
-noremap <silent><tab>m :bm<cr>
-noremap <silent><tab>v :vs<cr>
-noremap <silent><tab>c :nohl<cr>
+noremap <silent><leader>bn :bn<cr>
+noremap <silent><leader>bp :bp<cr>
+noremap <silent><leader>bm :bm<cr>
+noremap <silent><leader>bv :vs<cr>
+noremap <silent><leader>bd :bdelete<cr>
+noremap <silent><leader>bl :ls<cr>
+noremap <silent><leader>nh :nohl<cr>
 
 " use hotkey to operate tab
 noremap <silent><leader>t :tabnew<cr>
 noremap <silent><leader>g :tabclose<cr>
-noremap <silent><F3> :tabp<cr>
-noremap <silent><F4> :tabn<cr>
-inoremap <silent><F3> <ESC>:tabp<cr>
-inoremap <silent><F4> <ESC>:tabn<cr>
+noremap <silent><tab>n :tabn<cr>
+noremap <silent><tab>p :tabp<cr>
 noremap <silent><leader>1 :tabn 1<cr>
 noremap <silent><leader>2 :tabn 2<cr>
 noremap <silent><leader>3 :tabn 3<cr>
@@ -150,7 +160,6 @@ set matchtime=3
 noremap <silent><leader>w :w<cr>
 noremap <silent><leader>q :q<cr>
 noremap <silent><leader>l :close<cr>
-noremap <silent><leader>d :bp\|bd #<CR>
 
 " window management
 noremap <tab>h <c-w>h
