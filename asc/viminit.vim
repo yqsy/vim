@@ -114,12 +114,6 @@ if has('gui_running') && (has("win32") || has("win64"))
 	inoremap <silent><m-8> <ESC>:tabn 8<cr>
 	inoremap <silent><m-9> <ESC>:tabn 9<cr>
 	inoremap <silent><m-0> <ESC>:tabn 10<cr>
-	noremap <silent><m-w> :tabclose<cr>
-	inoremap <silent><m-w> <ESC>:tabclose<cr>
-	noremap <silent><m-o> :browse tabnew<cr>
-	inoremap <silent><m-o> <ESC>:browse tabnew<cr>
-	noremap <silent><m-t> :tabnew<cr>
-	inoremap <silent><m-t> <ESC>:tabnew<cr>
 endif
 
 " cmd+N to switch table quickly in macvim
@@ -149,14 +143,17 @@ if has("gui_macvim")
 	inoremap <silent><d-0> <ESC>:tabn 10<cr>
 	noremap <silent><d-o> :browse tabnew<cr>
 	inoremap <silent><d-o> <ESC>:browse tabnew<cr>
-	noremap <silent><d-t> :tabnew<cr>
-	inoremap <silent><d-t> <ESC>:tabnew<cr>
+endif
+
+" cross platform fast tab action
+if has('gui_running')
 	noremap <silent><m-o> :tabnew<cr>
 	inoremap <silent><m-o> <ESC>:tabnew<cr>
 	noremap <silent><m-t> :tabnew<cr>
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
+	noremap <silent><m-w> :tabclose<cr>
+	inoremap <silent><m-w> <ESC>:tabclose<cr>
 endif
-
 
 " miscs
 set scrolloff=3
