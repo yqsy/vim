@@ -41,7 +41,7 @@ if has('autocmd')
 endif
 
 if has('mouse')
-	set mouse=c
+	"set mouse=c
 endif
 
 "set nobackup
