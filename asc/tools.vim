@@ -73,7 +73,7 @@ function! Open_Manual(what)
 endfunc
 
 " switch header
-function! Open_HeaderFile()
+function! Open_HeaderFile(where)
 	let l:main = expand('%:p:r')
 	let l:fext = expand('%:e')
 	if index(['c', 'cpp', 'm', 'mm', 'cc'], l:fext) >= 0
@@ -87,7 +87,13 @@ function! Open_HeaderFile()
 	for l:next in l:altnames
 		let l:newname = l:main . '.' . l:next
 		if filereadable(l:newname)
-			exec 'vs ' . fnameescape(l:newname)
+			if a:where == 0
+				exec 'e '.fnameescape(l:newname)
+			elseif a:where == 1
+				exec 'vs ' . fnameescape(l:newname)
+			else
+				exec 'tabedit '. fnameescape(l:newname)
+			endif
 			return
 		endif
 	endfor
@@ -95,32 +101,20 @@ function! Open_HeaderFile()
 endfunc
 
 " Open Explore in new tab with current directory
-function! Open_ExploreInTab()
+function! Open_Explore(where)
 	let l:path = expand("%:p:h")
 	if l:path == ''
 		let l:path = getcwd()
 	endif
-	exec 'tabnew'
-	exec 'Explore '.fnameescape(l:path)
-endfunc
-
-" Open Explore in vertical split window
-function! Open_ExploreInRight()
-	let l:path = expand("%:p:h")
-	if l:path == ''
-		let l:path = getcwd()
+	if a:where == 0
+		exec 'Explore '.fnameescape(l:path)
+	elseif a:where == 1
+		exec 'vnew'
+		exec 'Explore '.fnameescape(l:path)
+	else
+		exec 'tabnew'
+		exec 'Explore '.fnameescape(l:path)
 	endif
-	exec 'vnew'
-	exec 'Explore '.fnameescape(l:path)
-endfunc
-
-" Open Explore here
-function! Open_ExploreHere()
-	let l:path = expand("%:p:h")
-	if l:path == ''
-		let l:path = getcwd()
-	endif
-	exec 'Explore '.fnameescape(l:path)
 endfunc
 
 function! Open_BrowseInTab()

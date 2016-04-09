@@ -13,7 +13,6 @@ if has('gui_running') && (has('win32') || has('win64'))
 		exec 'inoremap <silent><A-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
 	endfor
 else
-	let s:keys = ['º', '¡', '™', '£', '¢', '∞', '§', '¶', '•', 'ª', 'º' ]
 endif
 
 " keymap for VimTool in macvim
@@ -24,6 +23,13 @@ if has('gui_macvim')
 		if s:index == 10 | let s:key = '0' | endif
 		exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
 		exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
+	endfor
+else
+	let s:keys = ['º', '¡', '™', '£', '¢', '∞', '§', '¶', '•', 'ª', 'º' ]
+	for s:index in range(10)
+		let s:key = s:keys[s:index]
+		"exec 'noremap '.s:key.' :VimTool '.s:index.'<cr>'
+		"exec 'inoremap '.s:key.' <ESC>:VimTool '.s:index.'<cr>'
 	endfor
 endif
 
@@ -38,17 +44,14 @@ if has('gui_running')
 	noremap <M--> :resize -3<cr>
 	noremap <M-,> :vertical resize -3<cr>
 	noremap <M-.> :vertical resize +3<cr>
-	noremap <M-w> :tabclose<cr>
-	inoremap <M-w> <ESC>:tabclose<cr>
-	noremap <silent><A-o> :call Open_BrowseInTab()<cr>
-	inoremap <silent><A-o> <ESC>:call Open_BrowseInTab()<cr>
-	noremap <M-s> :w<cr>
-	inoremap <M-s> <esc>:w<cr>
-	noremap <M-s> :w<cr>
-	inoremap <M-s> <esc>:w<cr>
-
+	noremap <silent><A-o> :call Open_Browse(2)<cr>
+	inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
 	noremap <S-cr> o<ESC>
-else
+	noremap <M-l> w
+	noremap <M-h> b
+	noremap <M-j> 5j
+	noremap <M-k> 5k
+elseif 1
 	
 endif
 
@@ -69,9 +72,9 @@ noremap <space>tn :call Toggle_Number()<cr>
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile()<cr>
-noremap <silent><space>fe :call Open_ExploreInRight()<cr>
-noremap <silent><space>fo :call Open_ExploreInTab()<cr>
-noremap <silent><space>ft :call Open_ExploreHere()<cr>
+noremap <silent><space>ft :call Open_Explore(0)<cr>
+noremap <silent><space>fe :call Open_Explore(1)<cr>
+noremap <silent><space>fo :call Open_Explore(2)<cr>
 
 
 noremap <silent><leader>e :BufferClose<cr>

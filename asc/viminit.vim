@@ -145,7 +145,7 @@ if has("gui_macvim")
 	inoremap <silent><d-o> <ESC>:browse tabnew<cr>
 endif
 
-" cross platform fast tab action
+" fast file/tab actions in gui
 if has('gui_running')
 	noremap <silent><m-o> :tabnew<cr>
 	inoremap <silent><m-o> <ESC>:tabnew<cr>
@@ -153,6 +153,8 @@ if has('gui_running')
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
 	noremap <silent><m-w> :tabclose<cr>
 	inoremap <silent><m-w> <ESC>:tabclose<cr>
+	noremap <m-s> :w<cr>
+	inoremap <m-s> <esc>:w<cr>
 endif
 
 " miscs
