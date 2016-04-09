@@ -70,10 +70,12 @@ noremap <silent><leader>bl :ls<cr>
 noremap <silent><leader>nh :nohl<cr>
 
 " use hotkey to operate tab
-noremap <silent><leader>t :tabnew<cr>
-noremap <silent><leader>g :tabclose<cr>
+noremap <silent><tab>m :tabnew<cr>
+noremap <silent><tab>w :tabclose<cr>
 noremap <silent><tab>n :tabn<cr>
 noremap <silent><tab>p :tabp<cr>
+noremap <silent><leader>t :tabnew<cr>
+noremap <silent><leader>g :tabclose<cr>
 noremap <silent><leader>1 :tabn 1<cr>
 noremap <silent><leader>2 :tabn 2<cr>
 noremap <silent><leader>3 :tabn 3<cr>
