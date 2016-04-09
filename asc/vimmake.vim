@@ -49,9 +49,9 @@
 "
 "
 
-" default tool location is ~/.vim which could be changed by g:vimmake_home
-if !exists("g:vimmake_home")
-	let g:vimmake_home = "~/.vim"
+" default tool location is ~/.vim which could be changed by g:vimmake_path
+if !exists("g:vimmake_path")
+	let g:vimmake_path = "~/.vim"
 endif
 
 " don't save file by default
@@ -67,6 +67,11 @@ endif
 " default modes
 if !exists("g:vimmake_mode")
 	let g:vimmake_mode = {}
+endif
+
+" path where vimmake.vim locates
+if !exists("g:vimmake_home")
+	let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 endif
 
 " Execute current filename directly
@@ -157,7 +162,7 @@ function! s:VimMake(bang, command)
 	elseif g:vimmake_save == 2
 		silent exec "wa"
 	endif
-	let l:home = expand(g:vimmake_home)
+	let l:home = expand(g:vimmake_path)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
 	if a:bang == ''

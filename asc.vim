@@ -1,12 +1,23 @@
-source ~/.vim/asc/viminit.vim
-source ~/.vim/asc/vimmake.vim
+if !exists('s:vimasc_home')
+	let s:vimasc_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+	exec 'set rtp+='.s:vimasc_home
+endif
 
-source ~/.vim/asc/backup.vim
-source ~/.vim/asc/ignores.vim
-source ~/.vim/asc/tools.vim
-source ~/.vim/asc/keymaps.vim
+function! s:IncScript(name)
+	exec 'so 's:vimasc_home.'/'.a:name
+endfunc
 
-source ~/.vim/asc/plugins.vim
+command! -nargs=1 IncScript call s:IncScript('<args>')
 
-"let g:vimmake_home = "~/.vim/tools"
+IncScript asc/viminit.vim
+IncScript asc/vimmake.vim
+
+IncScript asc/backup.vim
+IncScript asc/ignores.vim
+IncScript asc/tools.vim
+IncScript asc/keymaps.vim
+IncScript asc/plugins.vim
+
+
+
 

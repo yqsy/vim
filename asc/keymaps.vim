@@ -12,6 +12,8 @@ if has('gui_running') && (has('win32') || has('win64'))
 		exec 'noremap <silent><A-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
 		exec 'inoremap <silent><A-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
 	endfor
+else
+	let s:keys = ['º', '¡', '™', '£', '¢', '∞', '§', '¶', '•', 'ª', 'º' ]
 endif
 
 " keymap for VimTool in macvim
@@ -46,6 +48,8 @@ if has('gui_running')
 	inoremap <M-s> <esc>:w<cr>
 
 	noremap <S-cr> o<ESC>
+else
+	
 endif
 
 
