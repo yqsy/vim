@@ -36,14 +36,16 @@ if has('gui_running')
 	noremap <M--> :resize -3<cr>
 	noremap <M-,> :vertical resize -3<cr>
 	noremap <M-.> :vertical resize +3<cr>
-	noremap <A-c> :tabclose<cr>
-	inoremap <A-c> <ESC>:tabclose<cr>
+	noremap <M-w> :tabclose<cr>
+	inoremap <M-w> <ESC>:tabclose<cr>
 	noremap <silent><A-o> :call Open_BrowseInTab()<cr>
 	inoremap <silent><A-o> <ESC>:call Open_BrowseInTab()<cr>
-	noremap <a-s> :w<cr>
-	inoremap <a-s> <esc>:w<cr>
-	noremap <c-s> :w<cr>
-	inoremap <c-s> <esc>:w<cr>
+	noremap <M-s> :w<cr>
+	inoremap <M-s> <esc>:w<cr>
+	noremap <M-s> :w<cr>
+	inoremap <M-s> <esc>:w<cr>
+
+	noremap <S-cr> o<ESC>
 endif
 
 
