@@ -94,30 +94,32 @@ inoremap <silent><s-tab> <ESC>:tabnext<CR>
 if has('gui_running') && (has("win32") || has("win64"))
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
-	noremap <silent><A-1> :tabn 1<cr>
-	noremap <silent><A-2> :tabn 2<cr>
-	noremap <silent><A-3> :tabn 3<cr>
-	noremap <silent><A-4> :tabn 4<cr>
-	noremap <silent><A-5> :tabn 5<cr>
-	noremap <silent><A-6> :tabn 6<cr>
-	noremap <silent><A-7> :tabn 7<cr>
-	noremap <silent><A-8> :tabn 8<cr>
-	noremap <silent><A-9> :tabn 9<cr>
-	noremap <silent><A-0> :tabn 10<cr>
-	inoremap <silent><A-1> <ESC>:tabn 1<cr>
-	inoremap <silent><A-2> <ESC>:tabn 2<cr>
-	inoremap <silent><A-3> <ESC>:tabn 3<cr>
-	inoremap <silent><A-4> <ESC>:tabn 4<cr>
-	inoremap <silent><A-5> <ESC>:tabn 5<cr>
-	inoremap <silent><A-6> <ESC>:tabn 6<cr>
-	inoremap <silent><A-7> <ESC>:tabn 7<cr>
-	inoremap <silent><A-8> <ESC>:tabn 8<cr>
-	inoremap <silent><A-9> <ESC>:tabn 9<cr>
-	inoremap <silent><A-0> <ESC>:tabn 10<cr>
-	noremap <silent><A-w> :tabclose<cr>
-	inoremap <silent><A-w> <ESC>:tabclose<cr>
-	noremap <silent><A-o> :browse tabnew<cr>
-	inoremap <silent><A-o> <ESC>:browse tabnew<cr>
+	noremap <silent><m-1> :tabn 1<cr>
+	noremap <silent><m-2> :tabn 2<cr>
+	noremap <silent><m-3> :tabn 3<cr>
+	noremap <silent><m-4> :tabn 4<cr>
+	noremap <silent><m-5> :tabn 5<cr>
+	noremap <silent><m-6> :tabn 6<cr>
+	noremap <silent><m-7> :tabn 7<cr>
+	noremap <silent><m-8> :tabn 8<cr>
+	noremap <silent><m-9> :tabn 9<cr>
+	noremap <silent><m-0> :tabn 10<cr>
+	inoremap <silent><m-1> <ESC>:tabn 1<cr>
+	inoremap <silent><m-2> <ESC>:tabn 2<cr>
+	inoremap <silent><m-3> <ESC>:tabn 3<cr>
+	inoremap <silent><m-4> <ESC>:tabn 4<cr>
+	inoremap <silent><m-5> <ESC>:tabn 5<cr>
+	inoremap <silent><m-6> <ESC>:tabn 6<cr>
+	inoremap <silent><m-7> <ESC>:tabn 7<cr>
+	inoremap <silent><m-8> <ESC>:tabn 8<cr>
+	inoremap <silent><m-9> <ESC>:tabn 9<cr>
+	inoremap <silent><m-0> <ESC>:tabn 10<cr>
+	noremap <silent><m-w> :tabclose<cr>
+	inoremap <silent><m-w> <ESC>:tabclose<cr>
+	noremap <silent><m-o> :browse tabnew<cr>
+	inoremap <silent><m-o> <ESC>:browse tabnew<cr>
+	noremap <silent><m-t> :tabnew<cr>
+	inoremap <silent><m-t> <ESC>:tabnew<cr>
 endif
 
 " cmd+N to switch table quickly in macvim
@@ -147,6 +149,12 @@ if has("gui_macvim")
 	inoremap <silent><d-0> <ESC>:tabn 10<cr>
 	noremap <silent><d-o> :browse tabnew<cr>
 	inoremap <silent><d-o> <ESC>:browse tabnew<cr>
+	noremap <silent><d-t> :tabnew<cr>
+	inoremap <silent><d-t> <ESC>:tabnew<cr>
+	noremap <silent><m-o> :tabnew<cr>
+	inoremap <silent><m-o> <ESC>:tabnew<cr>
+	noremap <silent><m-t> :tabnew<cr>
+	inoremap <silent><m-t> <ESC>:tabnew<cr>
 endif
 
 
