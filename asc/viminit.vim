@@ -71,7 +71,7 @@ noremap <silent><leader>nh :nohl<cr>
 
 " use hotkey to operate tab
 noremap <silent><tab>m :tabnew<cr>
-noremap <silent><tab>w :tabclose<cr>
+noremap <silent><tab>e :tabclose<cr>
 noremap <silent><tab>n :tabn<cr>
 noremap <silent><tab>p :tabp<cr>
 noremap <silent><leader>t :tabnew<cr>
