@@ -1,7 +1,6 @@
 " global settings
 let s:winopen = 0
 set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
-set laststatus=1
 set splitright
 "set splitbelow
 let g:vimmake_save = 1
@@ -118,10 +117,43 @@ function! Open_Explore(where)
 	endif
 endfunc
 
-function! Open_BrowseInTab()
+function! Open_Browse(where)
 	let l:path = expand("%:p:h")
 	if l:path == '' | let l:path = getcwd() | endif
-	exec 'browse tabnew '.fnameescape(l:path)
+	if a:where == 0
+		exec 'browse e '.fnameescape(l:path)
+	elseif a:where == 1
+		exec 'browse vnew '.fnameescape(l:path)
+	else
+		exec 'browse tabnew '.fnameescape(l:path)
+	endif
+endfunc
+
+function! Change_Transparency(increase)
+	if a:increase < 0
+		let l:inc = -a:increase
+		if l:inc > &transparency
+			set transparency=0
+		else
+			let &transparency = &transparency - l:inc
+		endif
+	elseif a:increase > 0
+		let l:inc = a:increase
+		if l:inc + &transparency > 100
+			set transparency=100
+		else
+			let &transparency = &transparency + l:inc
+		endif
+	endif
+	echo 'transparency: '.&transparency
+endfunc
+
+function! Toggle_Transparency(value)
+	if &transparency > 0
+		set transparency=0
+	else
+		let &transparency = a:value
+	endif
 endfunc
 
 " delete buffer keep window

@@ -54,6 +54,9 @@ if has('gui_running')
 	vnoremap <M-c> "+y
 	noremap <M-V> "+P
 	noremap <M-v> "+p
+	noremap <M-_> :call Change_Transparency(-2)<cr>
+	noremap <M-+> :call Change_Transparency(+2)<cr>
+	noremap <S-F4> :call Toggle_Transparency(8)<cr>
 elseif 1
 	
 endif
