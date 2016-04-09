@@ -51,6 +51,9 @@ if has('gui_running')
 	noremap <M-h> b
 	noremap <M-j> 5j
 	noremap <M-k> 5k
+	vnoremap <M-c> "+y
+	noremap <M-V> "+P
+	noremap <M-v> "+p
 elseif 1
 	
 endif
@@ -62,11 +65,12 @@ noremap <space>su :!svn up<cr>
 noremap <space>st :!svn st<cr>
 
 " toggle plugins
-noremap <space>tt :TagbarToggle<cr>
-noremap <space>tq :call Toggle_QuickFix()<cr>
+noremap <silent><space>tt :TagbarToggle<cr>
+noremap <silent><space>tq :call Toggle_QuickFix()<cr>
 noremap <silent><F10> :call Toggle_QuickFix()<cr>
 inoremap <silent><F10> <C-o>:call Toggle_QuickFix()<cr>
-noremap <space>tn :call Toggle_Number()<cr>
+noremap <silent><space>tn :call Toggle_Number()<cr>
+noremap <silent><space>tb :TagbarToggle<cr>
 
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
@@ -75,7 +79,10 @@ noremap <silent><space>fh :call Open_HeaderFile()<cr>
 noremap <silent><space>ft :call Open_Explore(0)<cr>
 noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
+noremap <silent><space>fb :TagbarToggle<cr>
 
+noremap <silent><F4> :TagbarToggle<cr>
+inoremap <silent><F4> <c-o>:TagbarToggle<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 
