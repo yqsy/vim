@@ -2,6 +2,7 @@
 let s:winopen = 0
 set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
 set splitright
+set switchbuf=usetab,newtab
 "set splitbelow
 let g:vimmake_save = 1
 
