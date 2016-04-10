@@ -386,105 +386,107 @@ class cterminal (object):
 	def __init__ (self):
 		self.config = configure()
 		self.unix = sys.platform[:3] != 'win' and True or False
-
-
-
-#----------------------------------------------------------------------
-# open terminal and run script
-#----------------------------------------------------------------------
-def open_terminal(terminal, title, script, profile = None):
-	cfg = configure()
-	if sys.platform[:3] == 'win':
-		if script == None:
-			return ['cmd', 'cygwin', 'cygwin-mintty']
-		if terminal in ['', 'system', 'dos', 'win', 'cmd', 'command']:
-			cfg.win32_open_console(title, script)
-		elif terminal.lower() in ['cygwin', 'bash', 'mintty', 'cygwin-mintty']:
-			if profile == None:
+		self.cygwin_login = False
+		self.post_command = ''
+	
+	def __win32_open_terminal (self, terminal, title, script, profile):
+		if terminal in ('', 'system', 'dos', 'win', 'windows', 'command', 'cmd'):
+			self.config.win32_open_console(title, script)
+		if terminal in ('cygwin', 'bash', 'mintty', 'cygwin-mintty', 'cygwin-silent'):
+			if not self.config.cygwin:
 				die('please give cygwin path in profile')
 				return -1
-			if not os.path.exists(profile):
-				die('can not find cygwin in: %s'%profile)
+			if not os.path.exists(self.config.cygwin):
+				die('can not find cygwin in: %s'%self.config.cygwin)
 				return -2
-			if not os.path.exists(os.path.join(profile, 'bin/sh.exe')):
-				die('can not find cygwin in: %s'%profile)
+			if not os.path.exists(os.path.join(self.config.cygwin, 'bin/sh.exe')):
+				die('can not verify cygwin in: %s'%self.config.cygwin)
 				return -3
-			cfg.cygwin = os.path.abspath(profile)
-			if terminal.lower() in ['cygwin', 'bash']:
-				login = terminal in ['CYGWIN', 'BASH'] and 'login' or ''
-				cfg.win32_open_cygwin_bash(title, script, login)
-			elif terminal.lower() in ['mintty', 'cygwin-mintty']:
-				login = terminal in ['MINTTY', 'CYGWIN-MINTTY'] and 'login' or ''
-				cfg.win32_open_cygwin_mintty(title, script, login)
+			if terminal in ('cygwin', 'bash'):
+				self.config.win32_open_cygwin_bash(title, script, profile)
+			elif terminal in ('cygwin-silent', 'cygwin-shell', 'cygwin-exe'):
+				self.config.win32_cygwin_execute(script, (profile == 'login'))
+			else:
+				self.config.win32_open_cygwin_mintty(title, script, profile)
 		else:
-			die('don\'t support terminal: %s'%terminal)
+			die('bad terminal name: %s'%terminal)
 			return -4
 		return 0
-	if sys.platform == 'darwin':
-		if script == None or terminal == None:
-			return ['terminal', 'iterm', 'xterm']
-		if terminal == None: 
-			terminal = ''
-		terminal = terminal.lower()
-		if terminal in ('terminal', 'system', '', 'default'):
-			cfg.darwin_open_terminal(title, script, profile)
-		elif terminal in ('iterm', 'iterm2'):
-			cfg.darwin_open_iterm(title, script, profile)
-		elif terminal in ('xterm'):
-			cfg.darwin_open_xterm(title, script, profile)
+
+	def __cygwin_open_terminal (self, terminal, title, script, profile):
+		if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows')
+			self.config.cygwin_open_cmd(title, script, profile)
+		elif terminal in ('bash', 'sh'):
+			self.config.cygwin_open_bash(title, script, profile)
+		elif terminal in ('mintty', 'cygwin-mintty'):
+			self.config.cygwin_open_mintty(title, script, profile)
 		else:
 			die('bad terminal name: %s'%terminal)
 			return -1
 		return 0
-	elif sys.platform == 'cygwin':
-		if script == None or terminal == None:
-			return ['cmd', 'bash', 'mintty']
+
+	def __darwin_open_terminal (self, terminal, title, script, profile):
+		if terminal in ('', 'terminal', 'system', 'default'):
+			self.config.darwin_open_terminal(title, script, profile)
+		elif terminal in ('iterm', 'iterm2'):
+			self.config.darwin_open_term(title, script, profile)
+		elif terminal in ('xterm', 'x'):
+			self.config.darwin_open_xterm(title, script, profile)
+		else:
+			die('bad terminal name: %s'%terminal)
+			return -1
+		return 0
+
+	def __linux_open_terminal (self, terminal, title, script, profile):
+		if terminal in ('xterm', '', 'default', 'system', 'x'):
+			self.config.linux_open_xterm(title, script, profile)
+		elif terminal in ('gnome', 'gnome-terminal'):
+			self.config.linux_open_gnome(title, script, profile)
+		else:
+			die('bad terminal name: %s'%terminal)
+			return -1
+		return 0
+
+	def open_terminal (self, terminal, title, script, profile):
 		if terminal == None:
 			terminal = ''
-		if terminal.lower() in ['dos', 'win', 'cmd', 'command']:
-			cfg.cygwin_open_cmd(title, script, profile)
-		elif terminal.lower() in ['bash', 'sh']:
-			if not profile:
-				profile = terminal.isupper() and 'login' or ''
-			cfg.cygwin_open_bash(title, script, profile)
-		else:
-			if not profile:
-				profile = terminal.isupper() and 'login' or ''
-			cfg.cygwin_open_mintty(title, script, profile)
-		return 0
-	else:
-		if script == None or terminal == None:
-			return ['xterm', 'gnome']
-		if terminal in ('xterm', '', 'default', 'system'):
-			cfg.linux_open_xterm(title, script, profile)
-		elif terminal in ('gnome', 'gnome-terminal'):
-			cfg.linux_open_gnome(title, script, profile)
-		else:
-			die('bad terminal name: %s'%terminal)
-			return -1
-		return 0
-	return 0
-
-
-#----------------------------------------------------------------------
-# execute
-#----------------------------------------------------------------------
-def execute(terminal, title, command, cwd, wait, profile = None, post = ''):
-	script = []
-	if sys.platform[:3] == 'win' and cwd[1:2] == ':':
-		script.append(cwd[:2])
-	script.append('cd "%s"'%cwd)
-	script.append(command)
-	if wait:
 		if sys.platform[:3] == 'win':
-			script.append('pause')
-		elif sys.platform == 'cygwin' and terminal in ('cmd', 'dos', 'win'):
-			script.append('pause')
+			if script == None:
+				return ('cmd', 'cygwin', 'cygwin-mintty')
+			return self.__win32_open_terminal(terminal, title, script, profile)
+		elif sys.platform == 'darwin':
+			if script == None:
+				return ('terminal', 'iterm')
+			return self.__darwin_open_terminal(terminal, title, script, profile)
 		else:
-			script.append('read -n1 -rsp "press any key to continue ..."')
-	if post:
-		script.append(post)
-	return open_terminal(terminal, title, script, profile)
+			return self.__linux_open_terminal(terminal, title, script, profile)
+		return 0
+
+	def check_windows (self, terminal):
+		if sys.platform[:3] == 'win':
+			if terminal in ('', 'system', 'dos', 'win', 'windows', 'command', 'cmd'):
+				return True
+		elif sys.platform == 'cygwin':
+			if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
+				return True
+		return False
+
+	def run_command (self, terminal, title, command, cwd, wait, profile):
+		windows = self.check_windows(terminal)
+		script = []
+		if sys.platform[:3] == 'win' and cwd[1:2] == ':':
+			script.append(cwd[:2])
+		script.append('cd "%s"'%cwd)
+		script.append(command)
+		if wait:
+			if windows:
+				script.append('pause')
+			else:
+				script.append('read -n1 -rsp "press any key to confinue ..."')
+		if self.post_command:
+			script.append(self.post_command)
+		return self.open_terminal(terminal, title, script, profile)
+
 
 
 #----------------------------------------------------------------------
@@ -496,7 +498,7 @@ def main(argv = None):
 	argv = [ n for n in argv ]
 	args = []
 	cmds = []
-	skip = ['-h', '--help', '-w']
+	skip = ['-h', '--help', '-w', '-s']
 	index = 1
 	if len(argv) > 0:
 		args.append(argv[0])
@@ -538,24 +540,30 @@ def main(argv = None):
 			action = 'store_true', help = 'wait before exit')
 	parser.add_option('-o', '--post', dest = 'post', default = '',
 			help = 'post action')
+	parser.add_option('-s', '--stdin', dest = 'stdin', default = False,
+			action = 'store_true', help = 'read commands from stdin')
+	if sys.platform[:3] == 'win':
+		parser.add_option('-g', '--cygwin', dest = 'cygwin', default = '',
+				help = 'cygwin home path')
 	opts, _ = parser.parse_args(args)
 	if opts.title == None:
 		opts.title = cmds[0]
 	if not opts.cwd:
 		opts.cwd = os.getcwd()
 	command = []
-	cfg = configure()
+	terminal = cterminal()
+	if sys.platform[:3] == 'win':
+		cygwin = opts.cygwin
+		terminal.config.cygwin = cygwin
 	for n in cmds:
-		if sys.platform[:3] == 'win':
-			n = cfg.win32_escape(n)
-		elif sys.platform == 'cygwin' and opts.terminal in ('dos', 'win', 'cmd'):
-			n = cfg.win32_escape(n)
+		if terminal.check_windows(opts.terminal):
+			n = terminal.config.win32_escape(n)
 		else:
-			n = cfg.unix_escape(n)
+			n = terminal.config.unix_escape(n)
 		command.append(n)
 	command = ' '.join(command)
-	execute(opts.terminal, opts.title, command, opts.cwd, opts.wait, 
-			opts.profile, opts.post)
+	terminal.run_command(opts.terminal, opts.title, command, 
+			opts.cwd, opts.wait, opts.profile, opts.post)
 	return 0
 
 
