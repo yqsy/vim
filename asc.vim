@@ -18,6 +18,7 @@ IncScript asc/tools.vim
 IncScript asc/keymaps.vim
 IncScript asc/plugins.vim
 
+IncScript asc/misc.vim
 
 
 
