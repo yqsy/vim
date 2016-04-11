@@ -37,7 +37,7 @@ if has('syntax')
 endif
 
 if has('autocmd') 
-"	filetype plugin indent on 
+	filetype plugin indent on 
 endif
 
 if has('mouse')

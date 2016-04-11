@@ -7,7 +7,14 @@ old = termios.tcgetattr(fd)
 new = termios.tcgetattr(fd)
 new[3] = new[3] & ~termios.ECHO 
 new[3] = new[3] & ~termios.ICANON
+new[3] = new[3] & ~termios.ICRNL
+#new[2] = new[2] & ~termios.ICRNL
+#new[1] = new[1] & ~termios.ICRNL
+new[0] = new[0] & ~termios.ICRNL
 termios.tcsetattr(fd, termios.TCSANOW, new)
+
+import os
+os.system('stty -a')
 
 names = {
 		27:'<ESC>',
