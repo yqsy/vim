@@ -230,7 +230,7 @@ class configure (object):
 		fp.close()
 		fp = None
 		command = 'cygstart cmd /C %s'%(filename)
-		print script
+		# print script
 		p = subprocess.Popen(['cygstart', 'cmd', '/C', filename], cwd = temp)
 		p.wait()
 		return 0
@@ -269,7 +269,8 @@ class configure (object):
 		command = ['cygstart', 'mintty']
 		# if  title:
 			# command += ['-t', title]
-		command += ['-i', '/Cygwin-Terminal.ico']
+		if os.path.exists('/Cygwin-Terminal.ico'):
+			command += ['-i', '/Cygwin-Terminal.ico']
 		command += ['-e', 'bash']
 		if profile == 'login':
 			command.append('--login')
@@ -288,12 +289,13 @@ class configure (object):
 			return os.path.abspath(path)
 		if path.lower().startswith('/cygdrive/'):
 			path = path[10] + ':' + path[11:]
-			#print 'cyg2win', path
-			return os.path.abspath(path)
+			return path
 		if not path.startswith('/'):
 			raise Exception('cannot convert path: %s'%path)
 		if not self.cygwin:
 			raise Exception('cannot find cygwin root')
+		if sys.platform == 'cygwin':
+			return self.cygwin_win_path(path)
 		return os.path.abspath(os.path.join(self.cygwin, path[1:]))
 	
 	# use bash in cygwin to execute script and return output
@@ -324,6 +326,31 @@ class configure (object):
 		p.stdout.close()
 		code = p.wait()
 		return code, text
+
+	# use bash in cygwin to execute script and output to current cmd window
+	def win32_cygwin_now (self, script, login = False):
+		if not self.cygwin:
+			return -1, None
+		if not os.path.exists(self.cygwin):
+			return -2, None
+		if not os.path.exists(os.path.join(self.cygwin, 'bin/sh.exe')):
+			return -3, None
+		bash = os.path.join(self.cygwin, 'bin/bash')
+		filename = os.path.split(self.temp)[-1]
+		tempfile = os.path.join(self.cygwin, 'tmp/' + filename)
+		fp = open(tempfile, 'wb')
+		fp.write('#! /bin/sh\n')
+		path = self.win2cyg(os.getcwd())
+		fp.write('cd %s\n'%self.unix_escape(path))
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		command = [bash]
+		if login:
+			command.append('--login')
+		command.extend(['-i', '/tmp/' + filename])
+		subprocess.call(command, shell = False)
+		return 0
 
 	# open bash of cygwin in a new window and execute script
 	def win32_cygwin_open_bash (self, title, script, profile = None):
@@ -369,7 +396,8 @@ class configure (object):
 		fp.close()
 		shortname = self.win32_path_short(mintty)
 		command = 'start %s '%shortname
-		command += '-i /Cygwin-Terminal.ico '
+		if os.path.exists(os.path.join(self.cygwin, 'Cygwin-Terminal.ico')):
+			command += '-i /Cygwin-Terminal.ico '
 		if title:
 			command += '-t "%s" '%title
 		command += '-e /usr/bin/bash '
@@ -419,7 +447,7 @@ class Terminal (object):
 			if terminal in ('cygwin', 'bash'):
 				self.config.win32_cygwin_open_bash(title, script, profile)
 			elif terminal in ('cygwin-silent', 'cygwin-shell', 'cygwinx'):
-				self.config.win32_cygwin_execute(script, (profile == 'login'))
+				self.config.win32_cygwin_now(script, True)
 			else:
 				self.config.win32_cygwin_open_mintty(title, script, profile)
 		else:
@@ -510,8 +538,7 @@ class Terminal (object):
 				script.append('cd "%s"'%self.config.win2cyg(cwd))
 		elif sys.platform == 'cygwin':
 			if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
-				path = os.path.abspath(cwd)
-				path = path[10] + ':' + path[11:]
+				path = self.config.cyg2win(os.path.abspath(cwd))
 				script.append(path[:2])
 				script.append('cd "%s"'%path)
 			else:
