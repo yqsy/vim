@@ -153,6 +153,9 @@ if has('gui_running')
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
 	noremap <silent><m-w> :tabclose<cr>
 	inoremap <silent><m-w> <ESC>:tabclose<cr>
+	" alt-w may conflict with latest QQ's hotkey
+	noremap <silent><m-e> :tabclose<cr>
+	inoremap <silent><m-e> <ESC>:tabclose<cr>
 	noremap <m-s> :w<cr>
 	inoremap <m-s> <esc>:w<cr>
 endif
