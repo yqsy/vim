@@ -15,6 +15,7 @@ if has('gui_running') && (has('win32') || has('win64'))
 		exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:tabn '.s:name.'<cr>'
 	endfor
 else
+	" require to config terminal to remap key alt-shift+? to '\033[{AS?'
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
