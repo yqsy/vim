@@ -5,14 +5,23 @@ for s:index in range(10)
 	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
 endfor
 
-" keymap for VimTool in windows gvim
+" keymap for switch tab in gvim and terminal (alt-shift-num)
 if has('gui_running') && (has('win32') || has('win64'))
 	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for s:index in range(10)
-		exec 'noremap <silent><A-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
-		exec 'inoremap <silent><A-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
+		let s:name = ''.s:index
+		if s:index == 0 | let s:name = '10' | endif
+		exec 'noremap <silent><M-'.s:keys[s:index].'> :tabn '.s:name.'<cr>'
+		exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:tabn '.s:name.'<cr>'
 	endfor
 else
+	for s:index in range(10)
+		let s:name = ''.s:index
+		if s:index == 0 | let s:name = '10' | endif
+		let s:key = '<ESC>[{AS'.s:index
+		exec 'noremap <silent>'.s:key.' :tabn '.s:name.'<cr>'
+		exec 'inoremap <silent>'.s:key.' <ESC>:tabn '.s:name.'<CR>'
+	endfor
 endif
 
 " keymap for VimTool in macvim
