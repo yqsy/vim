@@ -19,7 +19,7 @@ else
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
-		let s:key = '<ESC>[{AS'.s:index
+		let s:key = '<ESC>[{AS'.s:index.'~'
 		exec 'noremap <silent>'.s:key.' :tabn '.s:name.'<cr>'
 		exec 'inoremap <silent>'.s:key.' <ESC>:tabn '.s:name.'<CR>'
 	endfor
