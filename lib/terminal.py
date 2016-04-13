@@ -75,6 +75,9 @@ class configure (object):
 	def darwin_open_iterm (self, title, script, profile = None):
 		osascript = []
 		command = []
+		script = [ line for line in script ]
+		if profile:
+			script.insert(0, 'echo "\033]50;SetProfile=%s\a"'%profile)
 		for line in script:
 			line = line.replace('\\', '\\\\\\\\')
 			line = line.replace('"', '\\\\\\"')
@@ -84,9 +87,6 @@ class configure (object):
 		osascript.append('tell application "iTerm"')
 		osascript.append('set myterm to (make new terminal)')
 		osascript.append('tell myterm')
-		session = 'set mss to (make new session at the end of sessions)'
-		if profile:
-			session = session[:-1] + ' with profile "%s")'%profile
 		osascript.append('set mss to (make new session at the end of sessions)')
 		osascript.append('tell mss')
 		if title:
@@ -473,7 +473,7 @@ class Terminal (object):
 		if terminal in ('', 'terminal', 'system', 'default'):
 			self.config.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
-			self.config.darwin_open_term(title, script, profile)
+			self.config.darwin_open_iterm(title, script, profile)
 		elif terminal in ('xterm', 'x'):
 			self.config.darwin_open_xterm(title, script, profile)
 		else:

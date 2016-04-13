@@ -15,7 +15,6 @@ set noexpandtab
 set tabstop=4
 set cindent
 set autoindent
-set showtabline=1
 set winaltkeys=no
 set nowrap
 set wildignore=*.swp,*.bak,*.pyc,*.obj,*.o,*.class
@@ -183,7 +182,6 @@ endif
 
 " miscs
 set scrolloff=3
-set laststatus=1
 set showmatch
 set display=lastline
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
