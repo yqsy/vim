@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+import sys, os
+import utils
+
+if utils.VIM_FILEEXT in ('.c', '.cpp', '.cc', '.m', '.mm'):
+	name = os.path.splitext(utils.VIM_FILEPATH)[0]
+	utils.open('"name"')
+elif utils.VIM_FILEEXT in ('.py', '.pyw'):
+	utils.open('python "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.sh',):
+	utils.open('sh "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.lua',):
+	utils.open('lua "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.pl',):
+	utils.open('perl "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.php',):
+	utils.open('php "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.js',):
+	utils.open('node "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.rb',):
+	utils.open('ruby "%s"'%utils.VIM_FILENAME)
+
+
+
