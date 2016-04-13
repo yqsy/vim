@@ -28,39 +28,75 @@ function! Vim_NeatTabLine()
 	return s
 endfunc
 
-" get a single tab label
-function! Vim_NeatTabLabel(n)
-	let l:buflist = tabpagebuflist(a:n)
-	let l:winnr = tabpagewinnr(a:n)
-	let l:bufnr = l:buflist[l:winnr - 1]
-	let l:name = bufname(l:bufnr)
-	if getbufvar(l:bufnr, '&modifiable')
+" get a single tab name 
+function! Vim_NeatBuffer(bufnr, fullname)
+	let l:name = bufname(a:bufnr)
+	if getbufvar(a:bufnr, '&modifiable')
 		if l:name == ''
 			return '[No Name]'
 		else
-			return fnamemodify(l:name, ':t')
+			if a:fullname 
+				return l:name
+			else
+				return fnamemodify(l:name, ':t')
+			endif
 		endif
 	else
-		let l:buftype = getbufvar(l:bufnr, '&buftype')
+		let l:buftype = getbufvar(a:bufnr, '&buftype')
 		if l:buftype == 'quickfix'
 			return '[Quickfix]'
 		elseif l:name != ''
-			return '-'.fnamemodify(l:name, ':t')
+			if a:fullname 
+				return '-'.l:name
+			else
+				return '-'.fnamemodify(l:name, ':t')
+			endif
 		else
 		endif
 		return '[No Name]'
 	endif
 endfunc
 
+" get a single tab label
+function! Vim_NeatTabLabel(n)
+	let l:buflist = tabpagebuflist(a:n)
+	let l:winnr = tabpagewinnr(a:n)
+	let l:bufnr = l:buflist[l:winnr - 1]
+	return Vim_NeatBuffer(l:bufnr, 0)
+endfunc
+
 " get a single tab label in gui
-function! Vim_NeatGuiTab()
+function! Vim_NeatGuiTabLabel()
 	return Vim_NeatTabLabel(v:lnum)
 endfunc
 
-" setup new tabline
+" get a label tips
+function! Vim_NeatGuiTabTip()
+	let tip = ''
+	let bufnrlist = tabpagebuflist(v:lnum)
+	for bufnr in bufnrlist
+		" separate buffer entries
+		if tip != ''
+			let tip .= " \n"
+		endif
+		" Add name of buffer
+		let name = Vim_NeatBuffer(bufnr, 1)
+		let tip .= name
+		" add modified/modifiable flags
+		if getbufvar(bufnr, "&modified")
+			let tip .= ' [+]'
+		endif
+		if getbufvar(bufnr, "&modifiable")==0
+			let tip .= ' [-]'
+		endif
+	endfor
+	return tip
+endfunc
+
+" setup new tabline, just %M%t in macvim
 set tabline=%!Vim_NeatTabLine()
-"set guitablabel=%{Vim_NeatGuiTab()}
-set guitablabel=%M%t
+set guitablabel=%{Vim_NeatGuiTabLabel()}
+set guitabtooltip=%{Vim_NeatGuiTabTip()}
 
 
 function! Python_InitTab()
