@@ -157,7 +157,7 @@ endfunc
 
 " save file
 function! s:CheckSave()
-	if bufname('%') == '' || getbufvar('&modifiable') == 0
+	if bufname('%') == '' || getbufvar('%', '&modifiable') == 0
 		return
 	endif
 	if g:vimmake_save == 1
