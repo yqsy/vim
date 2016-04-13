@@ -39,12 +39,14 @@ if has('mouse')
 	set mouse=c
 endif
 
+
 "set nobackup
 "set nowritebackup
 "set noswapfile
 
 
 " map CTRL_HJKL to move cursor in all mode
+" config terminal bind <backspace> to ASCII code 127
 noremap <C-h> <left>
 noremap <C-j> <down>
 noremap <C-k> <up>
@@ -85,8 +87,8 @@ noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 
-" Alt+N to switch table quickly in windows
-if has('gui_running') && (has("win32") || has("win64"))
+" keymap to switch table in both gui and terminal (need config)
+if has('gui_running') 
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
 	noremap <silent><m-1> :tabn 1<cr>
@@ -109,6 +111,30 @@ if has('gui_running') && (has("win32") || has("win64"))
 	inoremap <silent><m-8> <ESC>:tabn 8<cr>
 	inoremap <silent><m-9> <ESC>:tabn 9<cr>
 	inoremap <silent><m-0> <ESC>:tabn 10<cr>
+endif
+
+" set terminal and map alt+n or alt+shift+n to "<ESC>[{0}n~"
+if !has('gui_running')
+	noremap <silent><ESC>[{0}1~ :tabn 1<cr>
+	noremap <silent><ESC>[{0}2~ :tabn 2<cr>
+	noremap <silent><ESC>[{0}3~ :tabn 3<cr>
+	noremap <silent><ESC>[{0}4~ :tabn 4<cr>
+	noremap <silent><ESC>[{0}5~ :tabn 5<cr>
+	noremap <silent><ESC>[{0}6~ :tabn 6<cr>
+	noremap <silent><ESC>[{0}7~ :tabn 7<cr>
+	noremap <silent><ESC>[{0}8~ :tabn 8<cr>
+	noremap <silent><ESC>[{0}9~ :tabn 9<cr>
+	noremap <silent><ESC>[{0}0~ :tabn 10<cr>
+	inoremap <silent><ESC>[{0}1~ <ESC>:tabn 1<cr>
+	inoremap <silent><ESC>[{0}2~ <ESC>:tabn 2<cr>
+	inoremap <silent><ESC>[{0}3~ <ESC>:tabn 3<cr>
+	inoremap <silent><ESC>[{0}4~ <ESC>:tabn 4<cr>
+	inoremap <silent><ESC>[{0}5~ <ESC>:tabn 5<cr>
+	inoremap <silent><ESC>[{0}6~ <ESC>:tabn 6<cr>
+	inoremap <silent><ESC>[{0}7~ <ESC>:tabn 7<cr>
+	inoremap <silent><ESC>[{0}8~ <ESC>:tabn 8<cr>
+	inoremap <silent><ESC>[{0}9~ <ESC>:tabn 9<cr>
+	inoremap <silent><ESC>[{0}0~ <ESC>:tabn 10<cr>
 endif
 
 " cmd+N to switch table quickly in macvim
@@ -153,6 +179,7 @@ if has('gui_running')
 	noremap <m-s> :w<cr>
 	inoremap <m-s> <esc>:w<cr>
 endif
+
 
 " miscs
 set scrolloff=3

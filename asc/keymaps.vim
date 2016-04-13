@@ -11,8 +11,8 @@ if has('gui_running') && (has('win32') || has('win64'))
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
-		exec 'noremap <silent><M-'.s:keys[s:index].'> :tabn '.s:name.'<cr>'
-		exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:tabn '.s:name.'<cr>'
+		"exec 'noremap <silent><M-'.s:keys[s:index].'> :tabn '.s:name.'<cr>'
+		"exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:tabn '.s:name.'<cr>'
 	endfor
 else
 	" require to config terminal to remap key alt-shift+? to '\033[{0}?~'
@@ -31,8 +31,8 @@ if has('gui_macvim')
 	for s:index in range(10)
 		let s:key = ''. s:index
 		if s:index == 10 | let s:key = '0' | endif
-		exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
-		exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
+		"exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
+		"exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
 	endfor
 else
 	let s:keys = ['º', '¡', '™', '£', '¢', '∞', '§', '¶', '•', 'ª', 'º' ]
