@@ -17,7 +17,6 @@ set cindent
 set autoindent
 set showtabline=1
 set winaltkeys=no
-set nohidden 
 set nowrap
 set wildignore=*.swp,*.bak,*.pyc,*.obj,*.o,*.class
 set backspace=eol,start,indent
@@ -34,10 +33,6 @@ endif
 if has('syntax')  
 	syntax enable 
 	syntax on 
-endif
-
-if has('autocmd') 
-"	filetype plugin indent on 
 endif
 
 if has('mouse')
