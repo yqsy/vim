@@ -155,13 +155,28 @@ function! s:PathJoin(home, name)
     endif
 endfunc
 
-" Execute ~/.vim/vimmake.{command} 
-function! s:VimMake(bang, command)
+" save file
+function! s:CheckSave()
+	if bufname('%') == '' || getbufvar('&modifiable') == 0
+		return
+	endif
 	if g:vimmake_save == 1
 		silent exec "w"
 	elseif g:vimmake_save == 2
 		silent exec "wa"
 	endif
+endfunc
+
+" error message
+function! s:ErrorMsg(msg)
+	echohl ErrorMsg
+	echom a:msg
+	echohl NONE
+endfunc
+
+" Execute ~/.vim/vimmake.{command} 
+function! s:VimMake(bang, command)
+	call s:CheckSave()
 	let l:home = expand(g:vimmake_path)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
@@ -210,11 +225,8 @@ command! -nargs=1 VimTool call s:VimTool(<f-args>)
 
 " build via gcc
 function! Vimmake_CompileGcc()
-	if g:vimmake_save == 1
-		silent exec "w"
-	elseif g:vimmake_save == 2
-		silent exec "wa"
-	endif
+	call s:CheckSave()
+	if bufname('%') == '' | return | endif
 	let l:compileflag = g:vimmake_cflags
 	let l:extname = expand("%:e")
 	if index(['cpp', 'cc', 'cxx', 'mm'], l:extname)
@@ -236,11 +248,8 @@ endfunc
 
 " build via emake (http://skywind3000.github.io/emake/emake.py)
 function! Vimmake_BuildEmake(filename, ininame, quickfix)
-	if g:vimmake_save == 1
-		silent exec "w"
-	elseif g:vimmake_save == 2
-		silent exec "wa"
-	endif
+	call s:CheckSave()
+	if bufname('%') == '' | return | endif
 	if (!a:quickfix) || (!has("quickfix"))
 		if a:ininame == ''
 			exec '!emake ' . shellescape(a:filename) . ''
@@ -265,11 +274,8 @@ endfunc
 
 " run current file by detecting file extname
 function! Vimmake_RunClever()
-	if g:vimmake_save == 1
-		silent exec "w"
-	elseif g:vimmake_save == 2
-		silent exec "wa"
-	endif
+	call s:CheckSave()
+	if bufname('%') == '' | return | endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
 		exec "call Vimmake_ExeMain()"
@@ -300,25 +306,25 @@ endfunc
 
 
 noremap <silent><F5> :call Vimmake_RunClever()<CR>
-inoremap <silent><F5> <C-o>:call Vimmake_RunClever()<CR>
+inoremap <silent><F5> <ESC>:call Vimmake_RunClever()<CR>
 
 noremap <silent><F6> :call Vimmake_ExeFile()<CR>
-inoremap <silent><F6> <C-o>:call Vimmake_ExeFile()<CR>
+inoremap <silent><F6> <ESC>:call Vimmake_ExeFile()<CR>
 
 noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
-inoremap <silent><F7> <C-o>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
+inoremap <silent><F7> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 
 noremap <silent><F8> :call Vimmake_ExeEmake()<CR>
-inoremap <silent><F8> <C-o>:call Vimmake_ExeEmake()<CR>
+inoremap <silent><F8> <ESC>:call Vimmake_ExeEmake()<CR>
 
 noremap <silent><F9> :call Vimmake_CompileGcc()<CR>
-inoremap <silent><F9> <C-o>:call Vimmake_CompileGcc()<CR>
+inoremap <silent><F9> <ESC>:call Vimmake_CompileGcc()<CR>
 
 
 noremap <silent><F11> :cp<cr>
 noremap <silent><F12> :cn<cr>
-inoremap <silent><F11> <C-o>:cp<cr>
-inoremap <silent><F12> <C-o>:cn<cr>
+inoremap <silent><F11> <ESC>:cp<cr>
+inoremap <silent><F12> <ESC>:cn<cr>
 
 noremap <silent><leader>cp :cp<cr>
 noremap <silent><leader>cn :cn<cr>
