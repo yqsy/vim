@@ -4,7 +4,7 @@ import utils
 
 if utils.VIM_FILEEXT in ('.c', '.cpp', '.cc', '.m', '.mm'):
 	name = os.path.splitext(utils.VIM_FILEPATH)[0]
-	utils.open('"name"')
+	utils.open('"%s"'%name)
 elif utils.VIM_FILEEXT in ('.py', '.pyw'):
 	utils.open('python "%s"'%utils.VIM_FILENAME)
 elif utils.VIM_FILEEXT in ('.sh',):

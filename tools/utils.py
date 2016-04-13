@@ -47,6 +47,7 @@ def execute(script, cwd = None):
 	script = [ line for line in script ]
 	if term == 'terminal':
 		script.insert(0, 'clear')
+		pass
 	terminal.main(args, script)
 
 def open(command, cwd = None):
