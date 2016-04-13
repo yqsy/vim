@@ -522,8 +522,9 @@ class Terminal (object):
 			if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
 				return True
 		return False
-
-	def run_command (self, terminal, title, command, cwd, wait, profile):
+	
+	def execute (self, terminal, title, script, cwd, wait, profile):
+		lines = [ line for line in script ]
 		windows = self.check_windows(terminal)
 		script = []
 		if cwd == None:
@@ -545,7 +546,7 @@ class Terminal (object):
 				script.append('cd "%s"'%cwd)
 		else:
 			script.append('cd "%s"'%cwd)
-		script.append(command)
+		script.extend(lines)
 		if wait:
 			if windows:
 				script.append('pause')
@@ -555,12 +556,16 @@ class Terminal (object):
 			script.append(self.post_command)
 		return self.open_terminal(terminal, title, script, profile)
 
+	def run_command (self, terminal, title, command, cwd, wait, profile):
+		script = [ command ]
+		return self.execute(terminal, title, script, cwd, wait, profile)
+
 
 
 #----------------------------------------------------------------------
 # main routine
 #----------------------------------------------------------------------
-def main(argv = None):
+def main(argv = None, shellscript = None):
 	if argv == None:
 		argv = sys.argv
 	argv = [ n for n in argv ]
@@ -611,7 +616,7 @@ def main(argv = None):
 			help = text)
 	parser.add_option('-p', '--profile', dest = 'profile', default = None,
 			help = 'terminal profile')
-	parser.add_option('-c', '--cwd', dest = 'cwd', default = '',
+	parser.add_option('-d', '--cwd', dest = 'cwd', default = '',
 			help = 'working directory')
 	parser.add_option('-w', '--wait', dest = 'wait', default = False,
 			action = 'store_true', help = 'wait before exit')
@@ -620,7 +625,7 @@ def main(argv = None):
 	parser.add_option('-s', '--stdin', dest = 'stdin', default = False,
 			action = 'store_true', help = 'read commands from stdin')
 	if sys.platform[:3] == 'win':
-		parser.add_option('-g', '--cygwin', dest = 'cygwin', default = '',
+		parser.add_option('-c', '--cygwin', dest = 'cygwin', default = '',
 				help = 'cygwin home path when using cygwin terminal')
 	opts, _ = parser.parse_args(args)
 	if not opts.cwd:
@@ -629,14 +634,23 @@ def main(argv = None):
 	if sys.platform[:3] == 'win':
 		cygwin = opts.cygwin
 		terminal.config.cygwin = cygwin
-	if opts.stdin:
+	if shellscript:
+		script = [ line for line in shellscript ]
+		if opts.post:
+			terminal.post_command = opts.post
+		terminal.execute(opts.terminal, opts.title, script,
+				opts.cwd, opts.wait, opts.profile)
+	elif opts.stdin:
 		text = ''
 		while True:
 			hr = sys.stdin.read()
 			if hr == '': break
 			text += hr
 		script = text.split('\n')
-		terminal.open_terminal(opts.terminal, opts.title, script, opts.profile)
+		if opts.post:
+			terminal.post_command = opts.post
+		terminal.execute(opts.terminal, opts.title, script,
+				opts.cwd, opts.wait, opts.profile)
 	else:
 		for n in cmds:
 			if terminal.check_windows(opts.terminal):
@@ -653,8 +667,11 @@ def main(argv = None):
 
 
 #----------------------------------------------------------------------
-# testing casen
+# run clever for vimmake
 #----------------------------------------------------------------------
+def vimtool():
+	
+	return 0
 
 #----------------------------------------------------------------------
 # testing casen

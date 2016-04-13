@@ -48,6 +48,9 @@ noremap <space>= :resize +3<cr>
 noremap <space>- :resize -3<cr>
 noremap <space>, :vertical resize -3<cr>
 noremap <space>. :vertical rexize +3<cr>
+noremap <space>hh :nohl<cr>
+noremap <tab>, :call Tab_MoveLeft()<cr>
+noremap <tab>. :call Tab_MoveRight()<cr>
 
 if has('gui_running')
 	noremap <M-=> :resize +3<cr>
@@ -67,7 +70,7 @@ if has('gui_running')
 	noremap <M-_> :call Change_Transparency(-2)<cr>
 	noremap <M-+> :call Change_Transparency(+2)<cr>
 	noremap <S-F4> :call Toggle_Transparency(8)<cr>
-elseif 1
+else
 	
 endif
 
