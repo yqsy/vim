@@ -12,7 +12,9 @@ command! -nargs=1 IncScript call s:IncScript('<args>')
 IncScript asc/viminit.vim
 IncScript asc/vimmake.vim
 
+IncScript asc/config.vim
 IncScript asc/backup.vim
+
 IncScript asc/ignores.vim
 IncScript asc/tools.vim
 IncScript asc/keymaps.vim

@@ -249,19 +249,3 @@ endfunction
 
 command! -bang -nargs=? BufferClose call s:BufferClose('<bang>', '<args>')
 
-
-function! Tab_MoveLeft()
-	let l:tabnr = tabpagenr() - 2
-	if l:tabnr >= 0
-		exec 'tabmove '.l:tabnr
-	endif
-endfunc
-
-function! Tab_MoveRight()
-	let l:tabnr = tabpagenr() + 1
-	exec 'tabmove '.l:tabnr
-endfunc
-
-
-
-
