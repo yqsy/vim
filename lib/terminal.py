@@ -77,6 +77,7 @@ class configure (object):
 		command = []
 		script = [ line for line in script ]
 		if profile:
+			script.insert(0, 'clear')
 			script.insert(0, 'echo "\033]50;SetProfile=%s\a"'%profile)
 		for line in script:
 			line = line.replace('\\', '\\\\\\\\')
