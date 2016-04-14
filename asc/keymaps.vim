@@ -109,5 +109,9 @@ else
 	noremap <space>hr :tabnew ~/.vimrc<cr>
 endif
 
+let s:filename = expand('<sfile>:p')
+exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
+
+
 
 
