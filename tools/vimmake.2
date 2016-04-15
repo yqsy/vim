@@ -1,0 +1,9 @@
+#! /bin/sh
+CFLAGS="-lstdc++ -pthread"
+CC="gcc"
+
+cd "$VIM_FILEDIR"
+$CC -O3 -Wall "$VIM_FILENAME" -o "$VIM_FILENOEXT" $CFLAGS
+
+
+

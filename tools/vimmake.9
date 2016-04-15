@@ -1,0 +1,10 @@
+#! /usr/bin/env python
+import sys, os
+import utils
+
+TOOL='/usr/local/app/android-toolchain'
+
+utils.open('python %s/nbuild.py run $s/android-9/emake.ini "%s"'%(TOOL, TOOL, utils.VIM_FILEPATH))
+
+
+

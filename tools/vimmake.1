@@ -19,6 +19,10 @@ elif utils.VIM_FILEEXT in ('.js',):
 	utils.open('node "%s"'%utils.VIM_FILENAME)
 elif utils.VIM_FILEEXT in ('.rb',):
 	utils.open('ruby "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.mak', '.emake'):
+	utils.open('emake -e "%s"'%utils.VIM_FILENAME)
+elif utils.VIM_FILEEXT in ('.osa', 'scpt', 'applescript'):
+	utils.open('osascript -e "%s"'%utils.VIM_FILENAME)
 
 
 
