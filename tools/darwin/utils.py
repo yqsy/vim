@@ -1,6 +1,6 @@
 import sys, os
 
-HOME = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+HOME = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(os.path.join(HOME, 'lib'))
 
 import terminal
