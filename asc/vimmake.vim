@@ -76,17 +76,29 @@ let s:vimmake_home = g:vimmake_home
 
 " Execute current filename directly
 function! Vimmake_ExeFile()
-	exec '!' . shellescape(expand("%:p"))
+	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		exec '!start cmd /C '. shellescape(expand("%:p")) . ' & pause'
+	else
+		exec '!' . shellescape(expand("%:p"))
+	endif
 endfunc
 
 " Execute current filename without extname
 function! Vimmake_ExeMain()
-	exec '!' . shellescape(expand("%:p:r"))
+	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		exec '!start cmd /C '. shellescape(expand("%:p:r")) . ' & pause'
+	else
+		exec '!' . shellescape(expand("%:p:r"))
+	endif
 endfunc
 
 " Execute executable of current emake project
 function! Vimmake_ExeEmake()
-	exec '!emake -e ' . shellescape(expand("%"))
+	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		exec '!start cmd /C emake -e '. shellescape(expand("%")) . ' & pause'
+	else
+		exec '!emake -e ' . shellescape(expand("%"))
+	endif
 endfunc
 
 " backup local makeprg and errorformat
@@ -122,15 +134,25 @@ function! Vimmake_Execute(command, mode)
 		let $VIM_GUI = '1'
 	endif
 	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
-		exec '!' . shellescape(a:command)
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			exec '!start cmd /c '. shellescape(a:command) . ' & pause'
+		else
+			exec '!' . shellescape(a:command)
+		endif
 	elseif (a:mode == 1)
 		call s:MakeSave()
 		setlocal errorformat=%f:%l:%m
 		exec "setlocal makeprg=" . fnameescape(a:command)
 		exec "make!"
 		call s:MakeRestore()
-	else
+	elseif (a:mode == 2)
 		let l:text = system("" . shellescape(a:command))
+	elseif (a:mode == 3)
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			exec '!start /b cmd /C '. shellescape(a:command)
+		else
+			silent call system("". shellescape(a:command))
+		endif
 	endif
 	return l:text
 endfunc
@@ -185,8 +207,10 @@ function! s:VimMake(bang, command)
 		call Vimmake_Execute(l:fullname, 0)
 	elseif a:bang == '!'
 		call Vimmake_Execute(l:fullname, 1)
-	else
+	elseif a:bang == '?'
 		call Vimmake_Execute(l:fullname, 2)
+	else
+		call Vimmake_Execute(l:fullname, 3)
 	endif
 	return l:fullname
 endfunc
@@ -280,28 +304,50 @@ function! Vimmake_RunClever()
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
 		exec "call Vimmake_ExeMain()"
-	elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
-		exec '!python ' . fnameescape(expand("%"))
 	elseif index(['mak', 'emake'], l:ext) >= 0
 		exec "call Vimmake_ExeEmake()"
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
-	elseif l:ext  == "js"
-		exec '!node ' . shellescape(expand("%"))
-	elseif l:ext == 'sh'
-		exec '!sh ' . shellescape(expand("%"))
-	elseif l:ext == 'lua'
-		exec '!lua ' . shellescape(expand("%"))
-	elseif l:ext == 'pl'
-		exec '!perl ' . shellescape(expand("%"))
-	elseif l:ext == 'rb'
-		exec '!ruby ' . shellescape(expand("%"))
-	elseif l:ext == 'php'
-		exec '!php ' . shellescape(expand("%"))
-	elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-		exec '!osascript '. shellescape(expand('%'))
+	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
+			exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext  == "js"
+			exec '!start cmd /C node ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext == 'sh'
+			exec '!start cmd /C sh ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext == 'lua'
+			exec '!start cmd /C lua ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext == 'pl'
+			exec '!start cmd /C perl ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext == 'rb'
+			exec '!start cmd /C ruby ' . shellescape(expand("%")) . ' & pause'
+		elseif l:ext == 'php'
+			exec '!start cmd /C php ' . shellescape(expand("%")) . ' & pause'
+		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
+			exec '!start cmd /C osascript '. shellescape(expand('%')) . ' & pause'
+		else
+			call Vimmake_ExeFile()
+		endif
 	else
-		call Vimmake_ExeFile()
+		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
+			exec '!python ' . shellescape(expand("%"))
+		elseif l:ext  == "js"
+			exec '!node ' . shellescape(expand("%"))
+		elseif l:ext == 'sh'
+			exec '!sh ' . shellescape(expand("%"))
+		elseif l:ext == 'lua'
+			exec '!lua ' . shellescape(expand("%"))
+		elseif l:ext == 'pl'
+			exec '!perl ' . shellescape(expand("%"))
+		elseif l:ext == 'rb'
+			exec '!ruby ' . shellescape(expand("%"))
+		elseif l:ext == 'php'
+			exec '!php ' . shellescape(expand("%"))
+		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
+			exec '!osascript '. shellescape(expand('%'))
+		else
+			call Vimmake_ExeFile()
+		endif
 	endif
 endfunc
 
