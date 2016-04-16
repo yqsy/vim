@@ -393,11 +393,20 @@ let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
 let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java']
 
 function! s:GrepCode(text)
-	let l:inc = ''
-	for l:item in g:vimmake_grepinc
-		let l:inc .= " --include \\*." . l:item
-	endfor
-	exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
+	let l:grep = &grepprg
+	if strpart(l:grep, 0, 8) == 'findstr '
+		let l:inc = ''
+		for l:item in g:vimmake_grepinc
+			let l:inc .= '*.'.l:item.' '
+		endfor
+		exec 'grep! /s "'. a:text . '" '. l:inc
+	else
+		let l:inc = ''
+		for l:item in g:vimmake_grepinc
+			let l:inc .= " --include \\*." . l:item
+		endfor
+		exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
+	endif
 endfunc
 
 
