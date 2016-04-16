@@ -22,6 +22,7 @@
 "     $VIM_GUI       - Is running under gui ?
 "     $VIM_VERSION   - Value of v:version
 "     $VIM_MODE      - Execute via 0:!, 1:makeprg, 2:system()
+"     $VIM_SCRIPT    - Home path of tool scripts
 "
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
@@ -70,9 +71,8 @@ if !exists("g:vimmake_mode")
 endif
 
 " path where vimmake.vim locates
-if !exists("g:vimmake_home")
-	let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-endif
+let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let s:vimmake_home = g:vimmake_home
 
 " Execute current filename directly
 function! Vimmake_ExeFile()
@@ -116,6 +116,7 @@ function! Vimmake_Execute(command, mode)
 	let $VIM_VERSION = ''.v:version
 	let $VIM_MODE = ''. a:mode
 	let $VIM_GUI = '0'
+	let $VIM_SCRIPT = g:vimmake_path
 	let l:text = ''
 	if has("gui_running")
 		let $VIM_GUI = '1'
