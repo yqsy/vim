@@ -10,14 +10,26 @@ for s:index in range(10)
 	endif
 endfor
 
+noremap <F1> :VimTool 1<cr>
+noremap <F2> :VimTool 2<cr>
+noremap <F3> :VimTool 3<cr>
+noremap <F11> :VimTool 11<cr>
+noremap <F12> :VimTool 12<cr>
+inoremap <F1> <ESC>:VimTool 1<cr>
+inoremap <F2> <ESC>:VimTool 2<cr>
+inoremap <F3> <ESC>:VimTool 3<cr>
+inoremap <F11> <ESC>:VimTool 11<cr>
+inoremap <F12> <ESC>:VimTool 12<cr>
+
+
 " keymap for switch tab in gvim and terminal (alt-shift-num)
 if has('gui_running') && (has('win32') || has('win64'))
 	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
-		"exec 'noremap <silent><M-'.s:keys[s:index].'> :tabn '.s:name.'<cr>'
-		"exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:tabn '.s:name.'<cr>'
+		exec 'noremap <silent><M-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
+		exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
 	endfor
 else
 	" require to config terminal to remap key alt-shift+? to '\033[{0}?~'
@@ -67,14 +79,20 @@ if has('gui_running')
 	noremap <S-cr> o<ESC>
 	noremap <M-l> w
 	noremap <M-h> b
-	noremap <M-j> 5j
-	noremap <M-k> 5k
+	noremap <M-j> 10j
+	noremap <M-k> 10k
 	vnoremap <M-c> "+y
 	noremap <M-V> "+P
 	noremap <M-v> "+p
 	noremap <M-_> :call Change_Transparency(-2)<cr>
 	noremap <M-+> :call Change_Transparency(+2)<cr>
 	noremap <S-F4> :call Toggle_Transparency(8)<cr>
+	noremap <C-S> :w<cr>
+	inoremap <C-S> <ESC>:w<cr>
+	noremap <M-Left> :call Tab_MoveLeft()<cr>
+	noremap <M-Right> :call Tab_MoveRight()<cr>
+	inoremap <M-Left> <ESC>:call Tab_MoveLeft()<cr>
+	inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
 else
 	
 endif
@@ -106,6 +124,7 @@ noremap <silent><F4> :TagbarToggle<cr>
 inoremap <silent><F4> <c-o>:TagbarToggle<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
+noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 
 " fast open file
 if has('win32') || has('win64')

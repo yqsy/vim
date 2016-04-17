@@ -36,7 +36,7 @@ function! Vim_NeatBuffer(bufnr, fullname)
 			return '[No Name]'
 		else
 			if a:fullname 
-				return l:name
+				return fnamemodify(l:name, ':p')
 			else
 				return fnamemodify(l:name, ':t')
 			endif
@@ -47,7 +47,7 @@ function! Vim_NeatBuffer(bufnr, fullname)
 			return '[Quickfix]'
 		elseif l:name != ''
 			if a:fullname 
-				return '-'.l:name
+				return '-'.fnamemodify(l:name, ':p')
 			else
 				return '-'.fnamemodify(l:name, ':t')
 			endif
@@ -123,6 +123,17 @@ function! Tab_MoveRight()
 	let l:tabnr = tabpagenr() + 1
 	exec 'tabmove '.l:tabnr
 endfunc
+
+function! s:Filter_Push(desc, wildcard)
+	let g:browsefilter .= a:desc . " (" . a:wildcard . ")\t" . a:wildcard . "\n"
+endfunc
+
+let g:browsefilter = ''
+call s:Filter_Push("All Files", "*")
+call s:Filter_Push("C/C++/Object-C", "*.c;*.cpp;*.cc;*.h;*.hh;*.hpp;*.m;*.mm")
+call s:Filter_Push("Python", "*.py;*.pyw")
+call s:Filter_Push("Text", "*.txt")
+call s:Filter_Push("Vim Script", "*.vim")
 
 
 
