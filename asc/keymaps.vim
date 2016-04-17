@@ -2,6 +2,12 @@
 for s:index in range(10)
 	let s:key = '' . s:index
 	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
+	if has('gui_running')
+		let s:button = 'F'.s:index
+		if s:index == 0 | let s:button = 'F10' | endif
+		exec 'noremap <S-'.s:button.'> :VimTool '. s:key .'<cr>'
+		exec 'inoremap <S-'.s:button.'> <ESC>:VimTool '. s:key .'<cr>'
+	endif
 endfor
 
 " keymap for switch tab in gvim and terminal (alt-shift-num)
