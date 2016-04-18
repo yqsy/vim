@@ -121,6 +121,10 @@ endfunc
 function! Open_Browse(where)
 	let l:path = expand("%:p:h")
 	if l:path == '' | let l:path = getcwd() | endif
+	let l:filter = b:browsefilter
+	if g:browsefilter != ''
+		let b:browsefilter = g:browsefilter
+	endif
 	if a:where == 0
 		exec 'browse e '.fnameescape(l:path)
 	elseif a:where == 1
@@ -128,6 +132,7 @@ function! Open_Browse(where)
 	else
 		exec 'browse tabnew '.fnameescape(l:path)
 	endif
+	let b:browsefilter = l:filter
 endfunc
 
 function! Change_Transparency(increase)
