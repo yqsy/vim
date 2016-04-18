@@ -302,7 +302,7 @@ function! Vimmake_RunClever()
 	call s:CheckSave()
 	if bufname('%') == '' | return | endif
 	let l:ext = expand("%:e")
-	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
+	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx', 'h', 'hh', 'hpp'], l:ext) >= 0
 		exec "call Vimmake_ExeMain()"
 	elseif index(['mak', 'emake'], l:ext) >= 0
 		exec "call Vimmake_ExeEmake()"
