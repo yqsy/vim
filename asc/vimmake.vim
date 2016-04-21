@@ -148,12 +148,18 @@ function! Vimmake_Execute(command, mode)
 	elseif (a:mode == 2)
 		let l:text = system("" . shellescape(a:command))
 	elseif (a:mode == 3)
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			exec '!start /b cmd /C '. shellescape(a:command)
+		if has('win32') || has('win64') || has('win16')
+			exec '!start /b cmd.exe /C '. shellescape(a:command)
 		else
-			silent call system("". shellescape(a:command))
+			system("". shellescape(a:command) . ' &')
 		endif
 	elseif (a:mode == 4)
+		if has('win32') || has('win64') || has('win16')
+			exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
+		else
+			exec '!' . shellescape(a:command)
+		endif
+	elseif (a:mode == 5)
 		if has('python')
 			python import vim, subprocess
 			python x = [vim.eval('a:command')]
@@ -230,8 +236,10 @@ function! s:VimMake(bang, command)
 		call Vimmake_Execute(l:fullname, 2)
 	elseif a:bang == 'b'
 		call Vimmake_Execute(l:fullname, 3)
-	else
+	elseif a:bang == 'm'
 		call Vimmake_Execute(l:fullname, 4)
+	else
+		call Vimmake_Execute(l:fullname, 5)
 	endif
 	return l:fullname
 endfunc
@@ -259,7 +267,13 @@ function! s:VimTool(command)
 	elseif index(['2', 'system', 'silent'], s:mode) >= 0
 		let l:text = s:VimMake('?', a:command)
 		echom "VimTool: ".l:text
-	elseif index(['4', 'python', 'p'], s:mode) >= 0
+	elseif index(['3', 'background', 'bg', 'async'], s:mode) >= 0
+		call s:VimMake('b', a:command)
+		echom "VimTool: ".l:text
+	elseif index(['4', 'minimal', 'm', 'min'], s:mode) >= 0
+		call s:VimMake('m', a:command)
+		echom "VimTool: ".l:text
+	elseif index(['5', 'python', 'p'], s:mode) >= 0
 		let l:text = s:VimMake('p', a:command)
 		echom "VimTool: ".l:text
 	else
