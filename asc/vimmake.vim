@@ -153,6 +153,25 @@ function! Vimmake_Execute(command, mode)
 		else
 			silent call system("". shellescape(a:command))
 		endif
+	elseif (a:mode == 4)
+		if has('python')
+			python import vim, subprocess
+			python x = [vim.eval('a:command')]
+			python m = subprocess.PIPE
+			python n = subprocess.STDOUT
+			python s = sys.platform[:3] == 'win' and True or False
+			python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
+			python t = p.stdout.read()
+			python p.stdout.close()
+			python p.wait()
+			python t = t.replace('\\', '\\\\').replace('"', '\\"')
+			python t = t.replace('\n', '\\n').replace('\r', '\\r')
+			python vim.command('let l:text = "%s"'%t)
+		else
+			echohl ErrorMsg
+			echom "This vim version does not support python"
+			echohl NONE
+		endif
 	endif
 	return l:text
 endfunc
@@ -209,8 +228,10 @@ function! s:VimMake(bang, command)
 		call Vimmake_Execute(l:fullname, 1)
 	elseif a:bang == '?'
 		call Vimmake_Execute(l:fullname, 2)
-	else
+	elseif a:bang == 'b'
 		call Vimmake_Execute(l:fullname, 3)
+	else
+		call Vimmake_Execute(l:fullname, 4)
 	endif
 	return l:fullname
 endfunc
@@ -237,6 +258,9 @@ function! s:VimTool(command)
 		call s:VimMake('!', a:command)
 	elseif index(['2', 'system', 'silent'], s:mode) >= 0
 		let l:text = s:VimMake('?', a:command)
+		echom "VimTool: ".l:text
+	elseif index(['4', 'python', 'p'], s:mode) >= 0
+		let l:text = s:VimMake('p', a:command)
 		echom "VimTool: ".l:text
 	else
 		call s:VimMake('', a:command)
