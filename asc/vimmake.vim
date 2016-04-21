@@ -169,7 +169,7 @@ function! Vimmake_Execute(command, mode)
 			python vim.command('let l:text = "%s"'%t)
 		else
 			echohl ErrorMsg
-			echom "This vim version does not support python"
+			echom "ERROR: This vim version does not support python"
 			echohl NONE
 		endif
 	endif
