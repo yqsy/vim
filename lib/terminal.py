@@ -561,6 +561,52 @@ class Terminal (object):
 		script = [ command ]
 		return self.execute(terminal, title, script, cwd, wait, profile)
 
+	def run_tee (self, command, teename, shell = False, wait = False):
+		args = []
+		for n in command:
+			if sys.platform[:3] == 'win':
+				n = self.config.win32_escape(n)
+			else:
+				n = self.config.unix_escape(n)
+			args.append(n)
+		import subprocess
+		p = subprocess.Popen(args, stdin = None, stdout = subprocess.PIPE, \
+				stderr = subprocess.STDOUT, shell = shell)
+		if sys.platform[:3] != 'win' and '~' in teename:
+			teename = os.path.expanduser(teename)
+		f = open(teename, 'w')
+		cache = ''
+		while True:
+			text = p.stdout.read()
+			if text in ('', None):
+				break
+			while text != '':
+				pos = text.find('\n')
+				if pos >= 0:
+					cache += text[:pos]
+					f.write(cache + '\n')
+					f.flush()
+					text = text[pos + 1:]
+					sys.stdout.write(cache + '\n')
+					sys.stdout.flush()
+					cache = ''
+				else:
+					cache += text
+					break
+		if cache:
+			f.write(cache)
+			sys.stdout.write(cache + "\n")
+			sys.stdout.flush()
+		p.stdout.close()
+		p.wait()
+		f.close()
+		if wait:
+			if sys.platform[:3] == 'win':
+				os.system('pause')
+			else:
+				os.system('read -n1 -rsp "press any key to continue ..."')
+		return 0
+
 
 
 #----------------------------------------------------------------------
@@ -625,6 +671,8 @@ def main(argv = None, shellscript = None):
 			help = 'post action')
 	parser.add_option('-s', '--stdin', dest = 'stdin', default = False,
 			action = 'store_true', help = 'read commands from stdin')
+	parser.add_option('-e', '--tee', dest = 'tee', default = '',
+			help = 'redirect output to file')
 	if sys.platform[:3] == 'win':
 		parser.add_option('-c', '--cygwin', dest = 'cygwin', default = '',
 				help = 'cygwin home path when using cygwin terminal')
@@ -652,6 +700,11 @@ def main(argv = None, shellscript = None):
 			terminal.post_command = opts.post
 		terminal.execute(opts.terminal, opts.title, script,
 				opts.cwd, opts.wait, opts.profile)
+	elif opts.tee != '':
+		shell = False
+		if sys.platform[:3] == 'win':
+			shell = True
+		terminal.run_tee(cmds, opts.tee, shell, opts.wait)
 	else:
 		for n in cmds:
 			if terminal.check_windows(opts.terminal):
@@ -673,6 +726,7 @@ def main(argv = None, shellscript = None):
 def vimtool():
 	
 	return 0
+
 
 #----------------------------------------------------------------------
 # testing casen
