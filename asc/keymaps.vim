@@ -13,13 +13,9 @@ endfor
 noremap <F1> :VimTool 1<cr>
 noremap <F2> :VimTool 2<cr>
 noremap <F3> :VimTool 3<cr>
-noremap <F11> :VimTool 11<cr>
-noremap <F12> :VimTool 12<cr>
 inoremap <F1> <ESC>:VimTool 1<cr>
 inoremap <F2> <ESC>:VimTool 2<cr>
 inoremap <F3> <ESC>:VimTool 3<cr>
-inoremap <F11> <ESC>:VimTool 11<cr>
-inoremap <F12> <ESC>:VimTool 12<cr>
 
 
 " keymap for switch tab in gvim and terminal (alt-shift-num)

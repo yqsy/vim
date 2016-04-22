@@ -266,18 +266,14 @@ function! s:VimTool(command)
 		call s:VimMake('!', a:command)
 	elseif index(['2', 'system', 'silent'], s:mode) >= 0
 		let l:text = s:VimMake('?', a:command)
-		echom "VimTool: ".l:text
 	elseif index(['3', 'background', 'bg', 'async'], s:mode) >= 0
-		call s:VimMake('b', a:command)
-		echom "VimTool: ".l:text
+		let l:text = s:VimMake('b', a:command)
 	elseif index(['4', 'minimal', 'm', 'min'], s:mode) >= 0
-		call s:VimMake('m', a:command)
-		echom "VimTool: ".l:text
+		let l:text = s:VimMake('m', a:command)
 	elseif index(['5', 'python', 'p'], s:mode) >= 0
 		let l:text = s:VimMake('p', a:command)
-		echom "VimTool: ".l:text
 	else
-		call s:VimMake('', a:command)
+		let l:text = s:VimMake('', a:command)
 	endif
 endfunc
 
