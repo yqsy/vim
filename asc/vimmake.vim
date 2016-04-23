@@ -404,11 +404,11 @@ function! Vimmake_RunClever()
 endfunc
 
 
-noremap <silent><F5> :silent call Vimmake_RunClever()<CR>
-inoremap <silent><F5> <ESC>:silent call Vimmake_RunClever()<CR>
+noremap <silent><F5> :call Vimmake_RunClever()<CR>
+inoremap <silent><F5> <ESC>:call Vimmake_RunClever()<CR>
 
-noremap <silent><F6> :silent call Vimmake_ExeFile()<CR>
-inoremap <silent><F6> <ESC>:silent call Vimmake_ExeFile()<CR>
+noremap <silent><F6> :call Vimmake_ExeFile()<CR>
+inoremap <silent><F6> <ESC>:call Vimmake_ExeFile()<CR>
 
 noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 inoremap <silent><F7> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
