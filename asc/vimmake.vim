@@ -70,6 +70,11 @@ if !exists("g:vimmake_mode")
 	let g:vimmake_mode = {}
 endif
 
+" extern proc
+if !exists("g:vimmake_runner")
+	let g:vimmake_runner = ""
+endif
+
 " path where vimmake.vim locates
 let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let s:vimmake_home = g:vimmake_home
@@ -129,6 +134,7 @@ function! Vimmake_Execute(command, mode)
 	let $VIM_MODE = ''. a:mode
 	let $VIM_GUI = '0'
 	let $VIM_SCRIPT = g:vimmake_path
+	let $VIM_SVRNAME = v:servername
 	let l:text = ''
 	if has("gui_running")
 		let $VIM_GUI = '1'
@@ -176,6 +182,14 @@ function! Vimmake_Execute(command, mode)
 		else
 			echohl ErrorMsg
 			echom "ERROR: This vim version does not support python"
+			echohl NONE
+		endif
+	elseif (a:mode == 6)
+		if g:vimmake_runner != ""
+			call call(g:vimmake_runner, [a:command])
+		else
+			echohl ErrorMsg
+			echom "ERROR: Can not find function name in g:vimmake_runner"
 			echohl NONE
 		endif
 	endif
@@ -238,8 +252,10 @@ function! s:VimMake(bang, command)
 		call Vimmake_Execute(l:fullname, 3)
 	elseif a:bang == 'm'
 		call Vimmake_Execute(l:fullname, 4)
-	else
+	elseif a:bang == 'p'
 		call Vimmake_Execute(l:fullname, 5)
+	else
+		call Vimmake_Execute(l:fullname, 6)
 	endif
 	return l:fullname
 endfunc
@@ -272,6 +288,8 @@ function! s:VimTool(command)
 		let l:text = s:VimMake('m', a:command)
 	elseif index(['5', 'python', 'p'], s:mode) >= 0
 		let l:text = s:VimMake('p', a:command)
+	elseif index(['6', 'e', 'runner', 'extern', 'launch'], s:mode) >= 0
+		let l:text = s:VimMake('e', a:command)
 	else
 		let l:text = s:VimMake('', a:command)
 	endif
