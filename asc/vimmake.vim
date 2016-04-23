@@ -238,7 +238,7 @@ endfunc
 
 " Execute ~/.vim/vimmake.{command} 
 function! s:VimMake(bang, command)
-	call s:CheckSave()
+	silent call s:CheckSave()
 	let l:home = expand(g:vimmake_path)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
@@ -302,7 +302,7 @@ command! -nargs=1 VimTool call s:VimTool(<f-args>)
 
 " build via gcc
 function! Vimmake_CompileGcc()
-	call s:CheckSave()
+	silent call s:CheckSave()
 	if bufname('%') == '' | return | endif
 	let l:compileflag = g:vimmake_cflags
 	let l:extname = expand("%:e")
@@ -325,7 +325,7 @@ endfunc
 
 " build via emake (http://skywind3000.github.io/emake/emake.py)
 function! Vimmake_BuildEmake(filename, ininame, quickfix)
-	call s:CheckSave()
+	silent call s:CheckSave()
 	if bufname('%') == '' | return | endif
 	if (!a:quickfix) || (!has("quickfix"))
 		if a:ininame == ''
@@ -351,7 +351,7 @@ endfunc
 
 " run current file by detecting file extname
 function! Vimmake_RunClever()
-	call s:CheckSave()
+	silent call s:CheckSave()
 	if bufname('%') == '' | return | endif
 	let l:ext = expand("%:e")
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx', 'h', 'hh', 'hpp'], l:ext) >= 0
@@ -404,11 +404,11 @@ function! Vimmake_RunClever()
 endfunc
 
 
-noremap <silent><F5> :call Vimmake_RunClever()<CR>
-inoremap <silent><F5> <ESC>:call Vimmake_RunClever()<CR>
+noremap <silent><F5> :silent call Vimmake_RunClever()<CR>
+inoremap <silent><F5> <ESC>:silent call Vimmake_RunClever()<CR>
 
-noremap <silent><F6> :call Vimmake_ExeFile()<CR>
-inoremap <silent><F6> <ESC>:call Vimmake_ExeFile()<CR>
+noremap <silent><F6> :silent call Vimmake_ExeFile()<CR>
+inoremap <silent><F6> <ESC>:silent call Vimmake_ExeFile()<CR>
 
 noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
 inoremap <silent><F7> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>

@@ -15,6 +15,10 @@ IncScript asc/vimmake.vim
 IncScript asc/config.vim
 IncScript asc/backup.vim
 
+if has('job') && has('reltime')
+	IncScript asc/build.vim
+endif
+
 IncScript asc/ignores.vim
 IncScript asc/tools.vim
 IncScript asc/keymaps.vim
