@@ -89,6 +89,10 @@ if has('gui_running')
 	noremap <M-Right> :call Tab_MoveRight()<cr>
 	inoremap <M-Left> <ESC>:call Tab_MoveLeft()<cr>
 	inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
+	noremap <M-r> :call Vimmake_RunClever()<cr>
+	inoremap <M-r> <ESC>:call Vimmake_RunClever()<cr>
+	noremap <M-b> :call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
+	inoremap <M-b> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
 else
 	
 endif
