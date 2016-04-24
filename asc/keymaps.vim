@@ -93,6 +93,8 @@ if has('gui_running')
 	inoremap <M-r> <ESC>:call Vimmake_RunClever()<cr>
 	noremap <M-b> :call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
 	inoremap <M-b> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
+	noremap <M-g> <c-w>gf
+	inoremap <M-g> <ESC><c-w>gf
 else
 	
 endif
