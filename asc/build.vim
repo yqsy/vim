@@ -1,6 +1,6 @@
 if (!has('python')) || (!has('timers')) 
 	echohl ErrorMsg
-	echom "ERROR: Vim must be compiled with +job"
+	echom "ERROR: Vim must be compiled with +python +timers"
 	echohl None
 endif
 
@@ -62,16 +62,20 @@ def build_update(limit):
 __EOF__
 
 let s:state = 0
+let g:status_var = ""
 
 function! Build_Exit(duration)
 	let s:state = 0
 	let l:text = "[Finished in ".a:duration." seconds]"
+	let g:status_var = "-finished-"
+	redrawstatus!
 	caddexpr l:text
 	echom l:text
 	if exists('s:timer')
 		call timer_stop(s:timer)
 		unlet s:timer
 	endif
+
 endfunc
 
 function! Build_Start(cmd)
@@ -90,6 +94,7 @@ function! Build_Start(cmd)
 		if l:hr == 0
 			cexpr "[".a:cmd."]"
 			let s:state = 1
+			let g:status_var = "-building-"
 		else
 			echohl ErrorMsg
 			echom "ERROR: Job start failed '".a:cmd."'"

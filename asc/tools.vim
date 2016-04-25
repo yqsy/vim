@@ -1,6 +1,7 @@
 " global settings
 let s:winopen = 0
-set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
+let g:status_var = ""
+set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %{g:status_var}\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
 set splitright
 set switchbuf=useopen,usetab,newtab
 "set splitbelow
