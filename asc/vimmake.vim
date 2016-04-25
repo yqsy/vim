@@ -476,7 +476,7 @@ endfor
 
 " grep code
 let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
-let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java']
+let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
 
 function! s:GrepCode(text)
 	let l:grep = &grepprg
