@@ -31,7 +31,6 @@ function! Build_Start(cmd)
 		echom "ERROR: build job is still running"
 		echohl NONE
 	elseif a:cmd != ""
-		cexpr ""
 		let s:job_time = float2nr(reltimefloat(reltime()))
 		if has('win32') || has('win64') || has('win16')
 			let s:job_desc = job_start(['cmd.exe', '/C', a:cmd], l:option)
@@ -39,7 +38,7 @@ function! Build_Start(cmd)
 			let s:job_desc = job_start(['/bin/sh', '-c', a:cmd], l:option)
 		endif
 		if job_status(s:job_desc) != 'fail'
-			echo "Build: ".a:cmd
+			cexpr "[".a:cmd."]"
 		else
 			echohl ErrorMsg
 			echom "ERROR: Job start failed '".a:cmd."'"

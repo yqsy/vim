@@ -253,7 +253,7 @@ function! s:CheckSave()
 		return
 	endif
 	if g:vimmake_save == 1
-		silent exec "w"
+		silent exec "update"
 	elseif g:vimmake_save == 2
 		silent exec "wa"
 	endif
