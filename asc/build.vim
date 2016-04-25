@@ -1,44 +1,95 @@
-if (!has('job')) || (!has('reltime')) 
+if (!has('python')) || (!has('timers')) 
 	echohl ErrorMsg
 	echom "ERROR: Vim must be compiled with +job"
 	echohl None
 endif
 
-let s:job_time = 0
+python << __EOF__
+import sys, os, subprocess, threading
+import threading, time, vim
 
-function! Build_JobHook(channel, msg)
-	caddexpr a:msg
-endfunc
+build_output = []
+build_lock = threading.Lock()
+build_state = 0
+build_start = 0.0
+build_time = 0.0
 
-function! Build_JobExit(channel, msg)
-	let l:now = float2nr(reltimefloat(reltime()))
-	let l:last = l:now - s:job_time
-	let l:text = "[Finished in ".l:last." seconds]"
+def build_async(args):
+	global build_start, build_time, build_state
+	def output(text):
+		build_lock.acquire()
+		build_output.append(text)
+		build_lock.release()
+		return 0
+	def background (args, p):
+		global build_time, build_start
+		while True:
+			text = p.stdout.readline()
+			if text in (None, ''):
+				break
+			text = text.rstrip('\n\r')
+			output(text)
+		p.wait()
+		build_time = time.time() - build_start
+		build_state = 0
+		output(None)
+		return 0
+	build_start = time.time()
+	try:
+		p = subprocess.Popen(args, stdout = subprocess.PIPE, \
+			stdin = None, stderr = subprocess.STDOUT, shell = True)
+	except:
+		return -1
+	build_state = 1
+	t = threading.Thread(target = background, args = (args, p))
+	t.daemon = True
+	t.start()
+	return 0
+
+def build_update(limit):
+	global build_output, build_time
+	build_lock.acquire()
+	result = build_output[:limit]
+	build_output = build_output[limit:]
+	build_lock.release()
+	for line in result:
+		if line == None:
+			vim.command('call Build_Exit("%.2f")'%build_time)
+		else:
+			vim.vars['build_message'] = line
+			vim.command('caddexpr g:build_message')
+	return 0
+__EOF__
+
+let s:state = 0
+
+function! Build_Exit(duration)
+	let s:state = 0
+	let l:text = "[Finished in ".a:duration." seconds]"
 	caddexpr l:text
 	echom l:text
+	if exists('s:timer')
+		call timer_stop(s:timer)
+		unlet s:timer
+	endif
 endfunc
 
 function! Build_Start(cmd)
-	let l:option = { 'callback': 'Build_JobHook', 'exit_cb': 'Build_JobExit' }
-	let l:running = 0
-	if exists('s:job_desc')
-		if job_status(s:job_desc) == 'run'
-			let l:running = 1
-		endif
+	if !exists('s:timer')
+		let s:timer = timer_start(100, 'Build_Timer', {'repeat':-1})
 	endif
-	if l:running != 0
+	if s:state != 0
 		echohl ErrorMsg
 		echom "ERROR: build job is still running"
 		echohl NONE
 	elseif a:cmd != ""
 		let s:job_time = float2nr(reltimefloat(reltime()))
-		if has('win32') || has('win64') || has('win16')
-			let s:job_desc = job_start(['cmd.exe', '/C', a:cmd], l:option)
-		else
-			let s:job_desc = job_start(['/bin/sh', '-c', a:cmd], l:option)
-		endif
-		if job_status(s:job_desc) != 'fail'
+		python args = vim.eval('a:cmd')
+		let l:hr = 0
+		python vim.command('let l:hr=%d'%build_async(args))
+		if l:hr == 0
 			cexpr "[".a:cmd."]"
+			let s:state = 1
 		else
 			echohl ErrorMsg
 			echom "ERROR: Job start failed '".a:cmd."'"
@@ -49,7 +100,12 @@ function! Build_Start(cmd)
 	endif
 endfunc
 
+function! Build_Timer(id)
+	python build_update(100)
+endfunc
+
 
 let g:vimmake_runner = "Build_Start"
+
 
 

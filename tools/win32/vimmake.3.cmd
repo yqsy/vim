@@ -16,6 +16,6 @@ GOTO END
 echo missing file name
 
 :END
-
+EXIT
 
 
