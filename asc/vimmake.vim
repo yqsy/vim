@@ -70,10 +70,16 @@ if !exists("g:vimmake_mode")
 	let g:vimmake_mode = {}
 endif
 
+" change directory
+if !exists("g:vimmake_cwd")
+	let g:vimmake_cwd = 0
+endif
+
 " extern proc
 if !exists("g:vimmake_runner")
 	let g:vimmake_runner = ""
 endif
+
 
 " path where vimmake.vim locates
 let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
@@ -81,29 +87,35 @@ let s:vimmake_home = g:vimmake_home
 
 " Execute current filename directly
 function! Vimmake_ExeFile()
+	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
 		exec '!start cmd /C '. shellescape(expand("%:p")) . ' & pause'
 	else
 		exec '!' . shellescape(expand("%:p"))
 	endif
+	call s:CwdRestore()
 endfunc
 
 " Execute current filename without extname
 function! Vimmake_ExeMain()
+	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
 		exec '!start cmd /C '. shellescape(expand("%:p:r")) . ' & pause'
 	else
 		exec '!' . shellescape(expand("%:p:r"))
 	endif
+	call s:CwdRestore()
 endfunc
 
 " Execute executable of current emake project
 function! Vimmake_ExeEmake()
+	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
 		exec '!start cmd /C emake -e '. shellescape(expand("%")) . ' & pause'
 	else
 		exec '!emake -e ' . shellescape(expand("%"))
 	endif
+	call s:CwdRestore()
 endfunc
 
 " backup local makeprg and errorformat
@@ -118,6 +130,24 @@ function! s:MakeRestore()
 	exec 'setlocal errorformat=' . fnameescape(s:match_save)
 endfunc
 
+" init current working directory
+function! s:CwdInit()
+	let s:cwd_save = getcwd()
+	let l:cwd = expand("%:p:h")
+	if g:vimmake_cwd != 0 && expand("%:p") != ""
+		exec 'cd ' . fnameescape(l:cwd)
+	endif
+endfunc
+
+" restore current working directory
+function! s:CwdRestore()
+	if exists('s:cwd_save')
+		if g:vimmake_cwd != 0 && s:cwd_save != "" 
+			exec 'cd '. fnameescape(s:cwd_save)
+		endif
+		let s:cwd_save = ""
+	endif
+endfunc
 
 " Execute command in normal(0), quickfix(1), system(2) mode
 function! Vimmake_Execute(command, mode)
@@ -361,6 +391,7 @@ function! Vimmake_RunClever()
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
 	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		call s:CwdInit()
 		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 			exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext  == "js"
@@ -380,7 +411,9 @@ function! Vimmake_RunClever()
 		else
 			call Vimmake_ExeFile()
 		endif
+		call s:CwdRestore()
 	else
+		call s:CwdInit()
 		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 			exec '!python ' . shellescape(expand("%"))
 		elseif l:ext  == "js"
@@ -400,6 +433,7 @@ function! Vimmake_RunClever()
 		else
 			call Vimmake_ExeFile()
 		endif
+		call s:CwdRestore()
 	endif
 endfunc
 
