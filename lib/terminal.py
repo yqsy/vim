@@ -575,27 +575,13 @@ class Terminal (object):
 		if sys.platform[:3] != 'win' and '~' in teename:
 			teename = os.path.expanduser(teename)
 		f = open(teename, 'w')
-		cache = ''
 		while True:
-			text = p.stdout.read()
+			text = p.stdout.readline()
 			if text in ('', None):
 				break
-			while text != '':
-				pos = text.find('\n')
-				if pos >= 0:
-					cache += text[:pos]
-					f.write(cache + '\n')
-					f.flush()
-					text = text[pos + 1:]
-					sys.stdout.write(cache + '\n')
-					sys.stdout.flush()
-					cache = ''
-				else:
-					cache += text
-					break
-		if cache:
-			f.write(cache)
-			sys.stdout.write(cache + "\n")
+			f.write(text)
+			f.flush()
+			sys.stdout.write(text)
 			sys.stdout.flush()
 		p.stdout.close()
 		p.wait()
