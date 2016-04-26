@@ -1,7 +1,7 @@
 " global settings
 let s:winopen = 0
 let g:status_var = ""
-set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %{g:status_var}\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
+set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %c:%l/%L%)
 set splitright
 set switchbuf=useopen,usetab,newtab
 "set splitbelow
@@ -262,5 +262,12 @@ function! Change_DirectoryToFile()
 	exec 'cd'
 endfunc
 
+
+" quickfix
+let g:status_var = ""
+augroup QuickfixStatus
+	au!
+	au BufWinEnter quickfix setlocal statusline=%t\ [%{g:status_var}]\ %{exists('w:quickfix_title')?\ '\ '.w:quickfix_title\ :\ ''}\ %=%-15(%l,%c%V%)\ %P
+augroup END
 
 

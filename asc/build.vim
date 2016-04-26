@@ -29,10 +29,10 @@ def build_async(args):
 				break
 			text = text.rstrip('\n\r')
 			output(text)
-		p.wait()
+		code = p.wait()
 		build_time = time.time() - build_start
 		build_state = 0
-		output(None)
+		output(code)
 		return 0
 	build_start = time.time()
 	try:
@@ -53,8 +53,8 @@ def build_update(limit):
 	build_output = build_output[limit:]
 	build_lock.release()
 	for line in result:
-		if line == None:
-			vim.command('call Build_Exit("%.2f")'%build_time)
+		if not type(line) in (unicode, str):
+			vim.command('call Build_Exit(%d, "%.2f")'%(line, build_time))
 		else:
 			vim.vars['build_message'] = line
 			vim.command('caddexpr g:build_message')
@@ -64,10 +64,15 @@ __EOF__
 let s:state = 0
 let g:status_var = ""
 
-function! Build_Exit(duration)
+function! Build_Exit(code, duration)
 	let s:state = 0
-	let l:text = "[Finished in ".a:duration." seconds]"
-	let g:status_var = "-finished-"
+	if a:code == 0
+		let l:text = "[Finished in ".a:duration." seconds]"
+		let g:status_var = "finished"
+	else
+		let l:text = "[Finished in ".a:duration." seconds with code=".a:code."]"
+		let g:status_var = "failed ".a:code 
+	endif
 	redrawstatus!
 	caddexpr l:text
 	echom l:text
@@ -92,9 +97,9 @@ function! Build_Start(cmd)
 		let l:hr = 0
 		python vim.command('let l:hr=%d'%build_async(args))
 		if l:hr == 0
-			cexpr "[".a:cmd."]"
+			exec "cexpr \'[".fnameescape(a:cmd)."]\'"
 			let s:state = 1
-			let g:status_var = "-building-"
+			let g:status_var = "building"
 		else
 			echohl ErrorMsg
 			echom "ERROR: Job start failed '".a:cmd."'"
