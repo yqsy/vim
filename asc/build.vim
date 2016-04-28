@@ -4,6 +4,11 @@ if (!has('python')) || (!has('timers'))
 	echohl None
 endif
 
+
+if !exists('g:build_post')
+	let g:build_post = ""
+endif
+
 python << __EOF__
 import sys, os, subprocess, threading
 import threading, time, vim
@@ -68,7 +73,7 @@ function! Build_Exit(code, duration)
 	let s:state = 0
 	if a:code == 0
 		let l:text = "[Finished in ".a:duration." seconds]"
-		let g:status_var = "finished"
+		let g:status_var = "success"
 	else
 		let l:text = "[Finished in ".a:duration." seconds with code=".a:code."]"
 		let g:status_var = "failed ".a:code 
@@ -80,7 +85,9 @@ function! Build_Exit(code, duration)
 		call timer_stop(s:timer)
 		unlet s:timer
 	endif
-
+	if g:build_post != ""
+		exec g:build_post
+	endif
 endfunc
 
 function! Build_Start(cmd)
@@ -99,7 +106,8 @@ function! Build_Start(cmd)
 		if l:hr == 0
 			exec "cexpr \'[".fnameescape(a:cmd)."]\'"
 			let s:state = 1
-			let g:status_var = "building"
+			let g:status_var = "waiting"
+			redrawstatus!
 		else
 			echohl ErrorMsg
 			echom "ERROR: Job start failed '".a:cmd."'"
