@@ -89,7 +89,7 @@ let s:vimmake_home = g:vimmake_home
 function! Vimmake_ExeFile()
 	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		exec '!start cmd /C '. shellescape(expand("%:p")) . ' & pause'
+		silent exec '!start cmd /C '. shellescape(expand("%:p")) . ' & pause'
 	else
 		exec '!' . shellescape(expand("%:p"))
 	endif
@@ -100,7 +100,7 @@ endfunc
 function! Vimmake_ExeMain()
 	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		exec '!start cmd /C '. shellescape(expand("%:p:r")) . ' & pause'
+		silent exec '!start cmd /C '. shellescape(expand("%:p:r")) . ' & pause'
 	else
 		exec '!' . shellescape(expand("%:p:r"))
 	endif
@@ -111,7 +111,7 @@ endfunc
 function! Vimmake_ExeEmake()
 	call s:CwdInit()
 	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		exec '!start cmd /C emake -e '. shellescape(expand("%")) . ' & pause'
+		silent exec '!start cmd /C emake -e '. shellescape(expand("%")) . ' & pause'
 	else
 		exec '!emake -e ' . shellescape(expand("%"))
 	endif
@@ -135,7 +135,7 @@ function! s:CwdInit()
 	let s:cwd_save = getcwd()
 	let l:cwd = expand("%:p:h")
 	if g:vimmake_cwd != 0 && expand("%:p") != ""
-		exec 'cd ' . fnameescape(l:cwd)
+		silent exec 'cd ' . fnameescape(l:cwd)
 	endif
 endfunc
 
@@ -143,7 +143,7 @@ endfunc
 function! s:CwdRestore()
 	if exists('s:cwd_save')
 		if g:vimmake_cwd != 0 && s:cwd_save != "" 
-			exec 'cd '. fnameescape(s:cwd_save)
+			silent exec 'cd '. fnameescape(s:cwd_save)
 		endif
 		let s:cwd_save = ""
 	endif
@@ -393,21 +393,21 @@ function! Vimmake_RunClever()
 	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
 		call s:CwdInit()
 		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
-			exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext  == "js"
-			exec '!start cmd /C node ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C node ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext == 'sh'
-			exec '!start cmd /C sh ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C sh ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext == 'lua'
-			exec '!start cmd /C lua ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C lua ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext == 'pl'
-			exec '!start cmd /C perl ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C perl ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext == 'rb'
-			exec '!start cmd /C ruby ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C ruby ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext == 'php'
-			exec '!start cmd /C php ' . shellescape(expand("%")) . ' & pause'
+			silent exec '!start cmd /C php ' . shellescape(expand("%")) . ' & pause'
 		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-			exec '!start cmd /C osascript '. shellescape(expand('%')) . ' & pause'
+			silent exec '!start cmd /C osascript '. shellescape(expand('%')) . ' & pause'
 		else
 			call Vimmake_ExeFile()
 		endif
