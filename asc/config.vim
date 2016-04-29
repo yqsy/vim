@@ -1,3 +1,8 @@
+if !exists('g:config_vim_gui_label')
+	let g:config_vim_gui_label = 0
+endif
+
+
 
 " make tabline in terminal mode
 function! Vim_NeatTabLine()
@@ -65,9 +70,25 @@ function! Vim_NeatTabLabel(n)
 	return Vim_NeatBuffer(l:bufnr, 0)
 endfunc
 
+
 " get a single tab label in gui
 function! Vim_NeatGuiTabLabel()
-	return Vim_NeatTabLabel(v:lnum)
+	let l:num = v:lnum
+	let l:buflist = tabpagebuflist(l:num)
+	let l:winnr = tabpagewinnr(l:num)
+	let l:bufnr = l:buflist[l:winnr - 1]
+	let l:fname = Vim_NeatBuffer(l:bufnr, 0)
+	if g:config_vim_gui_label == 0
+		return l:fname
+	elseif g:config_vim_gui_label == 1
+		return "[".l:num."] ".l:fname
+	elseif g:config_vim_gui_label == 2
+		return "".l:num." - ".l:fname
+	endif
+	if getbufvar(l:bufnr, '&modified')
+		return "[".l:num."] ".l:fname." +"
+	endif
+	return "[".l:num."] ".l:fname
 endfunc
 
 " get a label tips

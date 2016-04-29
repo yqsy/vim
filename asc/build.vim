@@ -18,6 +18,7 @@ build_lock = threading.Lock()
 build_state = 0
 build_start = 0.0
 build_time = 0.0
+build_slap = 0.0
 
 def build_async(args):
 	global build_start, build_time, build_state
@@ -28,12 +29,17 @@ def build_async(args):
 		return 0
 	def background (args, p):
 		global build_time, build_start
+		count = 0
 		while True:
 			text = p.stdout.readline()
 			if text in (None, ''):
 				break
 			text = text.rstrip('\n\r')
 			output(text)
+			count += 1
+			if count >= 10:
+				time.sleep(0.01)
+				count = 0
 		code = p.wait()
 		build_time = time.time() - build_start
 		build_state = 0
@@ -52,17 +58,22 @@ def build_async(args):
 	return 0
 
 def build_update(limit):
-	global build_output, build_time
+	global build_output, build_time, build_slap
+	current = time.time()
+	if current - build_slap < 0.1:
+		return 0
 	build_lock.acquire()
 	result = build_output[:limit]
 	build_output = build_output[limit:]
 	build_lock.release()
+	count = 0
 	for line in result:
 		if not type(line) in (unicode, str):
 			vim.command('call Build_Exit(%d, "%.2f")'%(line, build_time))
 		else:
 			vim.vars['build_message'] = line
 			vim.command('caddexpr g:build_message')
+	build_slap = time.time() + 0.1
 	return 0
 __EOF__
 
@@ -119,7 +130,7 @@ function! Build_Start(cmd)
 endfunc
 
 function! Build_Timer(id)
-	python build_update(100)
+	python build_update(10)
 endfunc
 
 
