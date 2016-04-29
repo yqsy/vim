@@ -116,7 +116,7 @@ noremap <silent><space>tb :TagbarToggle<cr>
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
-noremap <silent><space>fh :call Open_HeaderFile()<cr>
+noremap <silent><space>fh :call Open_HeaderFile(1)<cr>
 noremap <silent><space>ft :call Open_Explore(0)<cr>
 noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
