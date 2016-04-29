@@ -171,7 +171,7 @@ function! Vimmake_Execute(command, mode)
 	endif
 	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
 		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			exec '!start cmd /c '. shellescape(a:command) . ' & pause'
+			silent exec '!start cmd /c '. shellescape(a:command) . ' & pause'
 		else
 			exec '!' . shellescape(a:command)
 		endif
@@ -185,13 +185,13 @@ function! Vimmake_Execute(command, mode)
 		let l:text = system("" . shellescape(a:command))
 	elseif (a:mode == 3)
 		if has('win32') || has('win64') || has('win16')
-			exec '!start /b cmd.exe /C '. shellescape(a:command)
+			silent exec '!start /b cmd.exe /C '. shellescape(a:command)
 		else
 			system("". shellescape(a:command) . ' &')
 		endif
 	elseif (a:mode == 4)
 		if has('win32') || has('win64') || has('win16')
-			exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
+			silent exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
 		else
 			exec '!' . shellescape(a:command)
 		endif
