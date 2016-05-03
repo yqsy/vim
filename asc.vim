@@ -15,7 +15,7 @@ IncScript asc/vimmake.vim
 IncScript asc/config.vim
 IncScript asc/backup.vim
 
-if has('job') && has('reltime')
+if has('python') && has('timers')
 	IncScript asc/build.vim
 endif
 
