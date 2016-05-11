@@ -65,6 +65,10 @@ noremap <space>hh :nohl<cr>
 noremap <tab>, :call Tab_MoveLeft()<cr>
 noremap <tab>. :call Tab_MoveRight()<cr>
 
+" replace
+noremap <space>p viw"0p
+noremap <space>y yiw
+
 if has('gui_running')
 	noremap <M-=> :resize +3<cr>
 	noremap <M--> :resize -3<cr>
@@ -80,6 +84,7 @@ if has('gui_running')
 	vnoremap <M-c> "+y
 	noremap <M-V> "+P
 	noremap <M-v> "+p
+	noremap <M-p> "0p
 	noremap <M-_> :call Change_Transparency(-2)<cr>
 	noremap <M-+> :call Change_Transparency(+2)<cr>
 	noremap <S-F4> :call Toggle_Transparency(8)<cr>
