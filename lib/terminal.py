@@ -14,6 +14,18 @@ class configure (object):
 		self.unix = sys.platform[:3] != 'win' and True or False
 		self.temp = os.environ.get('temp', os.environ.get('tmp', '/tmp'))
 		self.tick = long(time.time()) % 100
+		if self.unix:
+			temp = os.environ.get('tmp', '/tmp')
+			if not temp:
+				temp = '/tmp'
+			folder = os.path.join(temp, 'folder')
+			if not os.path.exists(folder):
+				try:
+					os.makedirs(folder, 0777)
+				except:
+					folder = ''
+			if folder:
+				self.temp = folder
 		self.temp = os.path.join(self.temp, 'winex_%02d.cmd'%self.tick)
 		self.cygwin = ''
 		self.GetShortPathName = None
@@ -31,11 +43,25 @@ class configure (object):
 		stderr = p.stderr.read()
 		code = p.wait()
 		return code, stdout, stderr
-	
+
+	def where (self, filename, path = []):
+		PATH = os.environ.get('PATH', '')
+		if sys.platform[:3] == 'win':
+			PATH = PATH.split(';')
+		else:
+			PATH = PATH.split(':')
+		if path:
+			PATH.extend(path)
+		for base in PATH:
+			path = os.path.join(base, filename)
+			if os.path.exists(path):
+				return path
+		return None
+		
 	def escape (self, path):
 		path = path.replace('\\', '\\\\').replace('"', '\\"')
 		return path.replace('\'', '\\\'')
-		
+
 	def darwin_osascript (self, script):
 		for line in script:
 			#print line
@@ -50,8 +76,23 @@ class configure (object):
 		p.stdin.close()
 		text = p.stdout.read()
 		p.stdout.close()
-		code = p.wait()
+		code = p.wait() 
+		#print text
 		return code, text
+
+	def darwin_open_system (self, title, script, profile = None):
+		script = [ line for line in script ]
+		script.insert(0, 'clear')
+		fp = open(self.temp, 'w')
+		fp.write('#! /bin/sh\n')
+		for line in script:
+			fp.write(line + '\n')
+			print line
+		fp.close()
+		os.chmod(self.temp, 0755)
+		cmd = self.where('open')
+		self.call([cmd, '-a', 'Terminal', self.temp])
+		return 0, ''
 
 	def darwin_open_terminal (self, title, script, profile = None):
 		osascript = []
@@ -63,12 +104,16 @@ class configure (object):
 			command.append(line)
 		command = '; '.join(command)
 		osascript.append('tell application "Terminal"')
+		osascript.append('  if it is running then')
 		osascript.append('     do script "%s; exit"'%command)
-		x = '     set current settings of selected tab of '
+		osascript.append('  else')
+		osascript.append('     do script "%s; exit" in window 1'%command)
+		osascript.append('  end if')
+		x = '  set current settings of selected tab of '
 		x += 'window 1 to settings set "%s"'
 		if profile != None:
 			osascript.append(x%profile)
-		osascript.append('     activate')
+		osascript.append('  activate')
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
 
@@ -471,7 +516,9 @@ class Terminal (object):
 		return 0
 
 	def __darwin_open_terminal (self, terminal, title, script, profile):
-		if terminal in ('', 'terminal', 'system', 'default'):
+		if terminal in ('', 'system', 'default') and (not profile):
+			self.config.darwin_open_system(title, script, profile)
+		elif terminal in ('terminal',):
 			self.config.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
 			self.config.darwin_open_iterm(title, script, profile)
