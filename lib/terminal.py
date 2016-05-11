@@ -516,11 +516,13 @@ class Terminal (object):
 		return 0
 
 	def __darwin_open_terminal (self, terminal, title, script, profile):
-		if terminal in ('', 'system', 'default', 'terminal'):
+		if terminal in ('', 'system', 'default'):
 			if not profile:
 				self.config.darwin_open_system(title, script, profile)
 			else:
 				self.config.darwin_open_terminal(title, script, profile)
+		elif terminal in ('terminal',):
+			self.config.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
 			self.config.darwin_open_iterm(title, script, profile)
 		elif terminal in ('xterm', 'x'):
