@@ -87,7 +87,6 @@ class configure (object):
 		fp.write('#! /bin/sh\n')
 		for line in script:
 			fp.write(line + '\n')
-			print line
 		fp.close()
 		os.chmod(self.temp, 0755)
 		cmd = self.where('open')
