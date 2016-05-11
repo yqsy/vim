@@ -101,6 +101,7 @@ class configure (object):
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
 			command.append(line)
+		command.insert(0, 'clear')
 		command = '; '.join(command)
 		osascript.append('tell application "Terminal"')
 		osascript.append('  if it is running then')
@@ -515,10 +516,11 @@ class Terminal (object):
 		return 0
 
 	def __darwin_open_terminal (self, terminal, title, script, profile):
-		if terminal in ('', 'system', 'default') and (not profile):
-			self.config.darwin_open_system(title, script, profile)
-		elif terminal in ('terminal',):
-			self.config.darwin_open_terminal(title, script, profile)
+		if terminal in ('', 'system', 'default', 'terminal'):
+			if not profile:
+				self.config.darwin_open_system(title, script, profile)
+			else:
+				self.config.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
 			self.config.darwin_open_iterm(title, script, profile)
 		elif terminal in ('xterm', 'x'):
