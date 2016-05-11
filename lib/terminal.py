@@ -504,7 +504,7 @@ class Terminal (object):
 	def __cygwin_open_terminal (self, terminal, title, script, profile):
 		if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
 			self.config.cygwin_open_cmd(title, script, profile)
-		elif terminal in ('bash', 'sh', ''):
+		elif terminal in ('bash', 'sh', '', 'default'):
 			self.config.cygwin_open_bash(title, script, profile)
 		elif terminal in ('mintty', 'cygwin-mintty'):
 			if not title:
@@ -547,19 +547,19 @@ class Terminal (object):
 			terminal = ''
 		if sys.platform[:3] == 'win':
 			if script == None:
-				return ('cmd', 'cygwin', 'cygwin-mintty')
+				return ('cmd (default)', 'cygwin', 'cygwin-mintty')
 			return self.__win32_open_terminal(terminal, title, script, profile)
 		elif sys.platform == 'cygwin':
 			if script == None:
-				return ('bash', 'mintty', 'windows')
+				return ('bash (default)', 'mintty', 'windows')
 			return self.__cygwin_open_terminal(terminal, title, script, profile)
 		elif sys.platform == 'darwin':
 			if script == None:
-				return ('terminal', 'iterm')
+				return ('terminal (default)', 'iterm')
 			return self.__darwin_open_terminal(terminal, title, script, profile)
 		else:
 			if script == None:
-				return ('xterm', 'gnome-terminal')
+				return ('xterm (default)', 'gnome-terminal')
 			return self.__linux_open_terminal(terminal, title, script, profile)
 		return 0
 
