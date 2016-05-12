@@ -18,7 +18,7 @@ class configure (object):
 			temp = os.environ.get('tmp', '/tmp')
 			if not temp:
 				temp = '/tmp'
-			folder = os.path.join(temp, 'folder')
+			folder = os.path.join(temp, 'runner/folder')
 			if not os.path.exists(folder):
 				try:
 					os.makedirs(folder, 0777)
@@ -26,6 +26,10 @@ class configure (object):
 					folder = ''
 			if folder:
 				self.temp = folder
+				try:
+					os.chmod(self.temp, 0777)
+				except:
+					pass
 		self.temp = os.path.join(self.temp, 'winex_%02d.cmd'%self.tick)
 		self.cygwin = ''
 		self.GetShortPathName = None
@@ -88,7 +92,7 @@ class configure (object):
 		for line in script:
 			fp.write(line + '\n')
 		fp.close()
-		os.chmod(self.temp, 0755)
+		os.chmod(self.temp, 0777)
 		cmd = self.where('open')
 		self.call([cmd, '-a', 'Terminal', self.temp])
 		return 0, ''
@@ -253,7 +257,7 @@ class configure (object):
 			command.append(line)
 		command = '; '.join(command)
 		command = 'bash -c \"%s\"'%command
-		title = self.escape(title)
+		title = self.escape(title and title or '')
 		command = 'gnome-terminal '
 		if title:
 			command += '-t "%s" '%title
