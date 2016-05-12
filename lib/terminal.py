@@ -101,6 +101,8 @@ class configure (object):
 		osascript = []
 		command = []
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
@@ -129,6 +131,8 @@ class configure (object):
 			script.insert(0, 'clear')
 			script.insert(0, 'echo "\033]50;SetProfile=%s\a"'%profile)
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\\\\\')
 			line = line.replace('"', '\\\\\\"')
 			line = line.replace("'", "\\\\\\'")
@@ -225,6 +229,8 @@ class configure (object):
 	def darwin_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
@@ -240,25 +246,33 @@ class configure (object):
 	def linux_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
-			command.append(line)
-		command = '; '.join(command)
-		xterm = self.where('xterm')
-		if title:
-			os.spawnv(os.P_NOWAIT, xterm, ['-T', title, '-e', command])
-		else:
-			os.spawnv(os.P_NOWAIT, xterm, ['-e', command])
-		return 0
-
-	def linux_open_gnome (self, title, script, profile = None):
-		command = []
-		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
 			command.append(line)
 		command = '; '.join(command)
-		command = 'bash -c \"%s\"'%command
-		cmdline = 'gnome-terminal '
+		cmdline = self.where('xterm') + ' '
+		if title:
+			title = self.escape(title)
+			cmdline += '-T "%s" '%title
+		cmdline += '-e "%s" '%command
+		os.system(cmdline + ' & ')
+		return 0
+
+	def linux_open_gnome (self, title, script, profile = None):
+		command = []
+		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
+			line = line.replace('\\', '\\\\')
+			line = line.replace('"', '\\"')
+			line = line.replace("'", "\\'")
+			command.append(line)
+		command = '; '.join(command)
+		command = '%s -c \"%s\"'%(self.where('bash'), command)
+		cmdline = self.where('gnome-terminal') + ' '
 		if title:
 			title = self.escape(title and title or '')
 			cmdline += '-t "%s" '%title
