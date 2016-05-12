@@ -242,10 +242,11 @@ class configure (object):
 		for line in script:
 			command.append(line)
 		command = '; '.join(command)
+		xterm = self.which('xterm')
 		if title:
-			subprocess.call(['xterm', '-T', title, '-e', command])
+			os.spawnv(os.P_NOWAIT, xterm, ['-T', title, '-e', command])
 		else:
-			subprocess.call(['xterm', '-e', command])
+			os.spawnv(os.P_NOWAIT, xterm, ['-e', command])
 		return 0
 
 	def linux_open_gnome (self, title, script, profile = None):
