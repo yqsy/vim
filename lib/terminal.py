@@ -14,6 +14,22 @@ class configure (object):
 		self.unix = sys.platform[:3] != 'win' and True or False
 		self.temp = os.environ.get('temp', os.environ.get('tmp', '/tmp'))
 		self.tick = long(time.time()) % 100
+		if self.unix:
+			temp = os.environ.get('tmp', '/tmp')
+			if not temp:
+				temp = '/tmp'
+			folder = os.path.join(temp, 'runner/folder')
+			if not os.path.exists(folder):
+				try:
+					os.makedirs(folder, 0777)
+				except:
+					folder = ''
+			if folder:
+				self.temp = folder
+				try:
+					os.chmod(self.temp, 0777)
+				except:
+					pass
 		self.temp = os.path.join(self.temp, 'winex_%02d.cmd'%self.tick)
 		self.cygwin = ''
 		self.GetShortPathName = None
@@ -31,11 +47,25 @@ class configure (object):
 		stderr = p.stderr.read()
 		code = p.wait()
 		return code, stdout, stderr
-	
+
+	def where (self, filename, path = []):
+		PATH = os.environ.get('PATH', '')
+		if sys.platform[:3] == 'win':
+			PATH = PATH.split(';')
+		else:
+			PATH = PATH.split(':')
+		if path:
+			PATH.extend(path)
+		for base in PATH:
+			path = os.path.join(base, filename)
+			if os.path.exists(path):
+				return path
+		return None
+		
 	def escape (self, path):
 		path = path.replace('\\', '\\\\').replace('"', '\\"')
 		return path.replace('\'', '\\\'')
-		
+
 	def darwin_osascript (self, script):
 		for line in script:
 			#print line
@@ -50,25 +80,46 @@ class configure (object):
 		p.stdin.close()
 		text = p.stdout.read()
 		p.stdout.close()
-		code = p.wait()
+		code = p.wait() 
+		#print text
 		return code, text
+
+	def darwin_open_system (self, title, script, profile = None):
+		script = [ line for line in script ]
+		script.insert(0, 'clear')
+		fp = open(self.temp, 'w')
+		fp.write('#! /bin/sh\n')
+		for line in script:
+			fp.write(line + '\n')
+		fp.close()
+		os.chmod(self.temp, 0777)
+		cmd = self.where('open')
+		self.call([cmd, '-a', 'Terminal', self.temp])
+		return 0, ''
 
 	def darwin_open_terminal (self, title, script, profile = None):
 		osascript = []
 		command = []
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
 			command.append(line)
+		command.insert(0, 'clear')
 		command = '; '.join(command)
 		osascript.append('tell application "Terminal"')
+		osascript.append('  if it is running then')
 		osascript.append('     do script "%s; exit"'%command)
-		x = '     set current settings of selected tab of '
+		osascript.append('  else')
+		osascript.append('     do script "%s; exit" in window 1'%command)
+		osascript.append('  end if')
+		x = '  set current settings of selected tab of '
 		x += 'window 1 to settings set "%s"'
 		if profile != None:
 			osascript.append(x%profile)
-		osascript.append('     activate')
+		osascript.append('  activate')
 		osascript.append('end tell')
 		return self.darwin_osascript(osascript)
 
@@ -80,6 +131,8 @@ class configure (object):
 			script.insert(0, 'clear')
 			script.insert(0, 'echo "\033]50;SetProfile=%s\a"'%profile)
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\\\\\')
 			line = line.replace('"', '\\\\\\"')
 			line = line.replace("'", "\\\\\\'")
@@ -176,6 +229,8 @@ class configure (object):
 	def darwin_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
@@ -191,31 +246,40 @@ class configure (object):
 	def linux_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
-			command.append(line)
-		command = '; '.join(command)
-		if title:
-			subprocess.call(['xterm', '-T', title, '-e', command])
-		else:
-			subprocess.call(['xterm', '-e', command])
-		return 0
-
-	def linux_open_gnome (self, title, script, profile = None):
-		command = []
-		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
 			line = line.replace('\\', '\\\\')
 			line = line.replace('"', '\\"')
 			line = line.replace("'", "\\'")
 			command.append(line)
 		command = '; '.join(command)
-		command = 'bash -c \"%s\"'%command
-		title = self.escape(title)
-		command = 'gnome-terminal '
+		cmdline = self.where('xterm') + ' '
 		if title:
-			command += '-t "%s" '%title
+			title = self.escape(title)
+			cmdline += '-T "%s" '%title
+		cmdline += '-e "%s" '%command
+		os.system(cmdline + ' & ')
+		return 0
+
+	def linux_open_gnome (self, title, script, profile = None):
+		command = []
+		for line in script:
+			if line.rstrip('\r\n\t ') == '':
+				continue
+			line = line.replace('\\', '\\\\')
+			line = line.replace('"', '\\"')
+			line = line.replace("'", "\\'")
+			command.append(line)
+		command = '; '.join(command)
+		command = '%s -c \"%s\"'%(self.where('bash'), command)
+		cmdline = self.where('gnome-terminal') + ' '
+		if title:
+			title = self.escape(title and title or '')
+			cmdline += '-t "%s" '%title
 		if profile:
-			command += '--window-with-profile="%s" '%profile
-		command += ' --command=\'%s\''%command
-		os.system(command)
+			cmdline += '--window-with-profile="%s" '%profile
+		cmdline += ' --command=\'%s\''%command
+		os.system(cmdline)
 		return 0
 
 	def cygwin_open_cmd (self, title, script, profile = None):
@@ -459,7 +523,7 @@ class Terminal (object):
 	def __cygwin_open_terminal (self, terminal, title, script, profile):
 		if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
 			self.config.cygwin_open_cmd(title, script, profile)
-		elif terminal in ('bash', 'sh', ''):
+		elif terminal in ('bash', 'sh', '', 'default'):
 			self.config.cygwin_open_bash(title, script, profile)
 		elif terminal in ('mintty', 'cygwin-mintty'):
 			if not title:
@@ -471,7 +535,12 @@ class Terminal (object):
 		return 0
 
 	def __darwin_open_terminal (self, terminal, title, script, profile):
-		if terminal in ('', 'terminal', 'system', 'default'):
+		if terminal in ('', 'system', 'default'):
+			if (not profile) and (not title):
+				self.config.darwin_open_system(title, script, profile)
+			else:
+				self.config.darwin_open_terminal(title, script, profile)
+		elif terminal in ('terminal',):
 			self.config.darwin_open_terminal(title, script, profile)
 		elif terminal in ('iterm', 'iterm2'):
 			self.config.darwin_open_iterm(title, script, profile)
@@ -497,19 +566,19 @@ class Terminal (object):
 			terminal = ''
 		if sys.platform[:3] == 'win':
 			if script == None:
-				return ('cmd', 'cygwin', 'cygwin-mintty')
+				return ('cmd (default)', 'cygwin', 'cygwin-mintty')
 			return self.__win32_open_terminal(terminal, title, script, profile)
 		elif sys.platform == 'cygwin':
 			if script == None:
-				return ('bash', 'mintty', 'windows')
+				return ('bash (default)', 'mintty', 'windows')
 			return self.__cygwin_open_terminal(terminal, title, script, profile)
 		elif sys.platform == 'darwin':
 			if script == None:
-				return ('terminal', 'iterm')
+				return ('terminal (default)', 'iterm')
 			return self.__darwin_open_terminal(terminal, title, script, profile)
 		else:
 			if script == None:
-				return ('xterm', 'gnome-terminal')
+				return ('xterm (default)', 'gnome-terminal')
 			return self.__linux_open_terminal(terminal, title, script, profile)
 		return 0
 
