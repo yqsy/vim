@@ -257,14 +257,14 @@ class configure (object):
 			command.append(line)
 		command = '; '.join(command)
 		command = 'bash -c \"%s\"'%command
-		title = self.escape(title and title or '')
-		command = 'gnome-terminal '
+		cmdline = 'gnome-terminal '
 		if title:
-			command += '-t "%s" '%title
+			title = self.escape(title and title or '')
+			cmdline += '-t "%s" '%title
 		if profile:
-			command += '--window-with-profile="%s" '%profile
-		command += ' --command=\'%s\''%command
-		os.system(command)
+			cmdline += '--window-with-profile="%s" '%profile
+		cmdline += ' --command=\'%s\''%command
+		os.system(cmdline)
 		return 0
 
 	def cygwin_open_cmd (self, title, script, profile = None):
