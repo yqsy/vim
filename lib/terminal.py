@@ -242,7 +242,7 @@ class configure (object):
 		for line in script:
 			command.append(line)
 		command = '; '.join(command)
-		xterm = self.which('xterm')
+		xterm = self.where('xterm')
 		if title:
 			os.spawnv(os.P_NOWAIT, xterm, ['-T', title, '-e', command])
 		else:
