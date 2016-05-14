@@ -4,7 +4,7 @@
 " Last change: 2016.5.20
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
-"     :MakeCommand {name}
+"     :VimTool {name}
 "
 " Environment variables are set to below before executing:
 "     $VIM_FILEPATH  - File name of current buffer with full path
@@ -85,14 +85,24 @@ if !exists('g:vimmake_build_status')
 	let g:vimmake_build_status = ''
 endif
 
+" main run
+if !exists('g:vimmake_run_guess')
+	let g:vimmake_run_guess = []
+endif
+
+" extname -> command
+if !exists('g:vimmake_extrun')
+	let g:vimmake_extrun = {}
+endif
+
 
 "----------------------------------------------------------------------
 " Internal Definition
 "----------------------------------------------------------------------
 
 " path where vimmake.vim locates
-let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-let s:vimmake_home = g:vimmake_home
+let s:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let g:vimmake_home = s:vimmake_home
 let s:vimmake_advance = 0
 
 " check has advanced mode
@@ -115,14 +125,14 @@ function! s:MakeRestore()
 endfunc
 
 " init current working directory
-function! s:CwdInit()
+function! s:CwdInit(force)
 	if has('s:cwd_save')
 		if s:cwd_save != "" | return | endif
 	endif
 	let s:cwd_save = getcwd()
 	let s:cwd_local = haslocaldir()
 	let l:cwd = expand("%:p:h")
-	if g:vimmake_cwd != 0 && expand("%:p") != ""
+	if (g:vimmake_cwd != 0 || a:force != 0) && expand("%:p") != ""
 		if s:cwd_local == 0
 			silent exec 'cd ' . fnameescape(l:cwd)
 		else
@@ -132,9 +142,9 @@ function! s:CwdInit()
 endfunc
 
 " restore current working directory
-function! s:CwdRestore()
+function! s:CwdRestore(force)
 	if exists('s:cwd_save') && exists('s:cwd_local')
-		if g:vimmake_cwd != 0 && s:cwd_save != "" 
+		if (g:vimmake_cwd != 0 || a:force != 0) && s:cwd_save != "" 
 			if s:cwd_local == 0
 				silent exec 'cd '. fnameescape(s:cwd_save)
 			else
@@ -183,6 +193,12 @@ function! s:ErrorMsg(msg)
 	echohl ErrorMsg
 	echom 'ERROR: '. a:msg
 	echohl NONE
+endfunc
+
+" show not support message
+function! s:NotSupport()
+	let l:msg = "required: +timers +channel +job +reltime and vim >= 7.4.1816"
+	call s:ErrorMsg(l:msg)
 endfunc
 
 
@@ -286,8 +302,7 @@ function! Vimmake_Command(command, mode, match)
 		endif
 	elseif (a:mode == 6)
 		if s:vimmake_advance == 0
-			let s:msg = "required: +timers +channel +job +reltime and above 7.4.1816"
-			call s:ErrorMsg(s:msg)
+			call s:NotSupport()
 		else
 			call s:Vimmake_Build_Start(a:command)
 		endif
@@ -389,6 +404,10 @@ endfunc
 " start background build
 function! g:Vimmake_Build_Start(cmd)
 	let l:running = 0
+	if s:vimmake_advance == 0
+		call s:NotSupport()
+		return -1
+	endif
 	if exists('s:build_job')
 		if job_status(s:build_job) == 'run'
 			let l:running = 1
@@ -396,6 +415,7 @@ function! g:Vimmake_Build_Start(cmd)
 	endif
 	if s:build_state != 0 || l:running != 0
 		call s:ErrorMsg("background job is still running")
+		return -2
 	elseif a:cmd != ''
 		let l:args = []
 		let l:name = []
@@ -437,29 +457,36 @@ function! g:Vimmake_Build_Start(cmd)
 		else
 			unlet s:build_job
 			call s:ErrorMsg("Background job start failed '".a:cmd."'")
+			return -3
 		endif
 	else
 		echo "empty cmd"
+		return -4
 	endif
+	return 0
 endfunc
 
-
 " stop background job
-function! Vimmake_Build_Stop(how)
+function! g:Vimmake_Build_Stop(how)
 	let l:how = a:how
+	if s:vimmake_advance == 0
+		call s:NotSupport()
+		return -1
+	endif
 	if l:how == '' | let l:how = 'term' | endif
 	if exists('s:build_job')
 		if job_status(s:build_job) == 'run'
 			call job_stop(s:build_job, l:how)
 		endif
 	endif
+	return 0
 endfunc
 
 
 "----------------------------------------------------------------------
 "- Execute ~/.vim/vimmake.{command}
 "----------------------------------------------------------------------
-function! s:Cmd_MakeCommand(bang, command)
+function! s:Cmd_VimTool(bang, command)
 	let l:home = expand(g:vimmake_path)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
@@ -498,9 +525,105 @@ endfunc
 
 
 " command definition
-command! -bang -nargs=1 MakeCommand call s:Cmd_MakeCommand('<bang>', <f-args>)
+command! -bang -nargs=1 VimTool call s:Cmd_VimTool('<bang>', <f-args>)
 
-" build via gcc
+
+"----------------------------------------------------------------------
+"- Execute current file by mode or filetype
+"----------------------------------------------------------------------
+function! s:Cmd_VimExecute(bang, ...)
+	let l:mode = ''
+	let l:cwd = 0
+	if a:0 >= 1
+		let l:mode = a:1
+	endif
+	if a:0 >= 2
+		if index(['1', 'true', 'True', 'yes'], a:2) >= 0 
+			let l:cwd = 1 
+		endif
+	endif
+	if a:bang != '!'
+		silent call s:CheckSave()
+	endif
+	if bufname('%') == '' | return | endif
+	let l:ext = expand("%:e")
+	call s:CwdInit(l:cwd)
+	if index(['', '0', 'file', 'filename'], l:mode) >= 0
+		call Vimmake_Execute(0)
+	elseif index(['1', 'main', 'mainname', 'noext', 'exe'], l:mode) >= 0
+		call Vimmake_Execute(1)
+	elseif index(['2', 'emake'], l:mode) >= 0
+		call Vimmake_Execute(2)
+	elseif index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx'], l:ext) >= 0
+		call Vimmake_Execute(1)
+	elseif index(['h', 'hh', 'hpp'], l:ext) >= 0
+		call Vimmake_Execute(1)
+	elseif index(g:vimmake_run_guess, l:ext) >= 0
+		call Vimmake_Execute(1)
+	elseif index(['mak', 'emake'], l:ext) >= 0
+		call Vimmake_Execute(2)
+	elseif &filetype == "vim"
+		exec 'source ' . fnameescape(expand("%"))
+	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
+		let l:command = get(g:vimmake_extrun, l:ext, '')
+		let l:filename = shellescape(expand("%"))
+		if l:command != ''
+			silent exec '!start cmd /C '. l:command . ' ' . l:filename . ' & pause'
+		elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
+			silent exec '!start cmd /C python ' . l:filename . ' & pause'
+		elseif l:ext  == "js"
+			silent exec '!start cmd /C node ' . l:filename . ' & pause'
+		elseif l:ext == 'sh'
+			silent exec '!start cmd /C sh ' . l:filename . ' & pause'
+		elseif l:ext == 'lua'
+			silent exec '!start cmd /C lua ' . l:filename . ' & pause'
+		elseif l:ext == 'pl'
+			silent exec '!start cmd /C perl ' . l:filename . ' & pause'
+		elseif l:ext == 'rb'
+			silent exec '!start cmd /C ruby ' . l:filename . ' & pause'
+		elseif l:ext == 'php'
+			silent exec '!start cmd /C php ' . l:filename . ' & pause'
+		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
+			silent exec '!start cmd /C osascript '.l:filename.' & pause'
+		else
+			call Vimmake_Execute(0)
+		endif
+	else
+		let l:command = get(g:vimmake_extrun, l:ext, '')
+		if l:command != ''
+			exec '!'.l:command. ' ' . shellescape(expand("%"))
+		elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
+			exec '!python ' . shellescape(expand("%"))
+		elseif l:ext  == "js"
+			exec '!node ' . shellescape(expand("%"))
+		elseif l:ext == 'sh'
+			exec '!sh ' . shellescape(expand("%"))
+		elseif l:ext == 'lua'
+			exec '!lua ' . shellescape(expand("%"))
+		elseif l:ext == 'pl'
+			exec '!perl ' . shellescape(expand("%"))
+		elseif l:ext == 'rb'
+			exec '!ruby ' . shellescape(expand("%"))
+		elseif l:ext == 'php'
+			exec '!php ' . shellescape(expand("%"))
+		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
+			exec '!osascript '. shellescape(expand('%'))
+		else
+			call Vimmake_Execute(0)
+		endif
+	endif
+	call s:CwdRestore(l:cwd)
+endfunc
+
+
+" command definition
+command! -bang -nargs=* VimExecute call s:Cmd_VimExecute('<bang>', <f-args>)
+command! -bang -nargs=? VimRun call s:Cmd_VimExecute('<bang>', '?', <f-args>)
+
+
+"----------------------------------------------------------------------
+"- build via gcc
+"----------------------------------------------------------------------
 function! Vimmake_CompileGcc()
 	silent call s:CheckSave()
 	if bufname('%') == '' | return | endif
@@ -547,66 +670,6 @@ function! Vimmake_BuildEmake(filename, ininame, quickfix)
 		call s:MakeRestore()
 	endif
 endfunc
-
-
-"----------------------------------------------------------------------
-"- run current file by detecting file extname
-"----------------------------------------------------------------------
-function! Vimmake_Run(bang, mode, cwd)
-	silent call s:CheckSave()
-	if bufname('%') == '' | return | endif
-	let l:ext = expand("%:e")
-	call s:CwdInit()
-	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx', 'h', 'hh', 'hpp'], l:ext) >= 0
-		exec "call Vimmake_Execute(1)"
-	elseif index(['mak', 'emake'], l:ext) >= 0
-		exec "call Vimmake_Execute(2)"
-	elseif &filetype == "vim"
-		exec 'source ' . fnameescape(expand("%"))
-	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
-			silent exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext  == "js"
-			silent exec '!start cmd /C node ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext == 'sh'
-			silent exec '!start cmd /C sh ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext == 'lua'
-			silent exec '!start cmd /C lua ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext == 'pl'
-			silent exec '!start cmd /C perl ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext == 'rb'
-			silent exec '!start cmd /C ruby ' . shellescape(expand("%")) . ' & pause'
-		elseif l:ext == 'php'
-			silent exec '!start cmd /C php ' . shellescape(expand("%")) . ' & pause'
-		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-			silent exec '!start cmd /C osascript '.shellescape(expand('%')).' & pause'
-		else
-			call Vimmake_Execute(0)
-		endif
-	else
-		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
-			exec '!python ' . shellescape(expand("%"))
-		elseif l:ext  == "js"
-			exec '!node ' . shellescape(expand("%"))
-		elseif l:ext == 'sh'
-			exec '!sh ' . shellescape(expand("%"))
-		elseif l:ext == 'lua'
-			exec '!lua ' . shellescape(expand("%"))
-		elseif l:ext == 'pl'
-			exec '!perl ' . shellescape(expand("%"))
-		elseif l:ext == 'rb'
-			exec '!ruby ' . shellescape(expand("%"))
-		elseif l:ext == 'php'
-			exec '!php ' . shellescape(expand("%"))
-		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-			exec '!osascript '. shellescape(expand('%'))
-		else
-			call Vimmake_Execute(0)
-		endif
-	endif
-	call s:CwdRestore()
-endfunc
-
 
 
 
