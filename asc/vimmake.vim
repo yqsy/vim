@@ -1,13 +1,10 @@
 " vimmake.vim - Enhenced Customize Make system for vim
 "
 " Maintainer: skywind3000 (at) gmail.com
-" Last change: 2016.3.20
+" Last change: 2016.5.20
 "
-" Execute customize tools directly:
-"     <leader><F1-F9> execute ~/.vim/vimmake.1 - ~/.vim/vimmake.9
-"
-" Execute customize tools in quickfix mode:
-"     <tab><F1-F9> execute ~/.vim/vimmake.1 - ~/.vim/vimmake.9
+" Execute customize tools: ~/.vim/vimmake.{name} directly:
+"     :MakeCommand {name}
 "
 " Environment variables are set to below before executing:
 "     $VIM_FILEPATH  - File name of current buffer with full path
@@ -24,31 +21,19 @@
 "     $VIM_MODE      - Execute via 0:!, 1:makeprg, 2:system()
 "     $VIM_SCRIPT    - Home path of tool scripts
 "
-"
-" Execute customize tools: ~/.vim/vimmake.{name} directly:
-"     :VimMake {name}
-"
-" Execute customize tools: ~/.vim/vimmake.{name} in quickfix mode:
-"     :VimMake! {name}
-"
-" Execute customize tools: ~/.vim/vimmake.{name} in silent mode:
-"     :VimExec! {name}
-"
-" Support:
-"     <F5>  Run current file by detecting file type
-"     <F6>  Execute current file directly
-"     <F7>  Build with emake
-"     <F8>  Execute emake project
-"     <F9>  Compile with gcc/clang
-"     <F10> Toggle quickfix window
-"     <F11> Previous quickfix error
-"     <F12> Next quickfix error
+" Settings:
+"     g:vimmake_path - change the path of tools rather than ~/.vim/
 " 
 " Emake can be installed to /usr/local/bin to build C/C++ by: 
 "     $ wget https://skywind3000.github.io/emake/emake.py
 "     $ sudo python emake.py -i
 "
 "
+
+
+"----------------------------------------------------------------------
+"- Global Variables
+"----------------------------------------------------------------------
 
 " default tool location is ~/.vim which could be changed by g:vimmake_path
 if !exists("g:vimmake_path")
@@ -70,162 +55,96 @@ if !exists("g:vimmake_mode")
 	let g:vimmake_mode = {}
 endif
 
-" change directory
+" error format
+if !exists("g:vimmake_match")
+	let g:vimmake_match = {}
+endif
+
+" single error format
+if !exists("g:vimmake_error")
+	let g:vimmake_error = "%f:%l:%m"
+endif
+
+" change directory to %:p:h before running
 if !exists("g:vimmake_cwd")
 	let g:vimmake_cwd = 0
 endif
 
-" extern proc
-if !exists("g:vimmake_runner")
-	let g:vimmake_runner = ""
+" using timer to update quickfix
+if !exists('g:vimmake_build_timer')
+	let g:vimmake_build_timer = 0
 endif
 
+" invoked after async build finished
+if !exists('g:vimmake_build_post')
+	let g:vimmake_build_post = ''
+endif
+
+" build status
+if !exists('g:vimmake_build_status')
+	let g:vimmake_build_status = ''
+endif
+
+
+"----------------------------------------------------------------------
+" Internal Definition
+"----------------------------------------------------------------------
 
 " path where vimmake.vim locates
 let g:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let s:vimmake_home = g:vimmake_home
+let s:vimmake_advance = 0
 
-" Execute current filename directly
-function! Vimmake_ExeFile()
-	call s:CwdInit()
-	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		silent exec '!start cmd /C '. shellescape(expand("%:p")) . ' & pause'
-	else
-		exec '!' . shellescape(expand("%:p"))
+" check has advanced mode
+if v:version >= 800 || has('patch-7.4.1816')
+	if has('job') && has('channel') && has('timers') && has('reltime') 
+		let s:vimmake_advance = 1
 	endif
-	call s:CwdRestore()
-endfunc
-
-" Execute current filename without extname
-function! Vimmake_ExeMain()
-	call s:CwdInit()
-	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		silent exec '!start cmd /C '. shellescape(expand("%:p:r")) . ' & pause'
-	else
-		exec '!' . shellescape(expand("%:p:r"))
-	endif
-	call s:CwdRestore()
-endfunc
-
-" Execute executable of current emake project
-function! Vimmake_ExeEmake()
-	call s:CwdInit()
-	if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		silent exec '!start cmd /C emake -e '. shellescape(expand("%")) . ' & pause'
-	else
-		exec '!emake -e ' . shellescape(expand("%"))
-	endif
-	call s:CwdRestore()
-endfunc
+endif
 
 " backup local makeprg and errorformat
 function! s:MakeSave()
-	let s:make_save = &makeprg
-	let s:match_save = &errorformat
+	let s:make_save = &l:makeprg
+	let s:match_save = &l:errorformat
 endfunc
 
 " restore local makeprg and errorformat
 function! s:MakeRestore()
-	exec 'setlocal makeprg=' . fnameescape(s:make_save)
-	exec 'setlocal errorformat=' . fnameescape(s:match_save)
+	let &l:makeprg = s:make_save
+	let &l:errorformat = s:match_save
 endfunc
 
 " init current working directory
 function! s:CwdInit()
+	if has('s:cwd_save')
+		if s:cwd_save != "" | return | endif
+	endif
 	let s:cwd_save = getcwd()
+	let s:cwd_local = haslocaldir()
 	let l:cwd = expand("%:p:h")
 	if g:vimmake_cwd != 0 && expand("%:p") != ""
-		silent exec 'cd ' . fnameescape(l:cwd)
+		if s:cwd_local == 0
+			silent exec 'cd ' . fnameescape(l:cwd)
+		else
+			silent exec 'lcd ' . fnameescape(l:cwd)
+		endif
 	endif
 endfunc
 
 " restore current working directory
 function! s:CwdRestore()
-	if exists('s:cwd_save')
+	if exists('s:cwd_save') && exists('s:cwd_local')
 		if g:vimmake_cwd != 0 && s:cwd_save != "" 
-			silent exec 'cd '. fnameescape(s:cwd_save)
+			if s:cwd_local == 0
+				silent exec 'cd '. fnameescape(s:cwd_save)
+			else
+				silent exec 'lcd '. fnameescape(s:cwd_save)
+			endif
 		endif
 		let s:cwd_save = ""
+		unlet s:cwd_save
 	endif
 endfunc
-
-" Execute command in normal(0), quickfix(1), system(2) mode
-function! Vimmake_Execute(command, mode)
-	let $VIM_FILEPATH = expand("%:p")
-	let $VIM_FILENAME = expand("%:t")
-	let $VIM_FILEDIR = expand("%:p:h")
-	let $VIM_FILENOEXT = expand("%:t:r")
-	let $VIM_FILEEXT = "." . expand("%:e")
-	let $VIM_CWD = expand("%:p:h:h")
-	let $VIM_RELDIR = expand("%:h")
-	let $VIM_RELNAME = expand("%:p:.")
-	let $VIM_CWORD = expand("<cword>")
-	let $VIM_VERSION = ''.v:version
-	let $VIM_MODE = ''. a:mode
-	let $VIM_GUI = '0'
-	let $VIM_SCRIPT = g:vimmake_path
-	let $VIM_SVRNAME = v:servername
-	let l:text = ''
-	if has("gui_running")
-		let $VIM_GUI = '1'
-	endif
-	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			silent exec '!start cmd /c '. shellescape(a:command) . ' & pause'
-		else
-			exec '!' . shellescape(a:command)
-		endif
-	elseif (a:mode == 1)
-		call s:MakeSave()
-		setlocal errorformat=%f:%l:%m
-		exec "setlocal makeprg=" . fnameescape(a:command)
-		exec "make!"
-		call s:MakeRestore()
-	elseif (a:mode == 2)
-		let l:text = system("" . shellescape(a:command))
-	elseif (a:mode == 3)
-		if has('win32') || has('win64') || has('win16')
-			silent exec '!start /b cmd.exe /C '. shellescape(a:command)
-		else
-			system("". shellescape(a:command) . ' &')
-		endif
-	elseif (a:mode == 4)
-		if has('win32') || has('win64') || has('win16')
-			silent exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
-		else
-			exec '!' . shellescape(a:command)
-		endif
-	elseif (a:mode == 5)
-		if has('python')
-			python import vim, subprocess
-			python x = [vim.eval('a:command')]
-			python m = subprocess.PIPE
-			python n = subprocess.STDOUT
-			python s = sys.platform[:3] == 'win' and True or False
-			python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
-			python t = p.stdout.read()
-			python p.stdout.close()
-			python p.wait()
-			python t = t.replace('\\', '\\\\').replace('"', '\\"')
-			python t = t.replace('\n', '\\n').replace('\r', '\\r')
-			python vim.command('let l:text = "%s"'%t)
-		else
-			echohl ErrorMsg
-			echom "ERROR: This vim version does not support python"
-			echohl NONE
-		endif
-	elseif (a:mode == 6)
-		if g:vimmake_runner != ""
-			call call(g:vimmake_runner, [a:command])
-		else
-			echohl ErrorMsg
-			echom "ERROR: Can not find function name in g:vimmake_runner"
-			echohl NONE
-		endif
-	endif
-	return l:text
-endfunc
-
 
 " join two path
 function! s:PathJoin(home, name)
@@ -262,73 +181,324 @@ endfunc
 " error message
 function! s:ErrorMsg(msg)
 	echohl ErrorMsg
-	echom a:msg
+	echom 'ERROR: '. a:msg
 	echohl NONE
 endfunc
 
-" Execute ~/.vim/vimmake.{command} 
-function! s:VimMake(bang, command)
-	silent call s:CheckSave()
+
+"----------------------------------------------------------------------
+"- Execute Files
+"----------------------------------------------------------------------
+function! Vimmake_Execute(mode)
+	if a:mode == 0		" Execute current filename
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			silent exec '!start cmd /C '.shellescape(expand("%:p")) .' & pause'
+		else
+			exec '!'.shellescape(expand("%:p"))
+		endif
+	elseif a:mode == 1	" Execute current filename without extname
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			silent exec '!start cmd /C '.shellescape(expand("%:p:r")) .' & pause'
+		else
+			exec '!'.shellescape(expand("%:p:r"))
+		endif
+	elseif a:mode == 2
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			silent exec '!start cmd /C emake -e '.shellescape(expand("%")).' & pause'
+		else
+			exec '!emake -e '.shellescape(expand("%"))
+		endif
+	else
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+"- Execute command in normal(0), quickfix(1), system(2) mode
+"----------------------------------------------------------------------
+function! Vimmake_Command(command, mode, match)
+	let $VIM_FILEPATH = expand("%:p")
+	let $VIM_FILENAME = expand("%:t")
+	let $VIM_FILEDIR = expand("%:p:h")
+	let $VIM_FILENOEXT = expand("%:t:r")
+	let $VIM_FILEEXT = "." . expand("%:e")
+	let $VIM_CWD = expand("%:p:h:h")
+	let $VIM_RELDIR = expand("%:h")
+	let $VIM_RELNAME = expand("%:p:.")
+	let $VIM_CWORD = expand("<cword>")
+	let $VIM_VERSION = ''.v:version
+	let $VIM_MODE = ''. a:mode
+	let $VIM_GUI = '0'
+	let $VIM_SCRIPT = g:vimmake_path
+	let $VIM_SVRNAME = v:servername
+	let l:text = ''
+	if has("gui_running")
+		let $VIM_GUI = '1'
+	endif
+	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
+		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
+			silent exec '!start cmd /c '. shellescape(a:command) . ' & pause'
+		else
+			exec '!' . shellescape(a:command)
+		endif
+	elseif (a:mode == 1)
+		call s:MakeSave()
+		if a:match == ''
+			let &l:errorformat=g:vimmake_error
+		else
+			let &l:errorformat=a:match
+		endif
+		let &l:makeprg = a:command
+		exec "make!"
+		call s:MakeRestore()
+	elseif (a:mode == 2)
+		let l:text = system("" . shellescape(a:command))
+	elseif (a:mode == 3)
+		if has('win32') || has('win64') || has('win16')
+			silent exec '!start /b cmd.exe /C '. shellescape(a:command)
+		else
+			system("". shellescape(a:command) . ' &')
+		endif
+	elseif (a:mode == 4)
+		if has('win32') || has('win64') || has('win16')
+			silent exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
+		else
+			exec '!' . shellescape(a:command)
+		endif
+	elseif (a:mode == 5)
+		if has('python')
+			python import vim, subprocess
+			python x = [vim.eval('a:command')]
+			python m = subprocess.PIPE
+			python n = subprocess.STDOUT
+			python s = sys.platform[:3] == 'win' and True or False
+			python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
+			python t = p.stdout.read()
+			python p.stdout.close()
+			python p.wait()
+			python t = t.replace('\\', '\\\\').replace('"', '\\"')
+			python t = t.replace('\n', '\\n').replace('\r', '\\r')
+			python vim.command('let l:text = "%s"'%t)
+		else
+			echohl ErrorMsg
+			echom "ERROR: This vim version does not support python"
+			echohl NONE
+		endif
+	elseif (a:mode == 6)
+		if s:vimmake_advance == 0
+			let s:msg = "required: +timers +channel +job +reltime and above 7.4.1816"
+			call s:ErrorMsg(s:msg)
+		else
+			call s:Vimmake_Build_Start(a:command)
+		endif
+	endif
+	return l:text
+endfunc
+
+
+"----------------------------------------------------------------------
+"- build in background
+"----------------------------------------------------------------------
+let s:build_output = {}
+let s:build_head = 0
+let s:build_tail = 0
+let s:build_state = 0
+let s:build_start = 0.0
+
+" invoked on timer or finished
+function! s:Vimmake_Build_Update(count)
+	let l:count = 0
+	while s:build_tail < s:build_head
+		let l:text = s:build_output[s:build_tail]
+		unlet s:build_output[s:build_tail]
+		let s:build_tail += 1
+		caddexpr l:text
+		let l:count += 1
+		if a:count > 0 && l:count >= a:count
+			break
+		endif
+	endwhile
+	return l:count
+endfunc
+
+" invoked on timer
+function! g:Vimmake_Build_OnTimer(id)
+	if exists('s:build_job')
+		call job_status(s:build_job)
+	endif
+	call s:Vimmake_Build_Update(5 + g:vimmake_build_timer)
+endfunc
+
+" invoked on "callback" when job output
+function! g:Vimmake_Build_OnCallback(channel, text)
+	let s:build_output[s:build_head] = a:text
+	let s:build_head += 1
+	if g:vimmake_build_timer <= 0
+		call s:Vimmake_Build_Update(-1)
+	endif
+endfunc
+
+" because exit_cb and close_cb are disorder, we need OnFinish to guarantee
+" both of then have already invoked
+function! s:Vimmake_Build_OnFinish(what)
+	if s:build_state == 0
+		return -1
+	endif
+	if a:what == 0
+		let s:build_state = or(s:build_state, 2)
+	else
+		let s:build_state = or(s:build_state, 4)
+	endif
+	if and(s:build_state, 7) != 7
+		return -2
+	endif
+	if exists('s:build_job')
+		unlet s:build_job
+	endif
+	if exists('s:build_timer')
+		call timer_stop(s:build_timer)
+		unlet s:build_timer
+	endif
+	call s:Vimmake_Build_Update(-1)
+	let l:current = float2nr(reltimefloat(reltime()))
+	let l:last = l:current - s:build_start
+	caddexpr "[Finished in ".l:last." seconds]"
+	let s:build_state = 0
+	let g:vimmake_build_status = "success"
+	redrawstatus!
+endfunc
+
+" invoked on "close_cb" when channel closed
+function! g:Vimmake_Build_OnClose(channel)
+	while ch_status(a:channel) == 'buffered'
+		let l:text = ch_read(a:channel)
+		call s:Vimmake_Build_OnCallback(a:channel, l:text)
+	endwhile
+	call s:Vimmake_Build_Update(-1)
+	call s:Vimmake_Build_OnFinish(1)
+	if exists('s:build_job')
+		call job_status(s:build_job)
+	endif
+endfunc
+
+" invoked on "exit_cb" when job exited
+function! g:Vimmake_Build_OnExit(job, message)
+	call s:Vimmake_Build_OnFinish(0)
+endfunc
+
+" start background build
+function! g:Vimmake_Build_Start(cmd)
+	let l:running = 0
+	if exists('s:build_job')
+		if job_status(s:build_job) == 'run'
+			let l:running = 1
+		endif
+	endif
+	if s:build_state != 0 || l:running != 0
+		call s:ErrorMsg("background job is still running")
+	elseif a:cmd != ''
+		let l:args = []
+		let l:name = []
+		if has('win32') || has('win64') || has('win16')
+			let l:args = ['cmd.exe', '/C']
+		else
+			let l:args = ['/bin/sh', '-c']
+		endif
+		if type(a:cmd) == 1
+			let l:args += [a:cmd]
+			let l:name = a:cmd
+		elseif type(a:cmd) == 3
+			let l:args += a:cmd
+			let l:part = []
+			for l:x in a:cmd
+				let l:part += ['"' . l:x . '"']
+			endfor
+			let l:name = join(l:part, ', ')
+		endif
+		let l:options = {}
+		let l:options['callback'] = 'g:Vimmake_Build_OnCallback'
+		let l:options['close_cb'] = 'g:Vimmake_Build_OnClose'
+		let l:options['exit_cb'] = 'g:Vimmake_Build_OnExit'
+		let s:build_job = job_start(l:args, l:options)
+		if job_status(s:build_job) != 'fail'
+			let s:build_output = {}
+			let s:build_head = 0
+			let s:build_tail = 0
+			exec "cexpr \'[".fnameescape(l:name)."]\'"
+			let s:build_start = float2nr(reltimefloat(reltime()))
+			if g:vimmake_build_timer > 0
+				let l:options = {'repeat':-1}
+				let l:name = 'g:Vimmake_Build_OnTimer'
+				let s:build_timer = timer_start(1000, l:name, l:options)
+			endif
+			let s:build_state = 1
+			let g:vimmake_build_status = "building"
+			redrawstatus!
+		else
+			unlet s:build_job
+			call s:ErrorMsg("Background job start failed '".a:cmd."'")
+		endif
+	else
+		echo "empty cmd"
+	endif
+endfunc
+
+
+" stop background job
+function! Vimmake_Build_Stop(how)
+	let l:how = a:how
+	if l:how == '' | let l:how = 'term' | endif
+	if exists('s:build_job')
+		if job_status(s:build_job) == 'run'
+			call job_stop(s:build_job, l:how)
+		endif
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+"- Execute ~/.vim/vimmake.{command}
+"----------------------------------------------------------------------
+function! s:Cmd_MakeCommand(bang, command)
 	let l:home = expand(g:vimmake_path)
 	let l:fullname = "vimmake." . a:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
-	if a:bang == ''
-		call Vimmake_Execute(l:fullname, 0)
-	elseif a:bang == '!'
-		call Vimmake_Execute(l:fullname, 1)
-	elseif a:bang == '?'
-		call Vimmake_Execute(l:fullname, 2)
-	elseif a:bang == 'b'
-		call Vimmake_Execute(l:fullname, 3)
-	elseif a:bang == 'm'
-		call Vimmake_Execute(l:fullname, 4)
-	elseif a:bang == 'p'
-		call Vimmake_Execute(l:fullname, 5)
+	let l:value = get(g:vimmake_mode, a:command, '')
+	let l:match = get(g:vimmake_match, a:command, '')
+	if a:bang != '!'
+		silent call s:CheckSave()
+	endif
+	if type(s:value) == 0 
+		let l:mode = string(l:value) 
 	else
-		call Vimmake_Execute(l:fullname, 6)
+		let l:mode = s:value
+	endif
+	if l:match == ''
+		let l:match = g:vimmake_error
+	endif
+	if index(['', '0', 'normal', 'default'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 0, l:match)
+	elseif index(['1', 'quickfix', 'make', 'makeprg'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 1, l:match)
+	elseif index(['2', 'system', 'silent'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 2, l:match)
+	elseif index(['3', 'background', 'bg'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 3, l:match)
+	elseif index(['4', 'minimal', 'm', 'min'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 4, l:match)
+	elseif index(['5', 'python', 'p', 'py'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 5, l:match)
+	elseif index(['6', 'async', 'job', 'channel'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 6, l:match)
+	else
+		call s:ErrorMsg("invalid mode: ".l:mode)
 	endif
 	return l:fullname
 endfunc
 
-" Execute ~/.vim/vimmake.{command}
-function! s:VimExec(bang, command)
-	if a:bang == ''
-		return s:VimMake('', a:command)
-	else
-		return s:VimMake('?', a:command)
-	endif
-endfunc
-
-" Execute ~/.vim/vimmake.{command} with mode in g:vimmake_mode
-function! s:VimTool(command)
-	let s:value = get(g:vimmake_mode, a:command, '')
-	let s:mode = ''
-	if type(s:value) == 0 
-		let s:mode = string(s:value) 
-	else
-		let s:mode = s:value
-	endif
-	if index(['1', 'quickfix', 'make', 'makeprg'], s:mode) >= 0
-		call s:VimMake('!', a:command)
-	elseif index(['2', 'system', 'silent'], s:mode) >= 0
-		let l:text = s:VimMake('?', a:command)
-	elseif index(['3', 'background', 'bg', 'async'], s:mode) >= 0
-		let l:text = s:VimMake('b', a:command)
-	elseif index(['4', 'minimal', 'm', 'min'], s:mode) >= 0
-		let l:text = s:VimMake('m', a:command)
-	elseif index(['5', 'python', 'p'], s:mode) >= 0
-		let l:text = s:VimMake('p', a:command)
-	elseif index(['6', 'e', 'runner', 'extern', 'launch'], s:mode) >= 0
-		let l:text = s:VimMake('e', a:command)
-	else
-		let l:text = s:VimMake('', a:command)
-	endif
-endfunc
 
 " command definition
-command! -bang -nargs=1 VimMake call s:VimMake('<bang>', <f-args>)
-command! -bang -nargs=1 VimExec call s:VimExec('<bang>', <f-args>)
-command! -nargs=1 VimTool call s:VimTool(<f-args>)
+command! -bang -nargs=1 MakeCommand call s:Cmd_MakeCommand('<bang>', <f-args>)
 
 " build via gcc
 function! Vimmake_CompileGcc()
@@ -379,19 +549,21 @@ function! Vimmake_BuildEmake(filename, ininame, quickfix)
 endfunc
 
 
-" run current file by detecting file extname
-function! Vimmake_RunClever()
+"----------------------------------------------------------------------
+"- run current file by detecting file extname
+"----------------------------------------------------------------------
+function! Vimmake_Run(bang, mode, cwd)
 	silent call s:CheckSave()
 	if bufname('%') == '' | return | endif
 	let l:ext = expand("%:e")
+	call s:CwdInit()
 	if index(['c', 'cpp', 'cc', 'm', 'mm', 'cxx', 'h', 'hh', 'hpp'], l:ext) >= 0
-		exec "call Vimmake_ExeMain()"
+		exec "call Vimmake_Execute(1)"
 	elseif index(['mak', 'emake'], l:ext) >= 0
-		exec "call Vimmake_ExeEmake()"
+		exec "call Vimmake_Execute(2)"
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
 	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		call s:CwdInit()
 		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 			silent exec '!start cmd /C python ' . shellescape(expand("%")) . ' & pause'
 		elseif l:ext  == "js"
@@ -407,13 +579,11 @@ function! Vimmake_RunClever()
 		elseif l:ext == 'php'
 			silent exec '!start cmd /C php ' . shellescape(expand("%")) . ' & pause'
 		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-			silent exec '!start cmd /C osascript '. shellescape(expand('%')) . ' & pause'
+			silent exec '!start cmd /C osascript '.shellescape(expand('%')).' & pause'
 		else
-			call Vimmake_ExeFile()
+			call Vimmake_Execute(0)
 		endif
-		call s:CwdRestore()
 	else
-		call s:CwdInit()
 		if index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 			exec '!python ' . shellescape(expand("%"))
 		elseif l:ext  == "js"
@@ -431,134 +601,13 @@ function! Vimmake_RunClever()
 		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
 			exec '!osascript '. shellescape(expand('%'))
 		else
-			call Vimmake_ExeFile()
-		endif
-		call s:CwdRestore()
-	endif
-endfunc
-
-
-noremap <silent><F5> :call Vimmake_RunClever()<CR>
-inoremap <silent><F5> <ESC>:call Vimmake_RunClever()<CR>
-
-noremap <silent><F6> :call Vimmake_ExeFile()<CR>
-inoremap <silent><F6> <ESC>:call Vimmake_ExeFile()<CR>
-
-noremap <silent><F7> :call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
-inoremap <silent><F7> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<CR>
-
-noremap <silent><F8> :call Vimmake_ExeEmake()<CR>
-inoremap <silent><F8> <ESC>:call Vimmake_ExeEmake()<CR>
-
-noremap <silent><F9> :call Vimmake_CompileGcc()<CR>
-inoremap <silent><F9> <ESC>:call Vimmake_CompileGcc()<CR>
-
-
-noremap <silent><F11> :cp<cr>
-noremap <silent><F12> :cn<cr>
-inoremap <silent><F11> <ESC>:cp<cr>
-inoremap <silent><F12> <ESC>:cn<cr>
-
-noremap <silent><leader>cp :cp<cr>
-noremap <silent><leader>cn :cn<cr>
-noremap <silent><leader>co :copen 6<cr>
-noremap <silent><leader>cl :cclose<cr>
-
-for s:i in range(10)
-	let s:name = '<F' . s:i . '>'
-	if s:i == 0
-		let s:name = '<F10>'
-	endif
-	exec 'noremap <silent><leader>' . s:name . ' :VimMake ' . s:i . '<cr>'
-	exec 'noremap <silent><tab>' . s:name . ' :VimMake! ' . s:i . '<cr>'
-endfor
-
-
-" grep code
-let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
-let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
-
-function! s:GrepCode(text)
-	let l:grep = &grepprg
-	if strpart(l:grep, 0, 8) == 'findstr '
-		let l:inc = ''
-		for l:item in g:vimmake_grepinc
-			let l:inc .= '*.'.l:item.' '
-		endfor
-		exec 'grep! /s "'. a:text . '" '. l:inc
-	else
-		let l:inc = ''
-		for l:item in g:vimmake_grepinc
-			let l:inc .= " --include \\*." . l:item
-		endfor
-		exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
-	endif
-endfunc
-
-
-command! -nargs=1 GrepCode call s:GrepCode(<f-args>)
-
-" set keymap to GrepCode 
-noremap <silent><leader>cr :GrepCode <C-R>=expand("<cword>")<cr><cr>
-
-function! Vimmake_Update_FileList(outname)
-	let l:names = ['*.c', '*.cpp', '*.cc', '*.cxx']
-	let l:names += ['*.h', '*.hpp', '*.hh', '*.py', '*.pyw', '*.java', '*.js']
-	if has('win32') || has("win64") || has("win16")
-		silent! exec '!dir /b ' . join(l:names, ',') . ' > '.a:outname
-	else
-		let l:cmd = ''
-		let l:ccc = 1
-		for l:name in l:names
-			if l:ccc == 1
-				let l:cmd .= ' -name "'.l:name . '"'
-				let l:ccc = 0
-			else
-				let l:cmd .= ' -o -name "'.l:name. '"'
-			endif
-		endfor
-		silent! exec '!find . ' . l:cmd . ' > '.a:outname
-	endif
-	redraw!
-endfunc
-
-function! Vimmake_Update_Tags(ctags, cscope)
-	echo "update tags"
-	if a:ctags != "" 
-		if filereadable(a:ctags) | call delete(a:ctags) | endif
-		let l:parameters = ' --fields=+iaS --extra=+q --c++-kinds=+px '
-		exec '!ctags -R -f '.a:ctags. l:parameters . ' .'
-	endif
-	if has("cscope") && a:cscope != ""
-		silent! exec "cs kill -1"
-		if filereadable(a:cscope) | call delete(a:cscope) | endif
-		exec '!cscope -b -R -f '.a:cscope
-		if filereadable(a:cscope)
-			exec 'cs add '.a:cscope
+			call Vimmake_Execute(0)
 		endif
 	endif
-	redraw!
+	call s:CwdRestore()
 endfunc
 
-" cscope update
-noremap <leader>ca :call Vimmake_Update_Tags('.tags', '')<cr>
-noremap <leader>cm :call Vimmake_Update_Tags('', '.cscope')<cr>
 
-" set keymap to cscope
-if has("cscope")
-	noremap <leader>cs :cs find s <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>cg :cs find g <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>cc :cs find c <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>ct :cs find t <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>ce :cs find e <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>cf :cs find f <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>ci :cs find i <C-R>=expand("<cword>")<CR><CR>
-	noremap <leader>cd :cs find d <C-R>=expand("<cword>")<CR><CR>
-    set cscopequickfix=s-,c-,d-,i-,t-,e-
-    set csto=0
-    set cst
-    set csverb
-endif
 
 
 
