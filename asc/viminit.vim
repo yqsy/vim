@@ -86,7 +86,7 @@ noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 
-" keymap to switch table in both gui and terminal (need config)
+" keymap to switch tab in both gui and terminal (need config)
 if has('gui_running') 
 	noremap <silent><c-tab> :tabprev<CR>
 	inoremap <silent><c-tab> <ESC>:tabprev<CR>
@@ -136,7 +136,7 @@ if !has('gui_running')
 	inoremap <silent><ESC>]{0}0~ <ESC>:tabn 10<cr>
 endif
 
-" cmd+N to switch table quickly in macvim
+" cmd+N to switch tab quickly in macvim
 if has("gui_macvim")
 	set macmeta
 	noremap <silent><c-tab> :tabprev<CR>
