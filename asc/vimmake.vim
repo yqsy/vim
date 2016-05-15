@@ -341,6 +341,7 @@ endfunc
 let s:build_output = {}
 let s:build_head = 0
 let s:build_tail = 0
+let s:build_code = 0
 let s:build_state = 0
 let s:build_start = 0.0
 
@@ -401,9 +402,15 @@ function! s:Vimmake_Build_OnFinish(what)
 	call s:Vimmake_Build_Update(-1)
 	let l:current = float2nr(reltimefloat(reltime()))
 	let l:last = l:current - s:build_start
-	caddexpr "[Finished in ".l:last." seconds]"
+	if s:build_code == 0
+		caddexpr "[Finished in ".l:last." seconds]"
+		let g:vimmake_build_status = "success"
+	else
+		let l:text = 'with code '.s:build_code
+		caddexpr "[Finished in ".l:last." seconds ".l:text."]"
+		let g:vimmake_build_status = "failure"
+	endif
 	let s:build_state = 0
-	let g:vimmake_build_status = "success"
 	redrawstatus!
 	redraw
 	if g:vimmake_build_post != ""
@@ -427,7 +434,8 @@ endfunc
 
 " invoked on "exit_cb" when job exited
 function! g:Vimmake_Build_OnExit(job, message)
-	" caddexpr "[exit]"
+	"caddexpr "[exit]: ".a:message." ".type(a:message)
+	let s:build_code = a:message
 	call s:Vimmake_Build_OnFinish(0)
 endfunc
 
@@ -492,7 +500,7 @@ function! g:Vimmake_Build_Start(cmd)
 				let s:build_timer = timer_start(1000, l:name, l:options)
 			endif
 			let s:build_state = 1
-			let g:vimmake_build_status = "building"
+			let g:vimmake_build_status = "running"
 			redrawstatus!
 		else
 			unlet s:build_job
