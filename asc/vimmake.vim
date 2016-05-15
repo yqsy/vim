@@ -431,6 +431,7 @@ endfunc
 " start background build
 function! g:Vimmake_Build_Start(cmd)
 	let l:running = 0
+	let l:empty = 0
 	if s:vimmake_advance == 0
 		call s:NotSupport()
 		return -1
@@ -440,10 +441,15 @@ function! g:Vimmake_Build_Start(cmd)
 			let l:running = 1
 		endif
 	endif
+	if type(a:cmd) == 1
+		if a:cmd == '' | let l:empty = 1 | endif
+	elseif type(a:cmd) == 3
+		if a:cmd == [] | let l:empty = 1 | endif
+	endif
 	if s:build_state != 0 || l:running != 0
 		call s:ErrorMsg("background job is still running")
 		return -2
-	elseif a:cmd != ''
+	elseif l:empty == 0
 		let l:args = []
 		let l:name = []
 		if has('win32') || has('win64') || has('win16') || has('win95')
@@ -724,10 +730,10 @@ function! Vimmake_Make_Emake(filename, mode, ininame)
 			endif
 		else
 			if a:ininame == ''
-				silent '!start cmd.exe /C emake '. l:source .' & pause'
+				silent exec '!start cmd.exe /C emake '. l:source .' & pause'
 			else
 				let l:cmd = 'emake --ini='. l:config . ' ' . l:source
-				silent '!start cmd.exe /C '. l:cmd .' & pause'
+				silent exec '!start cmd.exe /C '. l:cmd .' & pause'
 			endif
 		endif
 	elseif a:mode == 2
