@@ -45,9 +45,14 @@ if !exists("g:vimmake_save")
 	let g:vimmake_save = 0
 endif
 
+" default cc executable
+if !exists("g:vimmake_cc")
+	let g:vimmake_cc = "gcc"
+endif
+
 " default gcc cflags
 if !exists("g:vimmake_cflags")
-	let g:vimmake_cflags = ""
+	let g:vimmake_cflags = []
 endif
 
 " default modes
@@ -104,12 +109,18 @@ endif
 let s:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:vimmake_home = s:vimmake_home
 let s:vimmake_advance = 0
+let s:vimmake_windows = 0
 
 " check has advanced mode
 if v:version >= 800 || has('patch-7.4.1816')
 	if has('job') && has('channel') && has('timers') && has('reltime') 
 		let s:vimmake_advance = 1
 	endif
+endif
+
+" check running in windows
+if has('win32') || has('win64') || has('win95') || has('win16')
+	let s:vimmake_windows = 1
 endif
 
 " backup local makeprg and errorformat
@@ -161,7 +172,7 @@ function! s:PathJoin(home, name)
     let l:size = strlen(a:home)
     if l:size == 0 | return a:name | endif
     let l:last = strpart(a:home, l:size - 1, 1)
-    if has("win32") || has("win64") || has("win16") 
+    if has("win32") || has("win64") || has("win16") || has('win95')
         if l:last == "/" || l:last == "\\"
             return a:home . a:name
         else
@@ -207,22 +218,25 @@ endfunc
 "----------------------------------------------------------------------
 function! Vimmake_Execute(mode)
 	if a:mode == 0		" Execute current filename
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			silent exec '!start cmd /C '.shellescape(expand("%:p")) .' & pause'
+		let l:fname = shellescape(expand("%:p"))
+		if has('gui_running') && (s:vimmake_windows != 0)
+			silent exec '!start cmd /C '. l:fname .' & pause'
 		else
-			exec '!'.shellescape(expand("%:p"))
+			exec '!' . l:fname
 		endif
 	elseif a:mode == 1	" Execute current filename without extname
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			silent exec '!start cmd /C '.shellescape(expand("%:p:r")) .' & pause'
+		let l:fname = shellescape(expand("%:p:r"))
+		if has('gui_running') && (s:vimmake_windows != 0)
+			silent exec '!start cmd /C '. l:fname .' & pause'
 		else
-			exec '!'.shellescape(expand("%:p:r"))
+			exec '!' . l:fname
 		endif
 	elseif a:mode == 2
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			silent exec '!start cmd /C emake -e '.shellescape(expand("%")).' & pause'
+		let l:fname = shellescape(expand("%"))
+		if has('gui_running') && (s:vimmake_windows != 0)
+			silent exec '!start cmd /C emake -e '. l:fname .' & pause'
 		else
-			exec '!emake -e '.shellescape(expand("%"))
+			exec '!emake -e ' . l:fname
 		endif
 	else
 	endif
@@ -251,11 +265,12 @@ function! Vimmake_Command(command, mode, match)
 	if has("gui_running")
 		let $VIM_GUI = '1'
 	endif
+	let l:cmd = shellescape(a:command)
 	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
-		if has('gui_running') && (has('win32') || has('win64') || has('win16'))
-			silent exec '!start cmd /c '. shellescape(a:command) . ' & pause'
+		if has('gui_running') && (s:vimmake_windows != 0)
+			silent exec '!start cmd /c '. l:cmd . ' & pause'
 		else
-			exec '!' . shellescape(a:command)
+			exec '!' . l:cmd
 		endif
 	elseif (a:mode == 1)
 		call s:MakeSave()
@@ -268,18 +283,18 @@ function! Vimmake_Command(command, mode, match)
 		exec "make!"
 		call s:MakeRestore()
 	elseif (a:mode == 2)
-		let l:text = system("" . shellescape(a:command))
+		let l:text = system("" . l:cmd)
 	elseif (a:mode == 3)
-		if has('win32') || has('win64') || has('win16')
-			silent exec '!start /b cmd.exe /C '. shellescape(a:command)
+		if s:vimmake_windows != 0
+			silent exec '!start /b cmd.exe /C '. l:cmd
 		else
-			system("". shellescape(a:command) . ' &')
+			system("". l:cmd . ' &')
 		endif
 	elseif (a:mode == 4)
-		if has('win32') || has('win64') || has('win16')
-			silent exec '!start /min cmd.exe /C '. shellescape(a:command) . ' & pause'
+		if s:vimmake_windows != 0
+			silent exec '!start /min cmd.exe /C '. l:cmd . ' & pause'
 		else
-			exec '!' . shellescape(a:command)
+			exec '!' . l:cmd
 		endif
 	elseif (a:mode == 5)
 		if has('python')
@@ -304,7 +319,7 @@ function! Vimmake_Command(command, mode, match)
 		if s:vimmake_advance == 0
 			call s:NotSupport()
 		else
-			call s:Vimmake_Build_Start(a:command)
+			call g:Vimmake_Build_Start(a:command)
 		endif
 	endif
 	return l:text
@@ -381,6 +396,9 @@ function! s:Vimmake_Build_OnFinish(what)
 	let s:build_state = 0
 	let g:vimmake_build_status = "success"
 	redrawstatus!
+	if g:vimmake_build_post != ""
+		exec g:vimmake_build_post
+	endif
 endfunc
 
 " invoked on "close_cb" when channel closed
@@ -419,7 +437,7 @@ function! g:Vimmake_Build_Start(cmd)
 	elseif a:cmd != ''
 		let l:args = []
 		let l:name = []
-		if has('win32') || has('win64') || has('win16')
+		if has('win32') || has('win64') || has('win16') || has('win95')
 			let l:args = ['cmd.exe', '/C']
 		else
 			let l:args = ['/bin/sh', '-c']
@@ -523,9 +541,18 @@ function! s:Cmd_VimTool(bang, command)
 	return l:fullname
 endfunc
 
+function! s:Cmd_VimStop(bang)
+	if a:bang == ''
+		call g:Vimmake_Build_Stop('term')
+	else
+		call g:Vimmake_Build_Stop('kill')
+	endif
+endfunc
+
 
 " command definition
 command! -bang -nargs=1 VimTool call s:Cmd_VimTool('<bang>', <f-args>)
+command! -bang -nargs=0 VimStop call s:Cmd_VimStop('<bang>')
 
 
 "----------------------------------------------------------------------
@@ -564,34 +591,34 @@ function! s:Cmd_VimExecute(bang, ...)
 		call Vimmake_Execute(2)
 	elseif &filetype == "vim"
 		exec 'source ' . fnameescape(expand("%"))
-	elseif has('gui_running') && (has('win32') || has('win64') || has('win16'))
-		let l:command = get(g:vimmake_extrun, l:ext, '')
-		let l:filename = shellescape(expand("%"))
-		if l:command != ''
-			silent exec '!start cmd /C '. l:command . ' ' . l:filename . ' & pause'
+	elseif has('gui_running') && (s:vimmake_windows != 0)
+		let l:cmd = get(g:vimmake_extrun, l:ext, '')
+		let l:fname = shellescape(expand("%"))
+		if l:cmd != ''
+			silent exec '!start cmd /C '. l:cmd . ' ' . l:fname . ' & pause'
 		elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
-			silent exec '!start cmd /C python ' . l:filename . ' & pause'
+			silent exec '!start cmd /C python ' . l:fname . ' & pause'
 		elseif l:ext  == "js"
-			silent exec '!start cmd /C node ' . l:filename . ' & pause'
+			silent exec '!start cmd /C node ' . l:fname . ' & pause'
 		elseif l:ext == 'sh'
-			silent exec '!start cmd /C sh ' . l:filename . ' & pause'
+			silent exec '!start cmd /C sh ' . l:fname . ' & pause'
 		elseif l:ext == 'lua'
-			silent exec '!start cmd /C lua ' . l:filename . ' & pause'
+			silent exec '!start cmd /C lua ' . l:fname . ' & pause'
 		elseif l:ext == 'pl'
-			silent exec '!start cmd /C perl ' . l:filename . ' & pause'
+			silent exec '!start cmd /C perl ' . l:fname . ' & pause'
 		elseif l:ext == 'rb'
-			silent exec '!start cmd /C ruby ' . l:filename . ' & pause'
+			silent exec '!start cmd /C ruby ' . l:fname . ' & pause'
 		elseif l:ext == 'php'
-			silent exec '!start cmd /C php ' . l:filename . ' & pause'
+			silent exec '!start cmd /C php ' . l:fname . ' & pause'
 		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
-			silent exec '!start cmd /C osascript '.l:filename.' & pause'
+			silent exec '!start cmd /C osascript '.l:fname.' & pause'
 		else
 			call Vimmake_Execute(0)
 		endif
 	else
-		let l:command = get(g:vimmake_extrun, l:ext, '')
-		if l:command != ''
-			exec '!'.l:command. ' ' . shellescape(expand("%"))
+		let l:cmd = get(g:vimmake_extrun, l:ext, '')
+		if l:cmd != ''
+			exec '!'. l:cmd . ' ' . shellescape(expand("%"))
 		elseif index(['py', 'pyw', 'pyc', 'pyo'], l:ext) >= 0
 			exec '!python ' . shellescape(expand("%"))
 		elseif l:ext  == "js"
@@ -622,54 +649,151 @@ command! -bang -nargs=? VimRun call s:Cmd_VimExecute('<bang>', '?', <f-args>)
 
 
 "----------------------------------------------------------------------
-"- build via gcc
+"- make via gcc
 "----------------------------------------------------------------------
-function! Vimmake_CompileGcc()
-	silent call s:CheckSave()
-	if bufname('%') == '' | return | endif
-	let l:compileflag = g:vimmake_cflags
-	let l:extname = expand("%:e")
-	if index(['cpp', 'cc', 'cxx', 'mm'], l:extname)
-		let l:compileflag .= ' -lstdc++'
+function! Vimmake_Make_Gcc(filename, mode)
+	let l:source = shellescape(a:filename)
+	let l:output = shellescape(fnamemodify(a:filename, ':r'))
+	let l:cc = 'gcc'
+	if g:vimmake_cc != ''
+		let l:cc = g:vimmake_cc
 	endif
-	if !has("quickfix")
-		exec '!gcc -Wall "%" -o "%<" ' . l:compileflag
-	else
+	let l:flags = join(g:vimmake_cflags, ' ')
+	let l:extname = expand("%:e")
+	if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
+		let l:flags .= ' -lstdc++'
+	endif
+	if a:mode == 0 && has('quickfix')
 		call s:MakeSave()
-		let l:cflags = substitute(l:compileflag, ' ', '\\ ', 'g')
-		let l:cflags = substitute(l:cflags, '"', '\\"', 'g')
-		exec 'setlocal makeprg=gcc\ -Wall\ \"%\"\ -o\ \"%<\"\ ' . l:cflags
-		setlocal errorformat=%f:%l:%m
+		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
+		let &l:makeprg = l:cmd . ' ' . l:flags
+		let &l:errorformat = '%f:%l:%m'
 		exec 'make!'
 		call s:MakeRestore()
+	elseif a:mode == 0 || a:mode == 1
+		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
+		if s:vimmake_windows == 0
+			exec '!'.l:cmd . ' ' . l:flags
+		else
+			exec '!start cmd.exe /C '.l:cmd. ' '.l:flags.' & pause'
+		endif
+	elseif a:mode == 2
+		let l:output = fnamemodify(a:filename, ':r')
+		let l:cmd = [l:cc, '-Wall', a:filename, '-o', l:output]
+		let l:cmd += g:vimmake_cflags
+		if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
+			let l:cmd += ['-lstdc++']
+		endif
+		call Vimmake_Build_Start(l:cmd)
 	endif
 endfunc
 
 
-" build via emake (http://skywind3000.github.io/emake/emake.py)
-function! Vimmake_BuildEmake(filename, ininame, quickfix)
-	silent call s:CheckSave()
-	if bufname('%') == '' | return | endif
-	if (!a:quickfix) || (!has("quickfix"))
-		if a:ininame == ''
-			exec '!emake ' . shellescape(a:filename) . ''
-		else
-			exec '!emake "--ini=' . a:ininame . '" ' . shellescape(a:filename) . ''
-		endif
-	else
+"----------------------------------------------------------------------
+"- make via emake (http://skywind3000.github.io/emake/emake.py)
+"----------------------------------------------------------------------
+function! Vimmake_Make_Emake(filename, mode, ininame)
+	let l:source = shellescape(a:filename)
+	let l:config = shellescape(a:ininame)
+	if a:mode == 0 && has('quickfix')
 		call s:MakeSave()
-		setlocal errorformat=%f:%l:%m
-		let l:fname = '\"' . fnameescape(a:filename) . '\"'
+		let &l:errorformat='%f:%l:%m'
 		if a:ininame == ''
-			exec 'setlocal makeprg=emake\ ' . l:fname 
+			let &l:makeprg = 'emake '. l:source
 			exec "make!"
 		else
-			exec 'setlocal makeprg=emake\ \"--ini=' . a:ininame . '\"\ ' . l:fname
+			let &l:makeprg = 'emake --ini='. l:config . ' '. l:source
 			exec "make!"
 		endif
 		call s:MakeRestore()
+	elseif a:mode == 0 || a:mode == 1
+		if s:vimmake_windows == 0
+			if a:ininame == ''
+				exec '!emake ' . l:source
+			else
+				exec '!emake "--ini=' . l:config . '" ' . l:source
+			endif
+		else
+			if a:ininame == ''
+				silent '!start cmd.exe /C emake '. l:source .' & pause'
+			else
+				let l:cmd = 'emake --ini='. l:config . ' ' . l:source
+				silent '!start cmd.exe /C '. l:cmd .' & pause'
+			endif
+		endif
+	elseif a:mode == 2
+		if a:ininame == ''
+			call g:Vimmake_Build_Start(['emake', a:filename])
+		else
+			let l:cfg = '--ini=' . a:ininame
+			call g:Vimmake_Build_Start(['emake', l:cfg, a:filename])
+		endif
 	endif
 endfunc
+
+
+"----------------------------------------------------------------------
+"- make via gnu make
+"----------------------------------------------------------------------
+function! Vimmake_Make_Make(target, mode)
+	let l:target = shellescape(target)
+	if a:mode == 0 && has('quickfix')
+		call s:MakeSave()
+		if a:target == ''
+			let &l:makeprg = 'make'
+			exec 'make!'
+		else
+			let &l:makeprg = 'make '.l:target
+			exec 'make!'
+		endif
+		call s:MakeRestore()
+	elseif a:mode == 0 || a:mode == 1
+		if s:vimmake_windows == 0
+			if a:target == ''
+				exec '!make'
+			else
+				exec '!make '.l:target
+			endif
+		else
+			if a:target == ''
+				exec '!start cmd.exe /C make & pause'
+			else
+				exec '!start cmd.exe /C make '.l:target.' & pause'
+			endif
+		endif
+	elseif a:mode == 2
+		if a:target == ''
+			call g:Vimmake_Build_Start([make])
+		else
+			call g:Vimmake_Build_Start([make, a:target])
+		endif
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+"- build via gcc
+"----------------------------------------------------------------------
+function! Cmd_VimMake(bang, what, ...)
+	if bufname('%') == '' | return | endif
+	if a:bang == '!'
+		silent call s:CheckSave()
+	endif
+	let l:mode = 0
+	let l:ininame = ""
+	if a:0 >= 1
+		if index(['1', 'noquickfix', 'stdout'], a:1) >= 0
+			let l:mode = 1
+		elseif index(['2', 'async'], a:1) >= 0
+			let l:mode = 2
+		endif
+	endif
+	if index(['0', 'gcc', 'cc'], a:what) >= 0
+	elseif index(['1', 'make'], a:what) >= 0
+	elseif index(['2', 'emake'], a:what) >= 0
+	endif
+endfunc
+
 
 
 
