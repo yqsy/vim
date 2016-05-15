@@ -485,7 +485,15 @@ function! g:Vimmake_Build_Start(cmd)
 			let l:args += [a:cmd]
 			let l:name = a:cmd
 		elseif type(a:cmd) == 3
-			let l:args += a:cmd
+			if s:vimmake_windows == 0
+				let l:temp = []
+				for l:item in a:cmd
+					let l:temp += [fnameescape(l:item)]
+				endfor
+				let l:args += [join(l:temp, ' ')]
+			else
+				let l:args += a:cmd
+			endif
 			let l:part = []
 			for l:x in a:cmd
 				let l:part += ['"' . l:x . '"']
