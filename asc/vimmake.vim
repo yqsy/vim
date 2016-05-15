@@ -99,6 +99,11 @@ if !exists('g:vimmake_build_status')
 	let g:vimmake_build_status = ''
 endif
 
+" external runner
+if !exists('g:vimmake_runner')
+	let g:vimmake_runner = ''
+endif
+
 " main run
 if !exists('g:vimmake_run_guess')
 	let g:vimmake_run_guess = []
@@ -329,6 +334,14 @@ function! Vimmake_Command(command, mode, match)
 			call s:NotSupport()
 		else
 			call g:Vimmake_Build_Start(a:command)
+		endif
+	elseif (a:mode == 7)
+		if g:vimmake_runner != ''
+			call call(g:vimmake_runner, a:command)
+		else
+			echohl ErrorMsg
+			echom "ERROR: g:vimmake_runner is empty"
+			echohl NONE
 		endif
 	endif
 	return l:text
@@ -565,6 +578,8 @@ function! s:Cmd_VimTool(bang, command)
 		call Vimmake_Command(l:fullname, 5, l:match)
 	elseif index(['6', 'async', 'job', 'channel'], l:mode) >= 0
 		call Vimmake_Command(l:fullname, 6, l:match)
+	elseif index(['7', 'runner', 'extern'], l:mode) >= 0
+		call Vimmake_Command(l:fullname, 7, l:match)
 	else
 		call s:ErrorMsg("invalid mode: ".l:mode)
 	endif
