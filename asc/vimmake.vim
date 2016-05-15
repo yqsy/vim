@@ -23,6 +23,15 @@
 "
 " Settings:
 "     g:vimmake_path - change the path of tools rather than ~/.vim/
+"     g:vimmake_mode - dictionary of invoke mode of each tool
+" 
+" Setup mode for command: ~/.vim/vimmake.{name}
+"     let g:vimmake_mode["name"] = "mode" 
+"     mode can be: 
+"		"normal"	- launch the tool and return to vim after exit (default)
+"		"quickfix"	- launch and redirect output to quickfix
+"		"bg"		- launch background and discard any output
+"		"async"		- run in async mode and redirect output to quickfix
 " 
 " Emake can be installed to /usr/local/bin to build C/C++ by: 
 "     $ wget https://skywind3000.github.io/emake/emake.py
@@ -565,7 +574,7 @@ function! s:Cmd_VimExecute(bang, ...)
 		let l:mode = a:1
 	endif
 	if a:0 >= 2
-		if index(['1', 'true', 'True', 'yes'], a:2) >= 0 
+		if index(['1', 'true', 'True', 'yes', 'cwd', 'cd'], a:2) >= 0 
 			let l:cwd = 1 
 		endif
 	endif
@@ -763,36 +772,90 @@ function! Vimmake_Make_Make(target, mode)
 		endif
 	elseif a:mode == 2
 		if a:target == ''
-			call g:Vimmake_Build_Start([make])
+			call g:Vimmake_Build_Start(['make'])
 		else
-			call g:Vimmake_Build_Start([make, a:target])
+			call g:Vimmake_Build_Start(['make', a:target])
 		endif
 	endif
 endfunc
 
 
 "----------------------------------------------------------------------
-"- build via gcc
+"- build via gcc/make/emake
 "----------------------------------------------------------------------
-function! Cmd_VimMake(bang, what, ...)
+if !exists('g:vimmake_build_mode')
+	let g:vimmake_build_mode = 0
+endif
+
+function! s:Cmd_VimMake(bang, what, ...)
 	if bufname('%') == '' | return | endif
-	if a:bang == '!'
+	if a:bang != '!'
 		silent call s:CheckSave()
 	endif
 	let l:mode = 0
-	let l:ininame = ""
+	let l:conf = ""
 	if a:0 >= 1
-		if index(['1', 'noquickfix', 'stdout'], a:1) >= 0
-			let l:mode = 1
-		elseif index(['2', 'async'], a:1) >= 0
-			let l:mode = 2
-		endif
+		let l:conf = a:1
 	endif
 	if index(['0', 'gcc', 'cc'], a:what) >= 0
+		call Vimmake_Make_Gcc(expand("%"), g:vimmake_build_mode)
 	elseif index(['1', 'make'], a:what) >= 0
+		call Vimmake_Make_Make(l:conf, g:vimmake_build_mode)
 	elseif index(['2', 'emake'], a:what) >= 0
+		call Vimmake_Make_Emake(expand("%"), g:vimmake_build_mode, l:conf)
 	endif
 endfunc
+
+
+command! -bang -nargs=* VimMake call s:Cmd_VimMake('<bang>', <f-args>)
+
+
+"----------------------------------------------------------------------
+" grep code
+"----------------------------------------------------------------------
+let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
+let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
+
+function! s:Cmd_GrepCode(text)
+	let l:grep = &grepprg
+	if strpart(l:grep, 0, 8) == 'findstr '
+		let l:inc = ''
+		for l:item in g:vimmake_grepinc
+			let l:inc .= '*.'.l:item.' '
+		endfor
+		exec 'grep! /s "'. a:text . '" '. l:inc
+	else
+		let l:inc = ''
+		for l:item in g:vimmake_grepinc
+			let l:inc .= " --include \\*." . l:item
+		endfor
+		exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
+	endif
+endfunc
+
+
+command! -nargs=1 GrepCode call s:Cmd_GrepCode(<f-args>)
+
+
+
+"----------------------------------------------------------------------
+" Keymap Setup
+"----------------------------------------------------------------------
+function! s:Cmd_MakeKeymap()
+	noremap <F5> :VimExecute run<cr>
+	noremap <F6> :VimExecute filename<cr>
+	noremap <F7> :VimMake emake<cr>
+	noremap <F8> :VimExecute emake<cr>
+	noremap <F9> :VimMake gcc<cr>
+	inoremap <F5> <ESC>:VimExecute run<cr>
+	inoremap <F6> <ESC>:VimExecute filename<cr>
+	inoremap <F7> <ESC>:VimMake emake<cr>
+	inoremap <F8> <ESC>:VimExecute emake<cr>
+	inoremap <F9> <ESC>:VimMake gcc<cr>
+endfunc
+
+command! -nargs=0 MakeKeymap call s:Cmd_MakeKeymap()
+
 
 
 
