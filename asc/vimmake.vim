@@ -405,6 +405,7 @@ function! s:Vimmake_Build_OnFinish(what)
 	let s:build_state = 0
 	let g:vimmake_build_status = "success"
 	redrawstatus!
+	redraw
 	if g:vimmake_build_post != ""
 		exec g:vimmake_build_post
 	endif
@@ -412,6 +413,7 @@ endfunc
 
 " invoked on "close_cb" when channel closed
 function! g:Vimmake_Build_OnClose(channel)
+	" caddexpr "[close]"
 	while ch_status(a:channel) == 'buffered'
 		let l:text = ch_read(a:channel)
 		call s:Vimmake_Build_OnCallback(a:channel, l:text)
@@ -425,6 +427,7 @@ endfunc
 
 " invoked on "exit_cb" when job exited
 function! g:Vimmake_Build_OnExit(job, message)
+	" caddexpr "[exit]"
 	call s:Vimmake_Build_OnFinish(0)
 endfunc
 
@@ -472,6 +475,10 @@ function! g:Vimmake_Build_Start(cmd)
 		let l:options['callback'] = 'g:Vimmake_Build_OnCallback'
 		let l:options['close_cb'] = 'g:Vimmake_Build_OnClose'
 		let l:options['exit_cb'] = 'g:Vimmake_Build_OnExit'
+		let l:options['out_io'] = 'pipe'
+		let l:options['err_io'] = 'out'
+		let l:options['out_mode'] = 'nl'
+		let l:options['err_mode'] = 'nl'
 		let s:build_job = job_start(l:args, l:options)
 		if job_status(s:build_job) != 'fail'
 			let s:build_output = {}
@@ -848,16 +855,16 @@ command! -nargs=1 GrepCode call s:Cmd_GrepCode(<f-args>)
 " Keymap Setup
 "----------------------------------------------------------------------
 function! s:Cmd_MakeKeymap()
-	noremap <F5> :VimExecute run<cr>
-	noremap <F6> :VimExecute filename<cr>
-	noremap <F7> :VimMake emake<cr>
-	noremap <F8> :VimExecute emake<cr>
-	noremap <F9> :VimMake gcc<cr>
-	inoremap <F5> <ESC>:VimExecute run<cr>
-	inoremap <F6> <ESC>:VimExecute filename<cr>
-	inoremap <F7> <ESC>:VimMake emake<cr>
-	inoremap <F8> <ESC>:VimExecute emake<cr>
-	inoremap <F9> <ESC>:VimMake gcc<cr>
+	noremap <silent><F5> :VimExecute run<cr>
+	noremap <silent><F6> :VimExecute filename<cr>
+	noremap <silent><F7> :VimMake emake<cr>
+	noremap <silent><F8> :VimExecute emake<cr>
+	noremap <silent><F9> :VimMake gcc<cr>
+	inoremap <silent><F5> <ESC>:VimExecute run<cr>
+	inoremap <silent><F6> <ESC>:VimExecute filename<cr>
+	inoremap <silent><F7> <ESC>:VimMake emake<cr>
+	inoremap <silent><F8> <ESC>:VimExecute emake<cr>
+	inoremap <silent><F9> <ESC>:VimMake gcc<cr>
 
 	noremap <silent><F11> :cp<cr>
 	noremap <silent><F12> :cn<cr>
