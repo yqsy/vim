@@ -858,11 +858,82 @@ function! s:Cmd_MakeKeymap()
 	inoremap <F7> <ESC>:VimMake emake<cr>
 	inoremap <F8> <ESC>:VimExecute emake<cr>
 	inoremap <F9> <ESC>:VimMake gcc<cr>
+
+	noremap <silent><F11> :cp<cr>
+	noremap <silent><F12> :cn<cr>
+	inoremap <silent><F11> <ESC>:cp<cr>
+	inoremap <silent><F12> <ESC>:cn<cr>
+
+	noremap <silent><leader>cp :cp<cr>
+	noremap <silent><leader>cn :cn<cr>
+	noremap <silent><leader>co :copen 6<cr>
+	noremap <silent><leader>cl :cclose<cr>
+	
+	" set keymap to GrepCode 
+	noremap <silent><leader>cr :GrepCode <C-R>=expand("<cword>")<cr><cr>
+
+	" set keymap to cscope
+	if has("cscope")
+		noremap <leader>cs :cs find s <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>cg :cs find g <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>cc :cs find c <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>ct :cs find t <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>ce :cs find e <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>cf :cs find f <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>ci :cs find i <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>cd :cs find d <C-R>=expand("<cword>")<CR><CR>
+		set cscopequickfix=s-,c-,d-,i-,t-,e-
+		set csto=0
+		set cst
+		set csverb
+	endif
+	
+	" cscope update
+	noremap <leader>ca :call Vimmake_Update_Tags('.tags', '')<cr>
+	noremap <leader>cm :call Vimmake_Update_Tags('', '.cscope')<cr>
 endfunc
 
 command! -nargs=0 MakeKeymap call s:Cmd_MakeKeymap()
 
 
+function! Vimmake_Update_FileList(outname)
+	let l:names = ['*.c', '*.cpp', '*.cc', '*.cxx']
+	let l:names += ['*.h', '*.hpp', '*.hh', '*.py', '*.pyw', '*.java', '*.js']
+	if has('win32') || has("win64") || has("win16")
+		silent! exec '!dir /b ' . join(l:names, ',') . ' > '.a:outname
+	else
+		let l:cmd = ''
+		let l:ccc = 1
+		for l:name in l:names
+			if l:ccc == 1
+				let l:cmd .= ' -name "'.l:name . '"'
+				let l:ccc = 0
+			else
+				let l:cmd .= ' -o -name "'.l:name. '"'
+			endif
+		endfor
+		silent! exec '!find . ' . l:cmd . ' > '.a:outname
+	endif
+	redraw!
+endfunc
+
+function! Vimmake_Update_Tags(ctags, cscope)
+	echo "update tags"
+	if a:ctags != "" 
+		if filereadable(a:ctags) | call delete(a:ctags) | endif
+		let l:parameters = ' --fields=+iaS --extra=+q --c++-kinds=+px '
+		exec '!ctags -R -f '.a:ctags. l:parameters . ' .'
+	endif
+	if has("cscope") && a:cscope != ""
+		silent! exec "cs kill -1"
+		if filereadable(a:cscope) | call delete(a:cscope) | endif
+		exec '!cscope -b -R -f '.a:cscope
+		if filereadable(a:cscope)
+			exec 'cs add '.a:cscope
+		endif
+	endif
+	redraw!
+endfunc
 
 
 
