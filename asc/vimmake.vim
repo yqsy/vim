@@ -528,10 +528,10 @@ function! s:Cmd_VimTool(bang, command)
 	if a:bang != '!'
 		silent call s:CheckSave()
 	endif
-	if type(s:value) == 0 
+	if type(l:value) == 0 
 		let l:mode = string(l:value) 
 	else
-		let l:mode = s:value
+		let l:mode = l:value
 	endif
 	if l:match == ''
 		let l:match = g:vimmake_error
