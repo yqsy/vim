@@ -880,7 +880,7 @@ function! s:Cmd_GrepCode(text)
 		for l:item in g:vimmake_grepinc
 			let l:inc .= '*.'.l:item.' '
 		endfor
-		exec 'grep! /s "'. a:text . '" '. l:inc
+		exec 'grep! /s /C:"'. a:text . '" '. l:inc
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grepinc
