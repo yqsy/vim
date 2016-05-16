@@ -494,11 +494,11 @@ function! g:Vimmake_Build_Start(cmd)
 			else
 				let l:args += a:cmd
 			endif
-			let l:part = []
+			let l:vector = []
 			for l:x in a:cmd
-				let l:part += ['"' . l:x . '"']
+				let l:vector += ['"'.l:x.'"']
 			endfor
-			let l:name = join(l:part, ', ')
+			let l:name = join(l:vector, ', ')
 		endif
 		let l:options = {}
 		let l:options['callback'] = 'g:Vimmake_Build_OnCallback'
@@ -513,7 +513,12 @@ function! g:Vimmake_Build_Start(cmd)
 			let s:build_output = {}
 			let s:build_head = 0
 			let s:build_tail = 0
-			exec "cexpr \'[".fnameescape(l:name)."]\'"
+			if type(a:cmd) == 1
+				exec "cexpr \'[".fnameescape(l:name)."]\'"
+			else
+				let l:arguments = l:name
+				exec "cexpr \'[\'.l:arguments.\']\'"
+			endif
 			let s:build_start = float2nr(reltimefloat(reltime()))
 			if g:vimmake_build_timer > 0
 				let l:options = {'repeat':-1}
@@ -546,7 +551,11 @@ function! g:Vimmake_Build_Stop(how)
 	if exists('s:build_job')
 		if job_status(s:build_job) == 'run'
 			call job_stop(s:build_job, l:how)
+		else
+			return -2
 		endif
+	else
+		return -3
 	endif
 	return 0
 endfunc
