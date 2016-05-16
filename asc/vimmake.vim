@@ -512,6 +512,7 @@ function! g:Vimmake_Build_Start(cmd)
 		let l:options['err_io'] = 'out'
 		let l:options['out_mode'] = 'nl'
 		let l:options['err_mode'] = 'nl'
+		let l:options['stoponexit'] = 'int'
 		let s:build_job = job_start(l:args, l:options)
 		if job_status(s:build_job) != 'fail'
 			let s:build_output = {}
