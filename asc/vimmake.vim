@@ -122,19 +122,23 @@ endif
 " path where vimmake.vim locates
 let s:vimmake_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:vimmake_home = s:vimmake_home
-let s:vimmake_advance = 0
-let s:vimmake_windows = 0
+let s:vimmake_advance = 0	" internal usage, won't be modified by user
+let g:vimmake_advance = 0	" external reference, may be modified by user
+let s:vimmake_windows = 0	" internal usage, won't be modified by user
+let g:vimmake_windows = 0	" external reference, may be modified by user
 
 " check has advanced mode
 if v:version >= 800 || has('patch-7.4.1816')
 	if has('job') && has('channel') && has('timers') && has('reltime') 
 		let s:vimmake_advance = 1
+		let g:vimmake_advance = 1
 	endif
 endif
 
 " check running in windows
 if has('win32') || has('win64') || has('win95') || has('win16')
 	let s:vimmake_windows = 1
+	let g:vimmake_windows = 1
 endif
 
 " backup local makeprg and errorformat
@@ -337,7 +341,7 @@ function! Vimmake_Command(command, mode, match)
 		endif
 	elseif (a:mode == 7)
 		if g:vimmake_runner != ''
-			call call(g:vimmake_runner, a:command)
+			call call(g:vimmake_runner, [a:command])
 		else
 			echohl ErrorMsg
 			echom "ERROR: g:vimmake_runner is empty"

@@ -17,7 +17,7 @@ IncScript asc/backup.vim
 
 if has('python') && has('timers')
 	IncScript asc/build.vim
-	IncScript asc/build2.vim
+	" IncScript asc/build2.vim
 endif
 
 IncScript asc/ignores.vim
