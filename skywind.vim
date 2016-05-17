@@ -1,9 +1,130 @@
+"----------------------------------------------------------------------
+"- Global Settings
+"----------------------------------------------------------------------
+let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let &tags .= ',.tags,' . expand('~/.vim/tags/standard.tags')
 
-highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+filetype plugin indent on
+language messages en
+set langmenu=en_US
 
+command! -nargs=1 OptScript exec 'so '.s:home.'/'.'<args>'
+
+
+"----------------------------------------------------------------------
+"- Quickfix Chinese Convertion
+"----------------------------------------------------------------------
+function! QuickfixChineseConvert()
+   let qflist = getqflist()
+   for i in qflist
+	  let i.text = iconv(i.text, "gbk", "utf-8")
+   endfor
+   call setqflist(qflist)
+endfunction
+
+
+"----------------------------------------------------------------------
+"- GUI Setting
+"----------------------------------------------------------------------
+if has('gui_running') 
+	set guioptions-=L
+	set mouse=a
+	set showtabline=2
+	set laststatus=2
+	set number
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		set guifont=inconsolata:h11
+		au QuickfixCmdPost make call QuickfixChineseConvert()
+		let g:config_vim_gui_label = 3
+		color desert256
+	elseif has('gui_macvim')
+
+	endif
+	highlight Pmenu guibg=darkgrey guifg=black
+endif
+
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
+	\ gui=NONE guifg=DarkGrey guibg=NONE
+
+
+"----------------------------------------------------------------------
+"- Return last position
+"----------------------------------------------------------------------
+autocmd BufReadPost *
+	\ if line("'\"") > 1 && line("'\"") <= line("$") |
+	\	 exe "normal! g`\"" |
+	\ endif
+
+
+"----------------------------------------------------------------------
+"- Vimmake
+"----------------------------------------------------------------------
 let g:vimmake_cwd = 1
 
+if has('win32') || has('win64') || has('win16') || has('win95')
+	let g:vimmake_cflags = ['-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
+else
+	let g:vimmake_cflags = ['-lstdc++']
+endif
+
+if v:version >= 800 || has('patch-7.4.1831')
+	if has('job') && has('channel') && has('timers') && has('reltime') 
+		let g:vimmake_build_mode = 2
+	endif
+endif
+
+
+"----------------------------------------------------------------------
+"- Misc
+"----------------------------------------------------------------------
+let g:calendar_navi = 'top'
+
+
+"----------------------------------------------------------------------
+"- OptScript
+"----------------------------------------------------------------------
+OptScript opt/echofunc.vim
+OptScript opt/calendar.vim
+
+
+"----------------------------------------------------------------------
+"- YCM config
+"----------------------------------------------------------------------
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_server_log_level = 'info'
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+
+
+"----------------------------------------------------------------------
+"- OmniCpp
+"----------------------------------------------------------------------
+let OmniCpp_NamespaceSearch = 1
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_ShowAccess = 1 
+let OmniCpp_ShowPrototypeInAbbr = 1
+let OmniCpp_MayCompleteDot = 1  
+let OmniCpp_MayCompleteArrow = 1 
+let OmniCpp_MayCompleteScope = 1
+let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+
+
+"----------------------------------------------------------------------
+"- VimPress
+"----------------------------------------------------------------------
+noremap <space>bp :BlogPreview local<cr>
+noremap <space>bb :BlogPreview publish<cr>
+noremap <space>bs :BlogSave<cr>
+noremap <space>bd :BlogSave draft<cr>
+noremap <space>bn :BlogNew post<cr>
+noremap <space>bl :BlogList<cr>
+
+
+"----------------------------------------------------------------------
+"- netrw / winmanager
+"----------------------------------------------------------------------
 let s:enter = 0
 let g:netrw_winsize = 25
 let g:netrw_list_hide= '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn'
@@ -59,6 +180,10 @@ function! s:TbInit()
 	return 1
 endfunc
 
+
+"----------------------------------------------------------------------
+"- ToggleDevelop
+"----------------------------------------------------------------------
 function! ToggleDevelop(layout)
 	if s:enter == 0
 		"set showtabline=2
@@ -146,22 +271,12 @@ noremap <leader>fs :call ToggleDevelop(3)<cr>
 noremap <leader>fd :call ToggleDevelop(4)<cr>
 noremap <leader>fb :call ToggleDevelop(2)<cr>
 noremap <leader>fa :TagbarOpen<cr>
+noremap <leader>fc :Calendar<cr>
 
-if 0
-	noremap ¡ :tabn1<cr>
-	noremap ™ :tabn2<cr>
-	noremap £ :tabn3<cr>
-	noremap ¢ :tabn4<cr>
-	noremap ∞ :tabn5<cr>
-	noremap § :tabn6<cr>
-	inoremap ¡ <esc>:tabn1<cr>
-	inoremap ™ <esc>:tabn2<cr>
-	inoremap £ <esc>:tabn3<cr>
-	inoremap ¢ <esc>:tabn4<cr>
-	inoremap ∞ <esc>:tabn5<cr>
-	inoremap § <esc>:tabn6<cr>
-endif
 
+"----------------------------------------------------------------------
+"- Author info
+"----------------------------------------------------------------------
 let g:skywind_name = 'skywind3000 (at) google.com'
 function! CopyrightSource()
 	let l:filename = expand("%:t")
@@ -179,7 +294,6 @@ function! CopyrightSource()
 	call append(line(".") - 1, '//')
 	call append(line(".") - 1, l:comment)
 endfunc
-
 
 
 nnoremap - :call bufferhint#Popup()<CR>

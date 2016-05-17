@@ -1,13 +1,6 @@
-if !exists('s:vimasc_home')
-	let s:vimasc_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-	exec 'set rtp+='.s:vimasc_home
-endif
-
-function! s:IncScript(name)
-	exec 'so 's:vimasc_home.'/'.a:name
-endfunc
-
-command! -nargs=1 IncScript call s:IncScript('<args>')
+let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+command! -nargs=1 IncScript exec 'so '.s:home.'/'.'<args>'
+exec 'set rtp+='.s:home
 
 IncScript asc/viminit.vim
 IncScript asc/vimmake.vim

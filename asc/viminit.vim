@@ -35,7 +35,7 @@ if has('syntax')
 endif
 
 if has('mouse')
-	set mouse=c
+	"set mouse=c
 endif
 
 
