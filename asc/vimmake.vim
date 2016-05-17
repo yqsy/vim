@@ -943,6 +943,14 @@ function! s:Cmd_MakeKeymap()
 		noremap <leader>cf :cs find f <C-R>=expand("<cword>")<CR><CR>
 		noremap <leader>ci :cs find i <C-R>=expand("<cword>")<CR><CR>
 		noremap <leader>cd :cs find d <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>ss :vert scs find s <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>sg :vert scs find g <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>sc :vert scs find c <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>st :vert scs find t <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>se :vert scs find e <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>sf :vert scs find f <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>si :vert scs find i <C-R>=expand("<cword>")<CR><CR>
+		noremap <leader>sd :vert scs find d <C-R>=expand("<cword>")<CR><CR>
 		set cscopequickfix=s-,c-,d-,i-,t-,e-
 		set csto=0
 		set cst
