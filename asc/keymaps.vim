@@ -18,7 +18,7 @@ inoremap <F2> <ESC>:VimTool 2<cr>
 inoremap <F3> <ESC>:VimTool 3<cr>
 
 
-" keymap for switch tab in gvim and terminal (alt-shift-num)
+" keymap for VimTool
 if has('gui_running') && (has('win32') || has('win64'))
 	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for s:index in range(10)
@@ -32,29 +32,12 @@ else
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
-		"let s:key = '<ESC>[{0}'.s:index.'~'
+		"let s:key = '<ESC>]{0}'.s:index.'~'
 		"exec 'noremap <silent>'.s:key.' :tabn '.s:name.'<cr>'
 		"exec 'inoremap <silent>'.s:key.' <ESC>:tabn '.s:name.'<CR>'
 	endfor
 endif
 
-" keymap for VimTool in macvim
-if has('gui_macvim')
-	noremap <silent><D-O> :browse tabedit<cr>
-	for s:index in range(10)
-		let s:key = ''. s:index
-		if s:index == 10 | let s:key = '0' | endif
-		"exec 'noremap <A-'.s:key.'> :VimTool '.s:key.'<cr>'
-		"exec 'inoremap <A-'.s:key.'> <ESC>:VimTool '.s:key.'<cr>'
-	endfor
-else
-	let s:keys = ['º', '¡', '™', '£', '¢', '∞', '§', '¶', '•', 'ª', 'º' ]
-	for s:index in range(10)
-		let s:key = s:keys[s:index]
-		"exec 'noremap '.s:key.' :VimTool '.s:index.'<cr>'
-		"exec 'inoremap '.s:key.' <ESC>:VimTool '.s:index.'<cr>'
-	endfor
-endif
 
 " window resizing shortcuts
 noremap <space>= :resize +3<cr>
