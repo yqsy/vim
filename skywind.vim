@@ -272,6 +272,7 @@ noremap <leader>fd :call ToggleDevelop(4)<cr>
 noremap <leader>fb :call ToggleDevelop(2)<cr>
 noremap <leader>fa :TagbarOpen<cr>
 noremap <leader>fc :Calendar<cr>
+noremap <leader>ft :NERDTree<cr>:vertical resize +3<cr>
 
 
 "----------------------------------------------------------------------
