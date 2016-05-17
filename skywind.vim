@@ -5,8 +5,6 @@ let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let &tags .= ',.tags,' . expand('~/.vim/tags/standard.tags')
 
 filetype plugin indent on
-language messages en
-set langmenu=en_US
 
 command! -nargs=1 OptScript exec 'so '.s:home.'/'.'<args>'
 
@@ -33,6 +31,8 @@ if has('gui_running')
 	set laststatus=2
 	set number
 	if has('win32') || has('win64') || has('win16') || has('win95')
+		language messages en
+		set langmenu=en_US
 		set guifont=inconsolata:h11
 		au QuickfixCmdPost make call QuickfixChineseConvert()
 		let g:config_vim_gui_label = 3
