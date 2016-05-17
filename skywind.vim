@@ -7,6 +7,7 @@ let &tags .= ',.tags,' . expand('~/.vim/tags/standard.tags')
 filetype plugin indent on
 
 command! -nargs=1 OptScript exec 'so '.s:home.'/'.'<args>'
+command! -nargs=1 OptRuntime exec 'set rtp+='.s:home.'/'.'<args>'
 
 
 "----------------------------------------------------------------------
