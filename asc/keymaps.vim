@@ -32,9 +32,6 @@ else
 	for s:index in range(10)
 		let s:name = ''.s:index
 		if s:index == 0 | let s:name = '10' | endif
-		"let s:key = '<ESC>]{0}'.s:index.'~'
-		"exec 'noremap <silent>'.s:key.' :tabn '.s:name.'<cr>'
-		"exec 'inoremap <silent>'.s:key.' <ESC>:tabn '.s:name.'<CR>'
 	endfor
 endif
 
@@ -77,10 +74,10 @@ if has('gui_running')
 	noremap <M-Right> :call Tab_MoveRight()<cr>
 	inoremap <M-Left> <ESC>:call Tab_MoveLeft()<cr>
 	inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
-	noremap <M-r> :call Vimmake_RunClever()<cr>
-	inoremap <M-r> <ESC>:call Vimmake_RunClever()<cr>
-	noremap <M-b> :call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
-	inoremap <M-b> <ESC>:call Vimmake_BuildEmake(expand("%"), "", 1)<cr>
+	noremap <M-r> :VimExecute run<cr>
+	inoremap <M-r> <ESC>:VimExecute run<cr>
+	noremap <M-b> :VimMake emake<cr>
+	inoremap <M-b> <ESC>:VimMake emake<cr>
 	noremap <M-g> <c-w>gf
 	inoremap <M-g> <ESC><c-w>gf
 else

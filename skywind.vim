@@ -31,6 +31,7 @@ if has('gui_running')
 	set showtabline=2
 	set laststatus=2
 	set number
+	set t_Co=256
 	if has('win32') || has('win64') || has('win16') || has('win95')
 		language messages en
 		set langmenu=en_US
