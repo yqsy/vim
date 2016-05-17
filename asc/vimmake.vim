@@ -388,6 +388,9 @@ endfunc
 
 " invoked on "callback" when job output
 function! g:Vimmake_Build_OnCallback(channel, text)
+	if !exists("s:build_job")
+		return
+	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
 	if g:vimmake_build_timer <= 0
@@ -451,7 +454,7 @@ endfunc
 
 " invoked on "exit_cb" when job exited
 function! g:Vimmake_Build_OnExit(job, message)
-	"caddexpr "[exit]: ".a:message." ".type(a:message)
+	" caddexpr "[exit]: ".a:message." ".type(a:message)
 	let s:build_code = a:message
 	call s:Vimmake_Build_OnFinish(0)
 endfunc
@@ -560,8 +563,10 @@ function! g:Vimmake_Build_Stop(how)
 		else
 			let l:hr = -2
 		endif
-		unlet s:build_job
-		let s:build_state = 0
+		if s:build_state > 0 
+			let s:build_state = 7
+			call s:Vimmake_Build_OnFinish(0)
+		endif
 	else
 		let l:hr = -3
 		let l:state = 0
