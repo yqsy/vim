@@ -69,7 +69,7 @@ else
 	let g:vimmake_cflags = ['-lstdc++']
 endif
 
-if v:version >= 800 || has('patch-7.4.1831')
+if v:version >= 800 || has('patch-7.4.1829')
 	if has('job') && has('channel') && has('timers') && has('reltime') 
 		let g:vimmake_build_mode = 2
 	endif

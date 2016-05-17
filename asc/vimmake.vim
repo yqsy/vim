@@ -128,7 +128,7 @@ let s:vimmake_windows = 0	" internal usage, won't be modified by user
 let g:vimmake_windows = 0	" external reference, may be modified by user
 
 " check has advanced mode
-if v:version >= 800 || has('patch-7.4.1831')
+if v:version >= 800 || has('patch-7.4.1829')
 	if has('job') && has('channel') && has('timers') && has('reltime') 
 		let s:vimmake_advance = 1
 		let g:vimmake_advance = 1
@@ -226,7 +226,7 @@ endfunc
 
 " show not support message
 function! s:NotSupport()
-	let l:msg = "required: +timers +channel +job +reltime and vim >= 7.4.1831"
+	let l:msg = "required: +timers +channel +job +reltime and vim >= 7.4.1829"
 	call s:ErrorMsg(l:msg)
 endfunc
 
