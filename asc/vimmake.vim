@@ -556,22 +556,16 @@ function! g:Vimmake_Build_Stop(how)
 		return -1
 	endif
 	if l:how == '' | let l:how = 'term' | endif
-	let l:hr = 0
 	if exists('s:build_job')
 		if job_status(s:build_job) == 'run'
 			call job_stop(s:build_job, l:how)
 		else
-			let l:hr = -2
-		endif
-		if s:build_state > 0 
-			let s:build_state = 7
-			call s:Vimmake_Build_OnFinish(0)
+			return -2
 		endif
 	else
-		let l:hr = -3
-		let l:state = 0
+		return -3
 	endif
-	return l:hr
+	return 0
 endfunc
 
 
@@ -619,7 +613,7 @@ endfunc
 
 function! s:Cmd_VimStop(bang)
 	if a:bang == ''
-		call g:Vimmake_Build_Stop('int')
+		call g:Vimmake_Build_Stop('term')
 	else
 		call g:Vimmake_Build_Stop('kill')
 	endif
