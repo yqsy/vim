@@ -460,7 +460,7 @@ function! g:Vimmake_Build_OnClose(channel)
 	let l:limit = 512
 	while ch_status(a:channel) == 'buffered'
 		let l:text = ch_read(a:channel)
-		if l:text == ''
+		if l:text == '' " important when child process is killed
 			let l:limit -= 1
 			if l:limit < 0 | break | endif
 		endif
