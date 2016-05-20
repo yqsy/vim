@@ -94,6 +94,11 @@ if !exists('g:vimmake_build_post')
 	let g:vimmake_build_post = ''
 endif
 
+" signal to stop job
+if !exists('g:vimmake_build_stop')
+	let g:vimmake_build_stop = 'term'
+endif
+
 " build status
 if !exists('g:vimmake_build_status')
 	let g:vimmake_build_status = ''
@@ -361,15 +366,18 @@ let s:build_tail = 0
 let s:build_code = 0
 let s:build_state = 0
 let s:build_start = 0.0
+let s:build_debug = 0
 
 " invoked on timer or finished
 function! s:Vimmake_Build_Update(count)
 	let l:count = 0
 	while s:build_tail < s:build_head
 		let l:text = s:build_output[s:build_tail]
+		if l:text != '' 
+			caddexpr l:text
+		endif
 		unlet s:build_output[s:build_tail]
 		let s:build_tail += 1
-		caddexpr l:text
 		let l:count += 1
 		if a:count > 0 && l:count >= a:count
 			break
@@ -391,6 +399,12 @@ function! g:Vimmake_Build_OnCallback(channel, text)
 	if !exists("s:build_job")
 		return
 	endif
+	if type(a:text) != 1
+		return
+	endif
+	if a:text == ''
+		return
+	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
 	if g:vimmake_build_timer <= 0
@@ -401,6 +415,7 @@ endfunc
 " because exit_cb and close_cb are disorder, we need OnFinish to guarantee
 " both of then have already invoked
 function! s:Vimmake_Build_OnFinish(what)
+	" caddexpr '(OnFinish): '.a:what.' '.s:build_state
 	if s:build_state == 0
 		return -1
 	endif
@@ -441,10 +456,17 @@ endfunc
 " invoked on "close_cb" when channel closed
 function! g:Vimmake_Build_OnClose(channel)
 	" caddexpr "[close]"
+	let s:build_debug = 1
+	let l:limit = 512
 	while ch_status(a:channel) == 'buffered'
 		let l:text = ch_read(a:channel)
-		call s:Vimmake_Build_OnCallback(a:channel, l:text)
+		if l:text == ''
+			let l:limit -= 1
+			if l:limit < 0 | break | endif
+		endif
+		call g:Vimmake_Build_OnCallback(a:channel, l:text)
 	endwhile
+	let s:build_debug = 0
 	call s:Vimmake_Build_Update(-1)
 	call s:Vimmake_Build_OnFinish(1)
 	if exists('s:build_job')
@@ -515,7 +537,10 @@ function! g:Vimmake_Build_Start(cmd)
 		let l:options['err_io'] = 'out'
 		let l:options['out_mode'] = 'nl'
 		let l:options['err_mode'] = 'nl'
-		let l:options['stoponexit'] = 'int'
+		let l:options['stoponexit'] = 'term'
+		if g:vimmake_build_stop != ''
+			let l:options['stoponexit'] = g:vimmake_build_stop
+		endif
 		let s:build_job = job_start(l:args, l:options)
 		if job_status(s:build_job) != 'fail'
 			let s:build_output = {}
@@ -566,6 +591,15 @@ function! g:Vimmake_Build_Stop(how)
 		return -3
 	endif
 	return 0
+endfunc
+
+" get job status
+function! g:Vimmake_Build_Status()
+	if exists('s:build_job')
+		return job_status(s:build_job)
+	else
+		return 'none'
+	endif
 endfunc
 
 
