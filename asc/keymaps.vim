@@ -37,13 +37,13 @@ endif
 
 
 " window resizing shortcuts
-noremap <space>= :resize +3<cr>
-noremap <space>- :resize -3<cr>
-noremap <space>, :vertical resize -3<cr>
-noremap <space>. :vertical rexize +3<cr>
-noremap <space>hh :nohl<cr>
-noremap <tab>, :call Tab_MoveLeft()<cr>
-noremap <tab>. :call Tab_MoveRight()<cr>
+noremap <silent><space>= :resize +3<cr>
+noremap <silent><space>- :resize -3<cr>
+noremap <silent><space>, :vertical resize -3<cr>
+noremap <silent><space>. :vertical rexize +3<cr>
+noremap <silent><space>hh :nohl<cr>
+noremap <silent><tab>, :call Tab_MoveLeft()<cr>
+noremap <silent><tab>. :call Tab_MoveRight()<cr>
 
 " replace
 noremap <space>p viw"0p
