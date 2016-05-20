@@ -10,19 +10,23 @@ let g:vimmake_save = 1
 
 " open quickfix
 function! Toggle_QuickFix()
-	if s:winopen == 0
+	let l:open = 0
+	if exists('b:quickfix_open')
+		if b:quickfix_open != 0
+			let l:open = 1
+		endif
+	endif
+	if l:open == 0
 		exec "copen 6"
 		exec "wincmd k"
-		set number
+		if &number == 0
+			set number
+		endif
 		set laststatus=2
-		let s:winopen = 2
-	elsei s:winopen == 1
-		exec "copen 6"
-		exec "wincmd k"
-		let s:winopen = 2
+		let b:quickfix_open = 1
 	else
 		exec "cclose"
-		let s:winopen = 1
+		let b:quickfix_open = 0
 	endif
 endfunc
 
