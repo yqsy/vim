@@ -157,6 +157,28 @@ call s:Filter_Push("Text", "*.txt")
 call s:Filter_Push("Vim Script", "*.vim")
 
 
+" restore screen after quitting
+if has('unix')
+	let s:uname = system('uname')
+	let s:xterm = 0
+	if s:uname == 'FreeBSD'
+		let s:xterm = 1
+	endif
+	" restore screen after quitting
+	if s:xterm != 0
+		if &term =~ "xterm"
+			let &t_ti="\0337\033[r\033[?47h"
+			let &t_te="\033[?47l\0338"
+			if has("terminfo")
+				let &t_Sf="\033[3%p1%dm"
+				let &t_Sb="\033[4%p1%dm"
+			else
+				let &t_Sf="\033[3%dm"
+				let &t_Sb="\033[4%dm"
+			endif
+		endif
+	endif
+endif
 
 
 
