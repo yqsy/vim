@@ -161,7 +161,7 @@ call s:Filter_Push("Vim Script", "*.vim")
 if has('unix')
 	let s:uname = system('uname')
 	let s:xterm = 0
-	if s:uname == 'FreeBSD'
+	if s:uname =~ "FreeBSD"
 		let s:xterm = 1
 	endif
 	" restore screen after quitting
