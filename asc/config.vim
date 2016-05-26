@@ -177,6 +177,7 @@ if has('unix')
 				let &t_Sb="\033[4%dm"
 			endif
 		endif
+		set restorescreen
 	endif
 endif
 
