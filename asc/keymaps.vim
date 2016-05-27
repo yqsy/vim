@@ -83,7 +83,8 @@ if has('gui_running')
 	noremap <M-g> <c-w>gf
 	inoremap <M-g> <ESC><c-w>gf
 else
-	
+	noremap <silent><ESC>[34~ :TagbarToggle<cr>
+	inoremap <silent><ESC>[34~ <ESC>:TagbarToggle<cr>
 endif
 
 
