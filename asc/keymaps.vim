@@ -13,9 +13,11 @@ endfor
 noremap <F1> :VimTool 1<cr>
 noremap <F2> :VimTool 2<cr>
 noremap <F3> :VimTool 3<cr>
+noremap <F4> :VimTool 4<cr>
 inoremap <F1> <ESC>:VimTool 1<cr>
 inoremap <F2> <ESC>:VimTool 2<cr>
 inoremap <F3> <ESC>:VimTool 3<cr>
+inoremap <F4> <ESC>:VimTool 4<cr>
 
 
 " keymap for VimTool
@@ -67,7 +69,7 @@ if has('gui_running')
 	noremap <M-p> "0p
 	noremap <M-_> :call Change_Transparency(-2)<cr>
 	noremap <M-+> :call Change_Transparency(+2)<cr>
-	noremap <S-F4> :call Toggle_Transparency(8)<cr>
+	noremap <M-F4> :call Toggle_Transparency(8)<cr>
 	noremap <C-S> :w<cr>
 	inoremap <C-S> <ESC>:w<cr>
 	noremap <M-Left> :call Tab_MoveLeft()<cr>
@@ -95,6 +97,8 @@ noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
 noremap <silent><F10> :call Toggle_QuickFix()<cr>
 inoremap <silent><F10> <C-o>:call Toggle_QuickFix()<cr>
+noremap <silent><S-F10> :TagbarToggle<cr>
+inoremap <silent><S-F10> <c-o>:TagbarToggle<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
 
@@ -107,8 +111,6 @@ noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
 noremap <silent><space>fb :TagbarToggle<cr>
 
-noremap <silent><F4> :TagbarToggle<cr>
-inoremap <silent><F4> <c-o>:TagbarToggle<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
