@@ -64,6 +64,7 @@ autocmd BufReadPost *
 "- Vimmake
 "----------------------------------------------------------------------
 let g:vimmake_cwd = 1
+let g:vimmake_run_guess = ['go']
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_cflags = ['-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
@@ -129,7 +130,7 @@ noremap <space>bl :BlogList<cr>
 "----------------------------------------------------------------------
 "- neocomplete
 "----------------------------------------------------------------------
-if 0
+if !exists('g:ycm_skywind_install')
 	let g:acp_enableAtStartup = 0
 	" Use neocomplete.
 	let g:neocomplete#enable_at_startup = 1

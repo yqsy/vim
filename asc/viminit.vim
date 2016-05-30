@@ -203,16 +203,12 @@ noremap <tab>w <c-w>w
 noremap <tab>o o<ESC>
 noremap <tab>O O<ESC>
 
-" faster insert mode
-inoremap <c-x> <del>
-inoremap <c-c> <bs>
-inoremap <c-\> <c-k>
-
-" as emacs
+" insert mode as emacs
 inoremap <c-a> <home>
 inoremap <c-e> <end>
 inoremap <c-d> <del>
-vnoremap <c-c> "+y
+vnoremap <c-c> <bs>
+inoremap <c-\> <c-k>
 
 " faster command mode
 cnoremap <c-h> <left>
