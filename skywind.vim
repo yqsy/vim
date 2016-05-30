@@ -130,7 +130,7 @@ noremap <space>bl :BlogList<cr>
 "----------------------------------------------------------------------
 "- neocomplete
 "----------------------------------------------------------------------
-if !exists('g:ycm_skywind_install')
+if 0
 	let g:acp_enableAtStartup = 0
 	" Use neocomplete.
 	let g:neocomplete#enable_at_startup = 1
