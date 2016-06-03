@@ -89,9 +89,14 @@ if !exists('g:vimmake_build_timer')
 	let g:vimmake_build_timer = 0
 endif
 
-" invoked after async build finished
+" will be executed after async build finished
 if !exists('g:vimmake_build_post')
 	let g:vimmake_build_post = ''
+endif
+
+" will be executed after output callback
+if !exists('g:vimmake_build_update')
+	let g:vimmake_build_update = ''
 endif
 
 " signal to stop job
@@ -383,6 +388,9 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
+	if g:vimmake_build_update != ''
+		exec g:vimmake_build_update
+	endif
 	return l:count
 endfunc
 
