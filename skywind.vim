@@ -41,6 +41,7 @@ if has('gui_running')
 		let g:config_vim_gui_label = 3
 		color desert256
 		set guioptions-=t
+		set guioptions=egrmT
 	elseif has('gui_macvim')
 		color seoul256
 		set guioptions=egrm
