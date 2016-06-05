@@ -109,6 +109,11 @@ if !exists('g:vimmake_build_status')
 	let g:vimmake_build_status = ''
 endif
 
+" auto scroll quickfix
+if !exists('g:vimmake_build_scroll')
+	let g:vimmake_build_scroll = 0
+endif
+
 " external runner
 if !exists('g:vimmake_runner')
 	let g:vimmake_runner = ''
@@ -388,6 +393,9 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
+	if g:vimmake_build_scroll != 0
+		silent clast
+	endif
 	if g:vimmake_build_update != ''
 		exec g:vimmake_build_update
 	endif
@@ -454,6 +462,9 @@ function! s:Vimmake_Build_OnFinish(what)
 		let g:vimmake_build_status = "failure"
 	endif
 	let s:build_state = 0
+	if g:vimmake_build_scroll != 0
+		silent clast
+	endif
 	redrawstatus!
 	redraw
 	if g:vimmake_build_post != ""

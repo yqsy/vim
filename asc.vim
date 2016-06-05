@@ -5,6 +5,8 @@ exec 'set rtp+='.s:home
 IncScript asc/viminit.vim
 IncScript asc/vimmake.vim
 
+MakeKeymap
+
 IncScript asc/config.vim
 IncScript asc/backup.vim
 
@@ -21,6 +23,5 @@ IncScript asc/plugins.vim
 IncScript asc/misc.vim
 
 
-MakeKeymap
 
 
