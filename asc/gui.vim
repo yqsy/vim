@@ -51,7 +51,17 @@ amenu B&uild.-s1- :
 amenu B&uild.&Gcc<TAB>F9 :VimMake gcc<cr>
 amenu B&uild.&Emake<Tab>F7 :VimMake emake<cr>
 amenu B&uild.GNU\ &Make :VimMake make<cr>
-
+amenu B&uild.-s2- :
+amenu B&uild.User\ Tool\ 1 :VimTool 1<cr>
+amenu B&uild.User\ Tool\ 2 :VimTool 2<cr>
+amenu B&uild.User\ Tool\ 3 :VimTool 3<cr>
+amenu B&uild.User\ Tool\ 4 :VimTool 4<cr>
+amenu B&uild.User\ Tool\ 5 :VimTool 5<cr>
+amenu B&uild.User\ Tool\ 6 :VimTool 6<cr>
+amenu B&uild.User\ Tool\ 7 :VimTool 7<cr>
+amenu B&uild.User\ Tool\ 8 :VimTool 8<cr>
+amenu B&uild.User\ Tool\ 9 :VimTool 9<cr>
+amenu B&uild.User\ Tool\ 0 :VimTool 0<cr>
 
 
 

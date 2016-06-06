@@ -393,7 +393,7 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
-	if g:vimmake_build_scroll != 0
+	if and(g:vimmake_build_scroll, 2) != 0
 		silent clast
 	endif
 	if g:vimmake_build_update != ''
@@ -462,7 +462,7 @@ function! s:Vimmake_Build_OnFinish(what)
 		let g:vimmake_build_status = "failure"
 	endif
 	let s:build_state = 0
-	if g:vimmake_build_scroll != 0
+	if and(g:vimmake_build_scroll, 1) != 0
 		silent clast
 	endif
 	redrawstatus!
