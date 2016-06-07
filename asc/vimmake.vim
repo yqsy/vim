@@ -378,6 +378,20 @@ let s:build_state = 0
 let s:build_start = 0.0
 let s:build_debug = 0
 
+" scroll quickfix down
+function! s:Vimmake_Build_Scroll()
+	if getbufvar('%', '&buftype') == 'quickfix'
+		normal G
+	endif
+endfunc
+
+" find quickfix window and scroll to the bottom then return last window
+function! s:Vimmake_Build_AutoScroll()
+	let l:winnr = winnr()			
+	windo call s:Vimmake_Build_Scroll()
+	exec ''.l:winnr.'wincmd w'
+endfunc
+
 " invoked on timer or finished
 function! s:Vimmake_Build_Update(count)
 	let l:count = 0
@@ -393,7 +407,10 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
-	if and(g:vimmake_build_scroll, 2) != 0
+	if and(g:vimmake_build_scroll, 1) != 0
+		call s:Vimmake_Build_AutoScroll()
+	endif
+	if and(g:vimmake_build_scroll, 8) != 0
 		silent clast
 	endif
 	if g:vimmake_build_update != ''
@@ -463,6 +480,9 @@ function! s:Vimmake_Build_OnFinish(what)
 	endif
 	let s:build_state = 0
 	if and(g:vimmake_build_scroll, 1) != 0
+		call s:Vimmake_Build_AutoScroll()
+	endif
+	if and(g:vimmake_build_scroll, 4) != 0
 		silent clast
 	endif
 	redrawstatus!
