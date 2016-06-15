@@ -381,7 +381,7 @@ let s:build_debug = 0
 " scroll quickfix down
 function! s:Vimmake_Build_Scroll()
 	if getbufvar('%', '&buftype') == 'quickfix'
-		normal G
+		silent normal G
 	endif
 endfunc
 
@@ -389,7 +389,7 @@ endfunc
 function! s:Vimmake_Build_AutoScroll()
 	let l:winnr = winnr()			
 	windo call s:Vimmake_Build_Scroll()
-	exec ''.l:winnr.'wincmd w'
+	silent exec ''.l:winnr.'wincmd w'
 endfunc
 
 " invoked on timer or finished
