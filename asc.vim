@@ -8,7 +8,7 @@ IncScript asc/vimmake.vim
 MakeKeymap
 
 IncScript asc/config.vim
-IncScript asc/backup.vim
+" IncScript asc/backup.vim
 
 if has('python') && has('timers')
 	IncScript asc/build.vim
