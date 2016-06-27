@@ -14,6 +14,8 @@ command! -nargs=1 VimLoad exec 'set rtp+='.s:home.'/'.'<args>'
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
 	\ gui=NONE guifg=DarkGrey guibg=NONE
 
+call Backup_Directory()
+
 
 "----------------------------------------------------------------------
 "- Return last position
