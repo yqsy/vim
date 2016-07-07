@@ -381,6 +381,12 @@ let s:build_code = 0
 let s:build_state = 0
 let s:build_start = 0.0
 let s:build_debug = 0
+let s:build_quick = 0
+
+" check :cbottom available
+if has('patch-7.4.1997')
+	let s:buick_quick = 1
+endif
 
 " scroll quickfix down
 function! s:Vimmake_Build_Scroll()
@@ -391,9 +397,13 @@ endfunc
 
 " find quickfix window and scroll to the bottom then return last window
 function! s:Vimmake_Build_AutoScroll()
-	let l:winnr = winnr()			
-	windo call s:Vimmake_Build_Scroll()
-	silent exec ''.l:winnr.'wincmd w'
+	if s:build_quick == 0
+		let l:winnr = winnr()			
+		windo call s:Vimmake_Build_Scroll()
+		silent exec ''.l:winnr.'wincmd w'
+	else
+		cbottom
+	endif
 endfunc
 
 " invoked on timer or finished
