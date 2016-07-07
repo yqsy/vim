@@ -936,21 +936,28 @@ if !exists('g:vimmake_build_mode')
 	let g:vimmake_build_mode = 0
 endif
 
-function! s:Cmd_VimMake(bang, what, ...)
+function! s:Cmd_VimMake(bang, ...)
 	if bufname('%') == '' | return | endif
+	if a:0 == 0
+		echohl ErrorMsg
+		echom "E471: Argument required"
+		echohl NONE
+		return
+	endif
 	if a:bang != '!'
 		silent call s:CheckSave()
 	endif
 	let l:mode = 0
+	let l:what = a:1
 	let l:conf = ""
-	if a:0 >= 1
-		let l:conf = a:1
+	if a:0 >= 2
+		let l:conf = a:2
 	endif
-	if index(['0', 'gcc', 'cc'], a:what) >= 0
+	if index(['0', 'gcc', 'cc'], l:what) >= 0
 		call Vimmake_Make_Gcc(expand("%"), g:vimmake_build_mode)
-	elseif index(['1', 'make'], a:what) >= 0
+	elseif index(['1', 'make'], l:what) >= 0
 		call Vimmake_Make_Make(l:conf, g:vimmake_build_mode)
-	elseif index(['2', 'emake'], a:what) >= 0
+	elseif index(['2', 'emake'], l:what) >= 0
 		call Vimmake_Make_Emake(expand("%"), g:vimmake_build_mode, l:conf)
 	endif
 endfunc
