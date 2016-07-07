@@ -17,7 +17,7 @@ function! Toggle_QuickFix()
 		endif
 	endif
 	if l:open == 0
-		exec "copen 6"
+		exec "botright copen 6"
 		exec "wincmd k"
 		if &number == 0
 			set number

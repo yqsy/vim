@@ -1,12 +1,12 @@
 " vimmake.vim - Enhenced Customize Make system for vim
 "
 " Maintainer: skywind3000 (at) gmail.com
-" Last change: 2016.5.20
+" Last change: 2016.7.7
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
 "     :VimTool {name}
 "
-" Environment variables are set to below before executing:
+" Environment variables are set before executing:
 "     $VIM_FILEPATH  - File name of current buffer with full path
 "     $VIM_FILENAME  - File name of current buffer without path
 "     $VIM_FILEDIR   - Full path of current buffer without the file name
@@ -20,18 +20,21 @@
 "     $VIM_VERSION   - Value of v:version
 "     $VIM_MODE      - Execute via 0:!, 1:makeprg, 2:system()
 "     $VIM_SCRIPT    - Home path of tool scripts
+"     $VIM_TARGET    - Target given after name as ":VimTool {name} {target}"
 "
 " Settings:
 "     g:vimmake_path - change the path of tools rather than ~/.vim/
 "     g:vimmake_mode - dictionary of invoke mode of each tool
 " 
 " Setup mode for command: ~/.vim/vimmake.{name}
-"     let g:vimmake_mode["name"] = "mode" 
-"     mode can be: 
+"     let g:vimmake_mode["name"] = "{mode}" 
+"     {mode} can be: 
 "		"normal"	- launch the tool and return to vim after exit (default)
 "		"quickfix"	- launch and redirect output to quickfix
 "		"bg"		- launch background and discard any output
 "		"async"		- run in async mode and redirect output to quickfix
+"	  
+"	  note: "g:vimmake_mode" must be initialized to "{}" at first
 " 
 " Emake can be installed to /usr/local/bin to build C/C++ by: 
 "     $ wget https://skywind3000.github.io/emake/emake.py
@@ -279,7 +282,7 @@ endfunc
 "----------------------------------------------------------------------
 "- Execute command in normal(0), quickfix(1), system(2) mode
 "----------------------------------------------------------------------
-function! Vimmake_Command(command, mode, match)
+function! Vimmake_Command(command, target, mode, match)
 	let $VIM_FILEPATH = expand("%:p")
 	let $VIM_FILENAME = expand("%:t")
 	let $VIM_FILEDIR = expand("%:p:h")
@@ -294,6 +297,7 @@ function! Vimmake_Command(command, mode, match)
 	let $VIM_GUI = '0'
 	let $VIM_SCRIPT = g:vimmake_path
 	let $VIM_SVRNAME = v:servername
+	let $VIM_TARGET = a:target
 	let l:text = ''
 	if has("gui_running")
 		let $VIM_GUI = '1'
@@ -645,12 +649,23 @@ endfunc
 "----------------------------------------------------------------------
 "- Execute ~/.vim/vimmake.{command}
 "----------------------------------------------------------------------
-function! s:Cmd_VimTool(bang, command)
+function! s:Cmd_VimTool(bang, ...)
+	if a:0 == 0
+		echohl ErrorMsg
+		echom "E471: Argument required"
+		echohl NONE
+		return
+	endif
+	let l:command = a:1
+	let l:target = ''
+	if a:0 >= 2
+		let l:target = a:2
+	endif
 	let l:home = expand(g:vimmake_path)
-	let l:fullname = "vimmake." . a:command
+	let l:fullname = "vimmake." . l:command
 	let l:fullname = s:PathJoin(l:home, l:fullname)
-	let l:value = get(g:vimmake_mode, a:command, '')
-	let l:match = get(g:vimmake_match, a:command, '')
+	let l:value = get(g:vimmake_mode, l:command, '')
+	let l:match = get(g:vimmake_match, l:command, '')
 	if a:bang != '!'
 		silent call s:CheckSave()
 	endif
@@ -663,21 +678,21 @@ function! s:Cmd_VimTool(bang, command)
 		let l:match = g:vimmake_error
 	endif
 	if index(['', '0', 'normal', 'default'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 0, l:match)
+		call Vimmake_Command(l:fullname, l:target, 0, l:match)
 	elseif index(['1', 'quickfix', 'make', 'makeprg'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 1, l:match)
+		call Vimmake_Command(l:fullname, l:target, 1, l:match)
 	elseif index(['2', 'system', 'silent'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 2, l:match)
+		call Vimmake_Command(l:fullname, l:target, 2, l:match)
 	elseif index(['3', 'background', 'bg'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 3, l:match)
+		call Vimmake_Command(l:fullname, l:target, 3, l:match)
 	elseif index(['4', 'minimal', 'm', 'min'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 4, l:match)
+		call Vimmake_Command(l:fullname, l:target, 4, l:match)
 	elseif index(['5', 'python', 'p', 'py'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 5, l:match)
+		call Vimmake_Command(l:fullname, l:target, 5, l:match)
 	elseif index(['6', 'async', 'job', 'channel'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 6, l:match)
+		call Vimmake_Command(l:fullname, l:target, 6, l:match)
 	elseif index(['7', 'runner', 'extern'], l:mode) >= 0
-		call Vimmake_Command(l:fullname, 7, l:match)
+		call Vimmake_Command(l:fullname, l:target, 7, l:match)
 	else
 		call s:ErrorMsg("invalid mode: ".l:mode)
 	endif
@@ -694,7 +709,7 @@ endfunc
 
 
 " command definition
-command! -bang -nargs=1 VimTool call s:Cmd_VimTool('<bang>', <f-args>)
+command! -bang -nargs=* VimTool call s:Cmd_VimTool('<bang>', <f-args>)
 command! -bang -nargs=0 VimStop call s:Cmd_VimStop('<bang>')
 
 
@@ -981,11 +996,13 @@ function! s:Cmd_MakeKeymap()
 	noremap <silent><F7> :VimMake emake<cr>
 	noremap <silent><F8> :VimExecute emake<cr>
 	noremap <silent><F9> :VimMake gcc<cr>
+	noremap <silent><F10> :call vimmake#Toggle_Quickfix()<cr>
 	inoremap <silent><F5> <ESC>:VimExecute run<cr>
 	inoremap <silent><F6> <ESC>:VimExecute filename<cr>
 	inoremap <silent><F7> <ESC>:VimMake emake<cr>
 	inoremap <silent><F8> <ESC>:VimExecute emake<cr>
 	inoremap <silent><F9> <ESC>:VimMake gcc<cr>
+	inoremap <silent><F10> <ESC>:call vimmake#Toggle_Quickfix()<cr>
 
 	noremap <silent><F11> :cp<cr>
 	noremap <silent><F12> :cn<cr>
@@ -1025,14 +1042,41 @@ function! s:Cmd_MakeKeymap()
 	endif
 	
 	" cscope update
-	noremap <leader>ca :call Vimmake_Update_Tags('.tags', '')<cr>
-	noremap <leader>cm :call Vimmake_Update_Tags('', '.cscope')<cr>
+	noremap <leader>ca :call vimmake#Update_Tags('.tags', '')<cr>
+	noremap <leader>cm :call vimmake#Update_Tags('', '.cscope')<cr>
 endfunc
 
 command! -nargs=0 MakeKeymap call s:Cmd_MakeKeymap()
 
+function! vimmake#MakeKeymap()
+	MakeKeymap
+endfunc
 
-function! Vimmake_Update_FileList(outname)
+function! vimmake#Load()
+endfunc
+
+function! vimmake#Toggle_Quickfix()
+	let l:open = 0
+	if exists('b:quickfix_open')
+		if b:quickfix_open != 0
+			let l:open = 1
+		endif
+	endif
+	if l:open == 0
+		exec "botright copen 6"
+		exec "wincmd k"
+		if &number == 0
+			set number
+		endif
+		set laststatus=2
+		let b:quickfix_open = 1
+	else
+		exec "cclose"
+		let b:quickfix_open = 0
+	endif
+endfunc
+
+function! vimmake#Update_FileList(outname)
 	let l:names = ['*.c', '*.cpp', '*.cc', '*.cxx']
 	let l:names += ['*.h', '*.hpp', '*.hh', '*.py', '*.pyw', '*.java', '*.js']
 	if has('win32') || has("win64") || has("win16")
@@ -1053,7 +1097,7 @@ function! Vimmake_Update_FileList(outname)
 	redraw!
 endfunc
 
-function! Vimmake_Update_Tags(ctags, cscope)
+function! vimmake#Update_Tags(ctags, cscope)
 	echo "update tags"
 	if a:ctags != "" 
 		if filereadable(a:ctags) | call delete(a:ctags) | endif

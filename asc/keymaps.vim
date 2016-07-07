@@ -80,8 +80,8 @@ if has('gui_running')
 	inoremap <M-r> <ESC>:VimExecute run<cr>
 	noremap <M-b> :VimMake emake<cr>
 	inoremap <M-b> <ESC>:VimMake emake<cr>
-	noremap <M-g> <c-w>gf
-	inoremap <M-g> <ESC><c-w>gf
+	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
+	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 else
 	noremap <silent><ESC>[34~ :TagbarToggle<cr>
 	inoremap <silent><ESC>[34~ <ESC>:TagbarToggle<cr>
@@ -96,8 +96,6 @@ noremap <space>st :!svn st<cr>
 " toggle plugins
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
-noremap <silent><F10> :call Toggle_QuickFix()<cr>
-inoremap <silent><F10> <C-o>:call Toggle_QuickFix()<cr>
 noremap <silent><S-F10> :TagbarToggle<cr>
 inoremap <silent><S-F10> <c-o>:TagbarToggle<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
@@ -118,14 +116,15 @@ noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 
 " fast open file
 if has('win32') || has('win64')
-	noremap <space>hr :tabnew ~/_vimrc<cr>
+noremap <space>hr :tabnew ~/_vimrc<cr>
 else
-	noremap <space>hr :tabnew ~/.vimrc<cr>
+noremap <space>hr :tabnew ~/.vimrc<cr>
 endif
 
 let s:filename = expand('<sfile>:p')
 exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
-
+noremap <space>hp :tabnew ~/.vim/project.txt<cr>
+noremap <space>hf <c-w>gf
 
 " cscope in new tab
 noremap <leader>cs :tab cs find s <C-R>=expand("<cword>")<CR><CR>
