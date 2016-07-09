@@ -385,7 +385,7 @@ let s:build_quick = 0
 
 " check :cbottom available
 if has('patch-7.4.1997')
-	let s:buick_quick = 1
+	let s:build_quick = 1
 endif
 
 " scroll quickfix down
