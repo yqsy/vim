@@ -270,8 +270,8 @@ endfunc
 " quickfix
 let g:status_var = ""
 augroup QuickfixStatus
-	au!
-	au BufWinEnter quickfix setlocal statusline=%t\ [%{g:vimmake_build_status}]\ %{exists('w:quickfix_title')?\ '\ '.w:quickfix_title\ :\ ''}\ %=%-15(%l,%c%V%)\ %P
+	au! BufWinEnter quickfix setlocal 
+		\ statusline=%t\ [%{g:vimmake_build_status}]\ %{exists('w:quickfix_title')?\ '\ '.w:quickfix_title\ :\ ''}\ %=%-15(%l,%c%V%)\ %P
 augroup END
 
 
