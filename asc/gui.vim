@@ -29,9 +29,11 @@ if has('gui_running')
 		language messages en
 		set langmenu=en_US
 		set guifont=inconsolata:h11
+		"set guifont=fixedsys
 		au QuickfixCmdPost make call QuickfixChineseConvert()
 		let g:config_vim_gui_label = 3
 		color desert256
+		"color seoul256
 		set guioptions-=t
 		set guioptions=egrmT
 	elseif has('gui_macvim')
@@ -39,6 +41,8 @@ if has('gui_running')
 		set guioptions=egrm
 	endif
 	highlight Pmenu guibg=darkgrey guifg=black
+else
+	set t_Co=256 t_md=
 endif
 
 
