@@ -32,8 +32,8 @@ if has('gui_running')
 		"set guifont=fixedsys
 		au QuickfixCmdPost make call QuickfixChineseConvert()
 		let g:config_vim_gui_label = 3
-		color desert256
-		"color seoul256
+		"color desert256
+		color seoul256
 		set guioptions-=t
 		set guioptions=egrmT
 	elseif has('gui_macvim')

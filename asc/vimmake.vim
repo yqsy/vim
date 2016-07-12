@@ -1034,11 +1034,11 @@ function! s:Cmd_VimScope(what, name)
 	elseif a:what == '9' || a:what == 'a'
 		let l:text = 'assigned "'.a:name
 	endif
-	cexpr "[cscope ".a:what.": ".l:text."]"
+	silent cexpr "[cscope ".a:what.": ".l:text."]"
 	try
 		exec 'cs find '.a:what.' '.fnameescape(a:name)
 	catch /^Vim\%((\a\+)\)\=:E259/
-		caddexpr 'not find "'.a:name.'"'
+		silent caddexpr 'not find "'.a:name.'"'
 	endtry
 endfunc
 
