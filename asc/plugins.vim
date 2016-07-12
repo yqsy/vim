@@ -26,8 +26,17 @@ let g:ycm_complete_in_strings=1
 set completeopt=menu
 
 
+"----------------------------------------------------------------------
+"- TagList
+"----------------------------------------------------------------------
+let Tlist_Show_One_File = 1 
+let Tlist_Use_Right_Window = 1
+let Tlist_WinWidth = 30
+
+
+
 "-----------------------------------------------------
-" Tabbar
+" Tagbar
 "-----------------------------------------------------
 let g:Tagbar_title = "[Tagbar]"
 let g:tagbar_vertical = 28
