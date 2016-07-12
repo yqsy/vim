@@ -126,16 +126,6 @@ exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
 noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
 
-" cscope in new tab
-noremap <leader>cs :tab cs find s <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>cg :tab cs find g <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>cc :tab cs find c <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>ct :tab cs find t <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>ce :tab cs find e <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>cf :tab cs find f <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>ci :tab cs find i <C-R>=expand("<cword>")<CR><CR>
-noremap <leader>cd :tab cs find d <C-R>=expand("<cword>")<CR><CR>
-
 
 " cscope in new tab
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>
