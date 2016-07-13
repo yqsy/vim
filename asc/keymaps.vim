@@ -96,8 +96,8 @@ noremap <space>st :!svn st<cr>
 " toggle plugins
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
-noremap <silent><S-F10> :TlistToggle<cr>
-inoremap <silent><S-F10> <c-o>:TlistToggle<cr>
+noremap <silent><S-F10> :TagbarToggle<cr>
+inoremap <silent><S-F10> <c-o>:TagbarToggle<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
 
