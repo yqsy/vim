@@ -16,6 +16,54 @@ endfunction
 
 
 "----------------------------------------------------------------------
+"- FontBoldOff
+"----------------------------------------------------------------------
+function! s:FontBoldOff()
+	let hid = 1
+	while 1
+		let hln = synIDattr(hid, 'name')
+		if !hlexists(hln) | break | endif
+		if hid == synIDtrans(hid) && synIDattr(hid, 'bold')
+			let atr = ['underline', 'undercurl', 'reverse', 'inverse', 'italic', 'standout']
+			call filter(atr, 'synIDattr(hid, v:val)')
+			let gui = empty(atr) ? 'NONE' : join(atr, ',')
+			exec 'highlight ' . hln . ' gui=' . gui
+		endif
+		let hid += 1
+	endwhile
+endfunc
+
+command! FontBoldOff call s:BoldOff()
+
+
+"----------------------------------------------------------------------
+"- GUI Setting
+"----------------------------------------------------------------------
+function! s:GuiTheme(theme)
+	if type(a:theme) == 0
+		let l:theme = string(a:theme)
+	else
+		let l:theme = a:theme
+	endif
+	if l:theme == '0'
+		set guifont=inconsolata:h11
+		color desert256
+		highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
+			\ gui=NONE guifg=DarkGrey guibg=NONE
+	elseif l:theme == '1'
+		set guifont=inconsolata:h11
+		color seoul256
+	elseif l:theme == '2'
+		set guifont=fixedsys:h10
+		color seoul256
+		FontBoldOff
+	endif
+endfunc
+
+command! -nargs=1 GuiTheme call s:GuiTheme(<f-args>)
+
+
+"----------------------------------------------------------------------
 "- GUI Setting
 "----------------------------------------------------------------------
 if has('gui_running')
