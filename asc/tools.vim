@@ -277,9 +277,9 @@ augroup END
 
 " log file
 function! s:LogAppend(filename, text)
-	let l:ts = strftime("%c")
+	let l:ts = strftime("[%Y-%m-%d %H:%M:%S] ")
 	exec "redir >> ".fnameescape(a:filename)
-	silent echon "[".l:ts."] ".a:text."\n"
+	silent echon l:ts.a:text."\n"
 	silent exec "redir END"
 endfunc
 
