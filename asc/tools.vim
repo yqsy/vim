@@ -275,3 +275,39 @@ augroup QuickfixStatus
 augroup END
 
 
+" log file
+function! s:LogAppend(filename, text)
+	let l:ts = strftime("%c")
+	exec "redir >> ".fnameescape(a:filename)
+	silent echon "[".l:ts."] ".a:text."\n"
+	silent exec "redir END"
+endfunc
+
+
+" write a log
+function! LogWrite(text)
+	if !exists('s:logname')
+		let s:logname = expand("~/.vim/tmp/record.log")
+		let l:path = expand("~/.vim/tmp")
+		try
+			silent call mkdir(l:path, "p", 0755)
+		catch /^Vim\%((\a\+)\)\=:E/
+		finally
+		endtry
+	endif
+	try
+		call s:LogAppend(s:logname, a:text)
+	catch /^Vim\%((\a\+)\)\=:E/
+	finally
+	endtry
+endfunc
+
+
+" toggle taglist
+function! Toggle_Taglist()
+	call LogWrite('[taglist] '.expand("%:p"))
+	TlistToggle
+endfunc
+
+
+

@@ -96,11 +96,10 @@ noremap <space>st :!svn st<cr>
 " toggle plugins
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
-noremap <silent><S-F10> :TlistToggle<cr>
-inoremap <silent><S-F10> <c-o>:TlistToggle<cr>
+noremap <silent><S-F10> :call Toggle_Taglist()<cr>
+inoremap <silent><S-F10> <c-o>:call Toggle_Taglist()<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
-
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
@@ -109,7 +108,6 @@ noremap <silent><space>ft :call Open_Explore(0)<cr>
 noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
 noremap <silent><space>fb :TagbarToggle<cr>
-
 
 noremap <silent><leader>e :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
@@ -125,7 +123,6 @@ let s:filename = expand('<sfile>:p')
 exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
 noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
-
 
 " cscope in new tab
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>
