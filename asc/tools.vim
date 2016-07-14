@@ -306,8 +306,13 @@ endfunc
 " toggle taglist
 function! Toggle_Taglist()
 	call LogWrite('[taglist] '.expand("%:p"))
-	TlistToggle
+	silent exec 'TlistToggle'
 endfunc
 
 
+" toggle tagbar
+function! Toggle_Tagbar()
+	call LogWrite('[tagbar] '.expand("%:p"))
+	silent exec 'TagbarToggle'
+endfunc
 

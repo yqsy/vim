@@ -83,8 +83,8 @@ if has('gui_running')
 	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 else
-	noremap <silent><ESC>[34~ :TagbarToggle<cr>
-	inoremap <silent><ESC>[34~ <ESC>:TagbarToggle<cr>
+	noremap <silent><ESC>[34~ :call Toggle_Tagbar()<cr>
+	inoremap <silent><ESC>[34~ <ESC>:call Toggle_Tagbar()<cr>
 endif
 
 
