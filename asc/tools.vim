@@ -316,3 +316,16 @@ function! Toggle_Tagbar()
 	silent exec 'TagbarToggle'
 endfunc
 
+
+" open explorer/finder
+function! Show_Explore()
+	let l:locate = expand("%:p:h")
+	if has('win32') || has('win64') || has('win16')
+		exec "!start /b cmd.exe /C explorer.exe ".shellescape(l:locate)
+	endif
+endfunc
+
+
+
+
+

@@ -123,6 +123,7 @@ let s:filename = expand('<sfile>:p')
 exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
 noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
+noremap <space>he :call Show_Explore()<cr>
 
 " cscope in new tab
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>
