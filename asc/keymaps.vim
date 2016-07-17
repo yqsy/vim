@@ -82,6 +82,8 @@ if has('gui_running')
 	inoremap <M-b> <ESC>:VimMake emake<cr>
 	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
+	noremap <M-a> ggVG
+	inoremap <M-a> <ESC>ggVG
 else
 	noremap <silent><ESC>[34~ :call Toggle_Tagbar()<cr>
 	inoremap <silent><ESC>[34~ <ESC>:call Toggle_Tagbar()<cr>
@@ -93,6 +95,9 @@ noremap <space>sc :!svn co -m "update from vim"<cr>
 noremap <space>su :!svn up<cr>
 noremap <space>st :!svn st<cr>
 
+" editing commands
+noremap <space>a ggVG
+
 " toggle plugins
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
@@ -100,6 +105,7 @@ noremap <silent><S-F10> :call Toggle_Taglist()<cr>
 inoremap <silent><S-F10> <c-o>:call Toggle_Taglist()<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
+
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
