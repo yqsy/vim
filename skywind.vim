@@ -40,9 +40,9 @@ let g:vimmake_run_guess = ['go']
 let g:vimmake_build_scroll = 3
 
 if has('win32') || has('win64') || has('win16') || has('win95')
-	let g:vimmake_cflags = ['-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
+	let g:vimmake_cflags = ['-O3', '-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
 else
-	let g:vimmake_cflags = ['-lstdc++']
+	let g:vimmake_cflags = ['-O3', '-lstdc++']
 endif
 
 if v:version >= 800 || has('patch-7.4.1829')
