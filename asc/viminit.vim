@@ -57,31 +57,31 @@ inoremap <C-l> <right>
 
 
 " use hotkey to change buffer
-noremap <silent><leader>bn :bn<cr>
-noremap <silent><leader>bp :bp<cr>
-noremap <silent><leader>bm :bm<cr>
-noremap <silent><leader>bv :vs<cr>
-noremap <silent><leader>bd :bdelete<cr>
-noremap <silent><leader>bl :ls<cr>
-noremap <silent><leader>nh :nohl<cr>
+noremap <silent>\bn :bn<cr>
+noremap <silent>\bp :bp<cr>
+noremap <silent>\bm :bm<cr>
+noremap <silent>\bv :vs<cr>
+noremap <silent>\bd :bdelete<cr>
+noremap <silent>\bl :ls<cr>
+noremap <silent>\nh :nohl<cr>
 
 " use hotkey to operate tab
 noremap <silent><tab>m :tabnew<cr>
 noremap <silent><tab>e :tabclose<cr>
 noremap <silent><tab>n :tabn<cr>
 noremap <silent><tab>p :tabp<cr>
-noremap <silent><leader>t :tabnew<cr>
-noremap <silent><leader>g :tabclose<cr>
-noremap <silent><leader>1 :tabn 1<cr>
-noremap <silent><leader>2 :tabn 2<cr>
-noremap <silent><leader>3 :tabn 3<cr>
-noremap <silent><leader>4 :tabn 4<cr>
-noremap <silent><leader>5 :tabn 5<cr>
-noremap <silent><leader>6 :tabn 6<cr>
-noremap <silent><leader>7 :tabn 7<cr>
-noremap <silent><leader>8 :tabn 8<cr>
-noremap <silent><leader>9 :tabn 9<cr>
-noremap <silent><leader>0 :tabn 10<cr>
+noremap <silent>\t :tabnew<cr>
+noremap <silent>\g :tabclose<cr>
+noremap <silent>\1 :tabn 1<cr>
+noremap <silent>\2 :tabn 2<cr>
+noremap <silent>\3 :tabn 3<cr>
+noremap <silent>\4 :tabn 4<cr>
+noremap <silent>\5 :tabn 5<cr>
+noremap <silent>\6 :tabn 6<cr>
+noremap <silent>\7 :tabn 7<cr>
+noremap <silent>\8 :tabn 8<cr>
+noremap <silent>\9 :tabn 9<cr>
+noremap <silent>\0 :tabn 10<cr>
 noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
@@ -188,9 +188,9 @@ set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
 set matchtime=3
 
 " leader definition
-noremap <silent><leader>w :w<cr>
-noremap <silent><leader>q :q<cr>
-noremap <silent><leader>l :close<cr>
+noremap <silent>\w :w<cr>
+noremap <silent>\q :q<cr>
+noremap <silent>\l :close<cr>
 
 " window management
 noremap <tab>h <c-w>h
