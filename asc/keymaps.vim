@@ -67,9 +67,6 @@ if has('gui_running')
 	noremap <M-V> "+P
 	noremap <M-v> "+p
 	noremap <M-p> "0p
-	noremap <M-_> :call Change_Transparency(-2)<cr>
-	noremap <M-+> :call Change_Transparency(+2)<cr>
-	noremap <M-F4> :call Toggle_Transparency(8)<cr>
 	noremap <C-S> :w<cr>
 	inoremap <C-S> <ESC>:w<cr>
 	noremap <M-Left> :call Tab_MoveLeft()<cr>
@@ -84,6 +81,11 @@ if has('gui_running')
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 	noremap <M-a> ggVG
 	inoremap <M-a> <ESC>ggVG
+	if has('gui_macvim')
+		noremap <M-_> :call Change_Transparency(-2)<cr>
+		noremap <M-+> :call Change_Transparency(+2)<cr>
+		noremap <M-F4> :call Toggle_Transparency(8)<cr>
+	endif
 else
 	noremap <silent><ESC>[34~ :call Toggle_Tagbar()<cr>
 	inoremap <silent><ESC>[34~ <ESC>:call Toggle_Tagbar()<cr>
