@@ -86,6 +86,29 @@ noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 
+" <leader> is empty in tiny mode
+if !has('eval')
+	noremap <silent>\bn :bn<cr>
+	noremap <silent>\bp :bp<cr>
+	noremap <silent>\bm :bm<cr>
+	noremap <silent>\bv :vs<cr>
+	noremap <silent>\bd :bdelete<cr>
+	noremap <silent>\bl :ls<cr>
+	noremap <silent>\nh :nohl<cr>
+	noremap <silent>\t :tabnew<cr>
+	noremap <silent>\g :tabclose<cr>
+	noremap <silent>\1 :tabn 1<cr>
+	noremap <silent>\2 :tabn 2<cr>
+	noremap <silent>\3 :tabn 3<cr>
+	noremap <silent>\4 :tabn 4<cr>
+	noremap <silent>\5 :tabn 5<cr>
+	noremap <silent>\6 :tabn 6<cr>
+	noremap <silent>\7 :tabn 7<cr>
+	noremap <silent>\8 :tabn 8<cr>
+	noremap <silent>\9 :tabn 9<cr>
+	noremap <silent>\0 :tabn 10<cr>
+endif
+
 " keymap to switch tab in both gui and terminal (need config)
 if has('gui_running') 
 	noremap <silent><c-tab> :tabprev<CR>
@@ -191,6 +214,12 @@ set matchtime=3
 noremap <silent><leader>w :w<cr>
 noremap <silent><leader>q :q<cr>
 noremap <silent><leader>l :close<cr>
+
+if !has('eval')
+	noremap <silent>\w :w<cr>
+	noremap <silent>\q :q<cr>
+	noremap <silent>\l :close<cr>
+endif
 
 " window management
 noremap <tab>h <c-w>h
