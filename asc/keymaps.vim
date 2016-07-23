@@ -133,6 +133,7 @@ noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
+noremap <space>ho :only<cr>
 
 " cscope in new tab
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>

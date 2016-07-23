@@ -325,7 +325,14 @@ function! Show_Explore()
 	endif
 endfunc
 
-
+" CTRL-N -> TAB
+function! Tools_Tab2CN(enable)
+	if a:enable == 0
+		iunmap <TAB>
+	else
+		inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
+	endif
+endfunc
 
 
 
