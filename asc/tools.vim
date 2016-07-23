@@ -46,7 +46,7 @@ function! s:Show_Content(title, width, content)
 		let l:width = winwidth(0) / 2
 		if l:width < 25 | let l:width = 25 | endif
 	endif
-	exec '' . l:width . 'vnew '. a:title
+	exec '' . l:width . 'vnew '. fnameescape(a:title)
 	setlocal buftype=nofile bufhidden=delete noswapfile winfixwidth
 	setlocal noshowcmd nobuflisted wrap nonumber
 	if has('syntax')
