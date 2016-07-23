@@ -340,7 +340,7 @@ function! Tools_Pydoc(word, where)
 	if a:where == '0' || a:where == 'quickfix'
 		cexpr l:text
 	else
-		call s:Show_Content('Pydoc: '.a:word, 0, l:text)
+		call s:Show_Content('PyDoc: '.a:word, 0, l:text)
 	endif
 endfunc
 
