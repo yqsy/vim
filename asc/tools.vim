@@ -334,5 +334,17 @@ function! Tools_Tab2CN(enable)
 	endif
 endfunc
 
+" Search pydoc
+function! Tools_Pydoc(word, where)
+	let l:text = system('python -m pydoc ' . shellescape(a:word))
+	if a:where == '0' || a:where == 'quickfix'
+		cexpr l:text
+	else
+		call s:Show_Content('Pydoc: '.a:word, 0, l:text)
+	endif
+endfunc
+
+
+command! -nargs=1 PyDoc call Tools_Pydoc("<args>", '1')
 
 

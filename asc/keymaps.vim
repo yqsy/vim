@@ -116,6 +116,7 @@ noremap <silent><space>ft :call Open_Explore(0)<cr>
 noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
 noremap <silent><space>fb :TagbarToggle<cr>
+noremap <silent><space>fp :call Tools_Pydoc("<C-R>=expand("<cword>")<cr>", 1)<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
