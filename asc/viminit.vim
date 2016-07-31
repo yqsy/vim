@@ -207,7 +207,6 @@ noremap <tab>O O<ESC>
 inoremap <c-a> <home>
 inoremap <c-e> <end>
 inoremap <c-d> <del>
-inoremap <c-\> <c-k>
 
 " faster command mode
 cnoremap <c-h> <left>
