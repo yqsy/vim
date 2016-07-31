@@ -145,11 +145,11 @@ function! Open_HeaderFile(where)
 		let l:newname = l:main . '.' . l:next
 		if filereadable(l:newname)
 			if a:where == 0
-				exec 'e '.fnameescape(l:newname)
+				call Tools_FileSwitch('e', l:newname)
 			elseif a:where == 1
-				exec 'vs ' . fnameescape(l:newname)
+				call Tools_FileSwitch('vs', l:newname)
 			else
-				exec 'tabedit '. fnameescape(l:newname)
+				call Tools_FileSwitch('tabnew', l:newname)
 			endif
 			return
 		endif

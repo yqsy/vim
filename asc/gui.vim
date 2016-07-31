@@ -115,7 +115,17 @@ amenu B&uild.User\ Tool\ 8 :VimTool 8<cr>
 amenu B&uild.User\ Tool\ 9 :VimTool 9<cr>
 amenu B&uild.User\ Tool\ 0 :VimTool 0<cr>
 
-
+amenu PopUp.-s9- :
+amenu PopUp.Open\ &Header :call Open_HeaderFile(2)<cr>
+amenu PopUp.-s10- :
+amenu PopUp.Search\ &Symbol :VimScope s <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &Defininition :VimScope g <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Functions\ &Called by :VimScope d <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Functions\ &Calling :VimScope c <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &String :VimScope t <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &Pattern :VimScope e <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &File :VimScope f <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &Include :VimScope i <C-R>=expand("<cword>")<CR><CR>
 
 
 
