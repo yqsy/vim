@@ -67,6 +67,57 @@ function! s:Show_Content(title, width, content)
 	noremap <silent><buffer> c :close!<cr>
 endfunc
 
+" Open file in new tab if it hasn't been open, or reuse the existant tab
+function! Tools_FileSwitch(how, filename)
+	let l:tabcc = tabpagenr()
+	let l:wincc = winnr()
+	let l:filename = fnamemodify(a:filename, ':p')
+	if has('win32') || has('win16') || has('win64') || has('win95')
+		let l:filename = tolower(l:filename)
+	endif
+	for i in range(tabpagenr('$'))
+		silent exec 'tabn '.(i + 1)
+		let l:buflist = tabpagebuflist(i + 1)
+		for j in range(len(l:buflist))
+			let l:bufnr = l:buflist[j]
+			if !getbufvar(l:bufnr, '&modifiable')
+				continue
+			endif
+			let l:buftype = getbufvar(l:bufnr, '&buftype')
+			if l:buftype == 'quickfix'
+				continue
+			endif
+			let l:name = fnamemodify(bufname(l:bufnr), ':p')
+			if has('win32') || has('win16') || has('win64') || has('win95')
+				let l:name = tolower(l:name)
+			endif
+			if l:filename == l:name
+				silent exec ''.(j + 1).'wincmd w'
+				return
+			endif
+		endfor
+	endfor
+	silent exec 'tabn '.l:tabcc
+	silent exec ''.l:wincc.'wincmd w'
+	if (a:how == 'edit') || (a:how == 'e')
+		exec 'e '.fnameescape(a:filename)
+	elseif (a:how == 'tabedit') || (a:how == 'tabe') || (a:how == 'tabnew')
+		exec 'tabe '.fnameescape(a:filename)
+	elseif (a:how == 'split') || (a:how == 'sp')
+		exec 'split '.fnameescape(a:filename)
+	elseif (a:how == 'vsplit') || (a:how == 'vs')
+		exec 'vsplit '.fnameescape(a:filename)
+	else
+		echohl ErrorMsg
+		echom "unknow command: ".a:how
+		echohl NONE
+	endif
+endfunc
+
+command! -nargs=* FileSwitch call Tools_FileSwitch(<f-args>)
+
+
+
 function! Open_Dictionary(word)
 	let l:expl = system('sdcv --utf8-input --utf8-output -n "'. a:word .'"')
 	call s:Show_Content('[StarDict]', 28, l:expl)
@@ -346,5 +397,7 @@ endfunc
 
 
 command! -nargs=1 PyDoc call Tools_Pydoc("<args>", '1')
+
+
 
 
