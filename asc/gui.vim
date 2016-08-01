@@ -124,8 +124,8 @@ amenu PopUp.Functions\ &Called by :VimScope d <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Functions\ &Calling :VimScope c <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Search\ &String :VimScope t <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Search\ &Pattern :VimScope e <C-R>=expand("<cword>")<CR><CR>
-amenu PopUp.Search\ &File :VimScope f <C-R>=expand("<cword>")<CR><CR>
-amenu PopUp.Search\ &Include :VimScope i <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ &File :VimScope f <C-R>=expand("<cfile>")<CR><CR>
+amenu PopUp.Search\ &Include :VimScope i <C-R>=expand("<cfile>")<CR><CR>
 
 
 
