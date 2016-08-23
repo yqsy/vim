@@ -308,10 +308,34 @@ function! Vimmake_Command(command, target, mode, match)
 	if has("gui_running")
 		let $VIM_GUI = '1'
 	endif
-	let l:cmd = shellescape(a:command)
+	if type(a:command) == 1
+		let l:cmd = shellescape(a:command)
+	else
+		let l:tmp = []
+		for l:item in a:command
+			let l:tmp += [shellescape(l:item)]
+		endfor
+		let l:cmd = join(l:tmp, ' ')
+	endif
 	if (a:mode == 0) || ((!has("quickfix")) && a:mode == 1)
 		if has('gui_running') && (s:vimmake_windows != 0)
-			silent exec '!start cmd /c '. l:cmd . ' & pause'
+			if type(a:command) == 1
+				silent exec '!start cmd /c '. l:cmd . ' & pause'
+			else
+				let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
+				let l:run = ['@echo off', l:cmd, 'pause']
+				if v:version >= 700
+					call writefile(l:run, l:tmp)
+				else
+					exe 'redir! > '. fnameescape(l:tmp)
+					silent echo "@echo off"
+					silent echo l:cmd
+					silent echo "pause"
+					redir END
+				endif
+				let l:ccc = shellescape(l:tmp)
+				silent exec '!start cmd /c '. l:ccc
+			endif
 		else
 			exec '!' . l:cmd
 		endif
@@ -322,7 +346,7 @@ function! Vimmake_Command(command, target, mode, match)
 		else
 			let &l:errorformat=a:match
 		endif
-		let &l:makeprg = a:command
+		let &l:makeprg = l:cmd
 		exec "make!"
 		call s:MakeRestore()
 	elseif (a:mode == 2)
@@ -342,7 +366,11 @@ function! Vimmake_Command(command, target, mode, match)
 	elseif (a:mode == 5)
 		if has('python')
 			python import vim, subprocess
-			python x = [vim.eval('a:command')]
+			if type(a:command) == 1
+				python x = [vim.eval('a:command')]
+			else
+				python x = vim.eval('a:command')
+			endif
 			python m = subprocess.PIPE
 			python n = subprocess.STDOUT
 			python s = sys.platform[:3] == 'win' and True or False
@@ -366,7 +394,11 @@ function! Vimmake_Command(command, target, mode, match)
 		endif
 	elseif (a:mode == 7)
 		if g:vimmake_runner != ''
-			call call(g:vimmake_runner, [a:command])
+			if type(a:command) == 1
+				call call(g:vimmake_runner, [a:command])
+			else
+				call call(g:vimmake_runner, a:command)
+			endif
 		else
 			echohl ErrorMsg
 			echom "ERROR: g:vimmake_runner is empty"

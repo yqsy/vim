@@ -399,5 +399,33 @@ endfunc
 command! -nargs=1 PyDoc call Tools_Pydoc("<args>", '1')
 
 
+function! Tools_BellUnix()
+    let l:t_ti = &t_ti
+    let l:t_te = &t_te
+    let &t_ti = ""
+    let &t_te = ""
+    silent !printf "\a"
+    redraw!
+    let &t_ti = l:t_ti
+    let &t_te = l:t_te
+endfunc
+
+function! Tools_BellConflict()
+	silent exec 'norm! \<ESC>'
+endfunc
+
+function! Tools_SwitchLayout() 
+	set number
+    set showtabline=2
+    set laststatus=2
+	if !has('gui_running')
+		set t_Co=256
+		set ttimeoutlen=100
+	endif
+    if has('patch-7.4.2100')
+        let g:vimmake_build_mode = 2 
+    endif
+endfunc
+
 
 

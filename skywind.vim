@@ -7,6 +7,10 @@ let &tags .= ',.tags,' . expand('~/.vim/tags/standard.tags')
 filetype plugin indent on
 set hlsearch
 
+if !has('gui_running')
+	set ttimeoutlen=100
+endif
+
 command! -nargs=1 VimImport exec 'so '.s:home.'/'.'<args>'
 command! -nargs=1 VimLoad exec 'set rtp+='.s:home.'/'.'<args>'
 
@@ -31,6 +35,14 @@ autocmd BufReadPost *
 	\ if line("'\"") > 1 && line("'\"") <= line("$") |
 	\	 exe "normal! g`\"" |
 	\ endif
+
+
+"----------------------------------------------------------------------
+"- 
+"----------------------------------------------------------------------
+function! SkywindLayout()
+
+endfunc
 
 
 "----------------------------------------------------------------------
