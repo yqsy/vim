@@ -8,6 +8,18 @@
 "
 "     when "!" is included, auto-scroll in quickfix will be disabled
 "
+" Parameters will be expanded if they start with '%', '#' or '<' :
+"     %:p     - File name of current buffer with full path
+"     %:t     - File name of current buffer without path
+"     %:p:h   - File path of current buffer without file name
+"     %:e     - File extension of current buffer
+"     %:t:r   - File name of current buffer without path and extension
+"     %       - File name relativize to current directory
+"     %:h:.   - File path relativize to current directory
+"     <cwd>   - Current directory
+"     <cword> - Current word under cursor
+"     <cfile> - Current file name under cursor
+"
 " Environment variables are set before executing:
 "     $VIM_FILEPATH  - File name of current buffer with full path
 "     $VIM_FILENAME  - File name of current buffer without path
@@ -392,8 +404,8 @@ function! s:AsyncRun(bang, ...)
 	let $VIM_FILEDIR = expand("%:p:h")
 	let $VIM_FILENOEXT = expand("%:t:r")
 	let $VIM_FILEEXT = "." . expand("%:e")
-	let $VIM_CWD = expand("%:p:h:h")
-	let $VIM_RELDIR = expand("%:h")
+	let $VIM_CWD = getcwd()
+	let $VIM_RELDIR = expand("%:h:.")
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CWORD = expand("<cword>")
 	let $VIM_CFILE = expand("<cfile>")
@@ -415,10 +427,12 @@ function! s:AsyncRun(bang, ...)
 	for l:index in range(a:0)
 		let l:item = a:{l:index + 1}
 		let l:name = l:item
-		if index(['%', '%<', '#'], l:item) >= 0
+		if index(['%', '%<', '#', '#<'], l:item) >= 0
 			let l:name = expand(l:item)
-		elseif l:item[:1] == '%:'
+		elseif index(['%:', '#:'], l:item[:1]) >= 0
 			let l:name = expand(l:item)
+		elseif l:item == '<cwd>'
+			let l:name = getcwd()
 		elseif (l:item[0] == '<') && (l:item[-1:] == '>')
 			let l:name = expand(l:item)
 		endif
