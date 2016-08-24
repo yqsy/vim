@@ -241,6 +241,10 @@ if !exists('loaded_taglist')
         let Tlist_Max_Tag_Length = 10
     endif
 
+	if !exists('Tlist_Python_Execute')
+		let Tlist_Python_Execute = 0
+	endif
+
     " Do not change the name of the taglist title variable. The winmanager
     " plugin relies on this name to determine the title for the taglist
     " plugin.
@@ -2287,6 +2291,27 @@ function! s:Tlist_Parse_Tagline(tag_line)
     let {fidx_tidx}_tag_name = tag_name
 endfunction
 
+function! s:Tlist_PythonSystem(command)
+	if !has('python')
+		return system(command)
+	else
+		python import subprocess, vim
+		python x = vim.eval('a:command')
+		python m = subprocess.PIPE
+		python n = subprocess.STDOUT
+		python s = sys.platform[:3] == 'win' and True or False
+		python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
+		python t = p.stdout.read()
+		python p.stdout.close()
+		python p.wait()
+		python t = t.replace('\\', '\\\\').replace('"', '\\"')
+		python t = t.replace('\n', '\\n').replace('\r', '\\r')
+		python vim.command('let l:text = "%s"'%t)
+		return l:text
+	endif
+endfunction
+
+
 " Tlist_Process_File
 " Get the list of tags defined in the specified file and store them
 " in Vim variables. Returns the file index where the tags are stored.
@@ -2377,7 +2402,18 @@ function! s:Tlist_Process_File(filename, ftype)
     call s:Tlist_Log_Msg('Cmd: ' . ctags_cmd)
 
     " Run ctags and get the tag list
-    let cmd_output = system(ctags_cmd)
+	let use_python = 0
+	if has('win95') || has('win32') || has('win64') || has('win16')
+		if has('python') && g:Tlist_Python_Execute != 0
+			let use_python = 1
+		endif
+	endif
+
+	if use_python == 0
+		let cmd_output = system(ctags_cmd)
+	else
+		let cmd_output = s:Tlist_PythonSystem(ctags_cmd)
+	endif
 
     " Restore the value of the 'shellslash' option.
     if has('win95') && !has('win32unix')
