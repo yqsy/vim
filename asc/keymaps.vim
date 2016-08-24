@@ -130,6 +130,8 @@ endif
 
 let s:filename = expand('<sfile>:p')
 exec 'noremap <space>hk :tabnew '.s:filename.'<cr>'
+let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
+exec 'noremap <space>hs :tabnew '.s:skywind.'<cr>'
 noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
