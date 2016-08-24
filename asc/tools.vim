@@ -422,9 +422,6 @@ function! Tools_SwitchLayout()
 		set t_Co=256
 		set ttimeoutlen=100
 	endif
-    if has('patch-7.4.2100')
-        let g:vimmake_build_mode = 2 
-    endif
 endfunc
 
 
