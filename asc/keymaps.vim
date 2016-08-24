@@ -75,8 +75,8 @@ if has('gui_running')
 	inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
 	noremap <M-r> :VimExecute run<cr>
 	inoremap <M-r> <ESC>:VimExecute run<cr>
-	noremap <M-b> :VimMake emake<cr>
-	inoremap <M-b> <ESC>:VimMake emake<cr>
+	noremap <M-b> :VimBuild emake<cr>
+	inoremap <M-b> <ESC>:VimBuild emake<cr>
 	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 	noremap <M-a> ggVG

@@ -45,6 +45,7 @@
 " Settings:
 "     g:asyncrun_exit - script will be executed after finished
 "     g:asyncrun_bell - non-zero to ring a bell after finished
+"     g:asyncrun_mode - 0:async(if support) 1:sync 2:shell
 "
 " Variables:
 "     g:asyncrun_code - exit code
@@ -67,6 +68,14 @@ endif
 
 if !exists('g:asyncrun_stop')
 	let g:asyncrun_stop = ''
+endif
+
+if !exists('g:asyncrun_mode')
+	let g:asyncrun_mode = 0
+endif
+
+if !exists('g:asyncrun_save')
+	let g:asyncrun_save = 0
 endif
 
 if !exists('g:asyncrun_timer')
@@ -112,6 +121,30 @@ if v:version >= 800 || has('patch-7.4.1829')
 		let g:asyncrun_support = 1
 	endif
 endif
+
+" backup local makeprg and errorformat
+function! s:MakeSave()
+	let s:make_save = &l:makeprg
+	let s:match_save = &l:errorformat
+endfunc
+
+" restore local makeprg and errorformat
+function! s:MakeRestore()
+	let &l:makeprg = s:make_save
+	let &l:errorformat = s:match_save
+endfunc
+
+" save file
+function! s:CheckSave()
+	if bufname('%') == '' || getbufvar('%', '&modifiable') == 0
+		return
+	endif
+	if g:asyncrun_save == 1
+		silent exec "update"
+	elseif g:asyncrun_save == 2
+		silent exec "wa"
+	endif
+endfunc
 
 
 "----------------------------------------------------------------------
@@ -236,7 +269,7 @@ function! s:AsyncRun_Job_OnFinish(what)
 	endif
 	let g:asyncrun_code = s:async_code
 	if g:asyncrun_bell != 0
-		exe "norm! \<esc>"
+		exec 'norm! \<esc>'
 	endif
 	redrawstatus!
 	redraw
@@ -419,6 +452,13 @@ function! s:AsyncRun(bang, ...)
 		let $VIM_GUI = '1'
 	endif
 	let l:cmd = []
+	if a:0 == 0
+		echohl ErrorMsg
+		echom "E471: Argument required"
+		echohl NONE
+		return
+	endif
+	call s:CheckSave()
 	if a:bang == '!'
 		let s:async_scroll = 0
 	else
@@ -438,7 +478,38 @@ function! s:AsyncRun(bang, ...)
 		endif
 		let l:cmd += [l:name]
 	endfor
-	call g:AsyncRun_Job_Start(l:cmd)
+	let l:part = []
+	for l:item in l:cmd
+		let l:part += [shellescape(l:item)]
+	endfor
+	let l:command = join(l:part, ' ')
+	if g:asyncrun_mode == 0 && s:asyncrun_support != 0
+		call g:AsyncRun_Job_Start(l:cmd)
+	elseif g:asyncrun_mode <= 1 && has('quickfix')
+		call s:MakeSave()
+		let &l:makeprg = l:command
+		exec "make!"
+		call s:MakeRestore()
+	else
+		if s:asyncrun_windows != 0
+			let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
+			let l:run = ['@echo off', l:command, 'pause']
+			if v:version >= 700
+				call writefile(l:run, l:tmp)
+			else
+				exe 'redir ! > '.fnameescape(l:tmp)
+				silent echo "@echo off"
+				silent echo l:cmd
+				silent echo "pause"
+				redir END
+			endif
+			let l:ccc = shellescape(l:tmp)
+			silent exec '!start cmd /C '. l:ccc
+			redraw!
+		else
+			exec '!' . l:command
+		endif
+	endif
 endfunc
 
 
