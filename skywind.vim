@@ -51,10 +51,6 @@ else
 	let g:vimmake_cflags = ['-O3', '-lstdc++']
 endif
 
-if $SSH_CONNECTION != ''
-	let g:vimmake_build_bell = 1
-	let g:asyncrun_bell = 1
-endif
 
 
 "----------------------------------------------------------------------

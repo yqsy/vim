@@ -422,6 +422,10 @@ function! Tools_SwitchLayout()
 		set t_Co=256
 		set ttimeoutlen=100
 	endif
+	if $SSH_CONNECTION != ''
+		let g:vimmake_build_bell = 1
+		let g:asyncrun_bell = 1
+	endif
 endfunc
 
 
