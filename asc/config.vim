@@ -120,6 +120,8 @@ set guitablabel=%{Vim_NeatGuiTabLabel()}
 set guitabtooltip=%{Vim_NeatGuiTabTip()}
 
 
+
+
 function! Python_InitTab()
 	setlocal tabstop=4
 	setlocal softtabstop=4
@@ -182,5 +184,18 @@ if has('unix')
 endif
 
 
+function! Terminal_SwitchTab()
+	if has('gui_running')
+		return
+	endif
+	for i in range(10)
+		exec "noremap <silent><M-".i."> :tabn ".i."<cr>"
+		exec "inoremap <silent><M-".i."> <ESC>:tabn ".i."<cr>"
+		exec "set <M-".i.">=\e{0}".i."~"
+	endfor
+endif
+
+
+call Terminal_SwitchTab()
 
 
