@@ -193,7 +193,7 @@ function! Terminal_SwitchTab()
 		exec "inoremap <silent><M-".i."> <ESC>:tabn ".i."<cr>"
 		exec "set <M-".i.">=\e{0}".i."~"
 	endfor
-endif
+endfunc
 
 
 call Terminal_SwitchTab()
