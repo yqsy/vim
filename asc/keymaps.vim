@@ -86,9 +86,6 @@ if has('gui_running')
 		noremap <M-+> :call Change_Transparency(+2)<cr>
 		noremap <M-F4> :call Toggle_Transparency(8)<cr>
 	endif
-else
-	noremap <silent><ESC>[34~ :call Toggle_Tagbar()<cr>
-	inoremap <silent><ESC>[34~ <ESC>:call Toggle_Tagbar()<cr>
 endif
 
 
@@ -104,9 +101,15 @@ noremap <space>a ggVG
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix()<cr>
 noremap <silent><S-F10> :call Toggle_Taglist()<cr>
-inoremap <silent><S-F10> <c-o>:call Toggle_Taglist()<cr>
+inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
+noremap <silent><C-F10> :call Toggle_Tagbar()<cr>
+inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
+
+if !has('gui_running')
+	exec "set <S-F10>=\r[34~"
+endif
 
 " open tools
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
