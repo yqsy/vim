@@ -25,7 +25,7 @@ call Backup_Directory()
 "- Autocmds
 "----------------------------------------------------------------------
 au BufNewFile,BufRead *.as setlocal filetype=actionscript
-au FileType python setlocal shiftwidth=4 tabstop=4
+au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
 
 
 "----------------------------------------------------------------------

@@ -120,21 +120,6 @@ set guitablabel=%{Vim_NeatGuiTabLabel()}
 set guitabtooltip=%{Vim_NeatGuiTabTip()}
 
 
-
-
-function! Python_InitTab()
-	setlocal tabstop=4
-	setlocal softtabstop=4
-	setlocal shiftwidth=4
-	setlocal noexpandtab
-endfunc
-
-if has('autocmd')
-	filetype plugin indent on
-	autocmd! BufNewFile,BufRead *.py call Python_InitTab()
-endif
-
-
 function! Tab_MoveLeft()
 	let l:tabnr = tabpagenr() - 2
 	if l:tabnr >= 0
@@ -193,6 +178,7 @@ function! Terminal_SwitchTab()
 		exec "inoremap <silent><M-".i."> <ESC>:tabn ".i."<cr>"
 		exec "set <M-".i.">=\e]{0}".i."~"
 	endfor
+	set ttimeout ttimeoutlen=100
 endfunc
 
 
