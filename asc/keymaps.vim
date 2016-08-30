@@ -108,7 +108,7 @@ noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
 
 if !has('gui_running')
-	exec "set <S-F10>=\r[34~"
+	exec "set <S-F10>=\e[34~"
 endif
 
 " open tools
