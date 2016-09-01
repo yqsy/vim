@@ -314,7 +314,7 @@ function! Change_DirectoryToFile()
 	let l:filename = expand("%:p")
 	if l:filename == "" | return | endif
 	silent exec 'cd '.expand("%:p:h")
-	exec 'cd'
+	exec 'pwd'
 endfunc
 
 
