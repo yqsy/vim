@@ -99,7 +99,7 @@ noremap <space>a ggVG
 
 " toggle plugins
 noremap <silent><space>tt :TagbarToggle<cr>
-noremap <silent><space>tq :call Toggle_QuickFix()<cr>
+noremap <silent><space>tq :call Toggle_QuickFix(6)<cr>
 noremap <silent><S-F10> :call Toggle_Taglist()<cr>
 inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
 noremap <silent><C-F10> :call Toggle_Tagbar()<cr>
