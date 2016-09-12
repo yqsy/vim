@@ -120,6 +120,8 @@ noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>
 noremap <silent><space>fb :TagbarToggle<cr>
 noremap <silent><space>fp :call Tools_Pydoc("<C-R>=expand("<cword>")<cr>", 1)<cr>
+noremap <silent><space>fs :mksession! ~/.vim/session.txt<cr>
+noremap <silent><space>fl :so ~/.vim/session.txt<cr>
 
 noremap <silent><leader>e :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
