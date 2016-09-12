@@ -123,6 +123,9 @@ noremap <silent><space>fp :call Tools_Pydoc("<C-R>=expand("<cword>")<cr>", 1)<cr
 noremap <silent><space>fs :mksession! ~/.vim/session.txt<cr>
 noremap <silent><space>fl :so ~/.vim/session.txt<cr>
 
+set ssop-=options    " do not store global and local values in a session
+set ssop-=folds      " do not store folds
+
 noremap <silent><leader>e :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 
