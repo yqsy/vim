@@ -103,7 +103,6 @@ function! <SID>snip_copyright(author)
 	let l:text += [l:c . ' Last change: ' . strftime('%Y/%m/%d %H:%M:%S') ]
 	let l:text += [l:c]
 	let l:text += [l:complete]
-	let l:text += ['']
 	call append(0, l:text)
 endfunc
 
