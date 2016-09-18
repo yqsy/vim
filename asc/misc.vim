@@ -85,7 +85,7 @@ function! <SID>snip_copyright(author)
 	let l:c = s:comment()
 	let l:complete = s:comment_bar('=', 71)
 	let l:filename = expand("%:t")
-	let l:t = strftime("%c")
+	let l:t = strftime("%Y/%m/%d")
 	let l:text = []
 	if &filetype == 'python'
 		let l:text += ['#! /usr/bin/env python']
@@ -96,10 +96,10 @@ function! <SID>snip_copyright(author)
 	endif
 	let l:text += [l:complete]
 	let l:text += [l:c]
-	let l:text += [l:c . ' ' . l:filename . ' - ...' ]
+	let l:text += [l:c . ' ' . l:filename . ' - ' ]
 	let l:text += [l:c]
-	let l:text += [l:c . ' created by: ' . a:author . ' in '. l:t]
-	let l:text += [l:c . ' last change: ' . l:t ]
+	let l:text += [l:c . ' Created by ' . a:author . ' on '. l:t]
+	let l:text += [l:c . ' Last change: ' . strftime('%Y/%m/%d %H:%M:%S') ]
 	let l:text += [l:c]
 	let l:text += [l:complete]
 	let l:text += ['']
@@ -113,6 +113,7 @@ endfunc
 noremap <space>e- :call <SID>snip_comment_block('-')<cr>
 noremap <space>e= :call <SID>snip_comment_block('=')<cr>
 noremap <space>ec :call <SID>snip_copyright('skywind')<cr>
-noremap <space>et "=strftime("%c")<CR>gP
+noremap <space>et "=strftime("%Y/%m/%d %H:%M:%S")<CR>gp
+
 
 
