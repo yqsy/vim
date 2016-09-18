@@ -72,6 +72,7 @@ function! <SID>snip_comment_block(repeat)
 	if l:comment == ''
 		return
 	endif
+	call s:snip('')
 	call s:snip(l:complete)
 	call s:snip(l:comment . ' ')
 	call s:snip(l:complete)
@@ -114,6 +115,7 @@ noremap <space>e- :call <SID>snip_comment_block('-')<cr>
 noremap <space>e= :call <SID>snip_comment_block('=')<cr>
 noremap <space>ec :call <SID>snip_copyright('skywind')<cr>
 noremap <space>et "=strftime("%Y/%m/%d %H:%M:%S")<CR>gp
-
+noremap <space>ep :call append(line('.') - 1, '')<cr>
+noremap <space>en :call append(line('.'), '')<cr>
 
 

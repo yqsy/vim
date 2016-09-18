@@ -59,6 +59,7 @@ if has('gui_running')
 	noremap <silent><A-o> :call Open_Browse(2)<cr>
 	inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
 	noremap <S-cr> o<ESC>
+	noremap <c-cr> O<esc>
 	noremap <M-l> w
 	noremap <M-h> b
 	noremap <M-j> 10j
