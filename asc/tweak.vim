@@ -31,7 +31,7 @@
 "     :TweakEnableCaption!
 "
 "======================================================================
-if (!has('python')) || (!(has('win32') || has('win64') || has('windows')))
+if (!has('python')) || (!(has('win32') || has('win64')))
 	finish
 endif
 
