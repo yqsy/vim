@@ -33,7 +33,7 @@ function! s:FontBoldOff()
 	endwhile
 endfunc
 
-command! FontBoldOff call s:BoldOff()
+command! FontBoldOff call s:FontBoldOff()
 
 
 "----------------------------------------------------------------------
