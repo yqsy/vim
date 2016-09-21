@@ -195,30 +195,63 @@ function! Open_Browse(where)
 	endif
 endfunc
 
+
+function! Transparency_Set(value)
+	if (has('win32') || has('win64')) && exists('g:tweak_alpha')
+		let l:alpha = (100 - a:value) * 255 / 100
+		if l:alpha >= 255 
+			let l:alpha = 255 
+		endif
+		if l:alpha < 0 
+			let l:alpha = 0 
+		endif
+		exec 'TweakSetAlpha ' . l:alpha
+	elseif has('gui_macvim')
+		if a:value >= 100
+			set transparency = 100
+		elseif a:value >= 0
+			let &transparency = a:value
+		else
+			set transparency = 0
+		endif
+	endif
+endfunc
+
+function! Transparency_Get()
+	if (has('win32') || has('win64')) && exists('g:tweak_alpha')
+		return (255 - g:tweak_alpha) * 100 / 255
+	elseif has('gui_macvim')
+		return &transparency
+	endif
+	return 100
+endfunc
+
 function! Change_Transparency(increase)
+	let l:current = Transparency_Get()
 	if a:increase < 0
 		let l:inc = -a:increase
-		if l:inc > &transparency
-			set transparency=0
+		if l:inc > l:current
+			silent call Transparency_Set(0)
 		else
-			let &transparency = &transparency - l:inc
+			silent call Transparency_Set(l:current - l:inc)
 		endif
 	elseif a:increase > 0
 		let l:inc = a:increase
-		if l:inc + &transparency > 100
-			set transparency=100
+		if l:inc + l:current > 100
+			silent call Transparency_Set(100)
 		else
-			let &transparency = &transparency + l:inc
+			silent call Transparency_Set(l:current + l:inc)
 		endif
 	endif
-	echo 'transparency: '.&transparency
+	echo 'transparency: '.l:current
 endfunc
 
 function! Toggle_Transparency(value)
-	if &transparency > 0
-		set transparency=0
+	let l:current = Transparency_Get()
+	if Transparency_Get() > 0
+		call Transparency_Set(0)
 	else
-		let &transparency = a:value
+		call Transparency_Set(a:value)
 	endif
 endfunc
 

@@ -82,10 +82,10 @@ if has('gui_running')
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 	noremap <M-a> ggVG
 	inoremap <M-a> <ESC>ggVG
-	if has('gui_macvim')
-		noremap <M-_> :call Change_Transparency(-2)<cr>
-		noremap <M-+> :call Change_Transparency(+2)<cr>
-		noremap <M-F4> :call Toggle_Transparency(8)<cr>
+	if has('gui_running')
+		noremap <S-F12> :call Change_Transparency(-2)<cr>
+		noremap <S-F11> :call Change_Transparency(+2)<cr>
+		noremap <C-F4> :call Toggle_Transparency(8)<cr>
 	endif
 endif
 
