@@ -83,9 +83,9 @@ if has('gui_running')
 	noremap <M-a> ggVG
 	inoremap <M-a> <ESC>ggVG
 	if has('gui_running')
-		noremap <S-F12> :call Change_Transparency(-2)<cr>
-		noremap <S-F11> :call Change_Transparency(+2)<cr>
-		noremap <C-F4> :call Toggle_Transparency(8)<cr>
+		noremap <m-_> :call Change_Transparency(-2)<cr>
+		noremap <m-+> :call Change_Transparency(+2)<cr>
+		noremap <m-\|> :call Toggle_Transparency(9)<cr>
 	endif
 endif
 
