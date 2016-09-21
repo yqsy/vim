@@ -21,5 +21,7 @@ if has('gui_running')
 	IncScript asc/gui.vim
 endif
 
-
+if has('python')
+	IncScript asc/tweak.vim
+endif
 

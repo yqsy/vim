@@ -210,7 +210,7 @@ class VimTweak (object):
 
 
 #----------------------------------------------------------------------
-# GetInstance
+# GetInstance - for lazy initialize ctypes
 #----------------------------------------------------------------------
 _VimTweakInstance = None
 
@@ -223,11 +223,13 @@ def VimTweakGetInstance():
 
 __EOF__
 
+let g:tweak_transparency = 255
 
 function! s:SetAlpha(alpha)
 	python import vim
 	python tweak = VimTweakGetInstance()
 	python tweak.SetAlpha(vim.eval('a:alpha'))
+	let g:tweak_transparency = 0 + a:alpha
 endfunc
 
 function! s:EnableCaption(enable)
