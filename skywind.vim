@@ -112,6 +112,16 @@ let g:ctrlp_custom_ignore = {
 
 
 "----------------------------------------------------------------------
+" UltiSnips
+"----------------------------------------------------------------------
+function! Config_UltiSnips()
+	let g:UltiSnipsExpandTrigger="<c-b>"
+	let g:UltiSnipsJumpForwardTrigger="<c-b>"
+	let g:UltiSnipsJumpBackwardTrigger="<c-x>b"
+endfunc
+
+
+"----------------------------------------------------------------------
 "- neocomplete
 "----------------------------------------------------------------------
 if 0
