@@ -118,3 +118,25 @@ noremap <space>ep :call append(line('.') - 1, '')<cr>
 noremap <space>en :call append(line('.'), '')<cr>
 
 
+
+"----------------------------------------------------------------------
+" insert mode fast
+"----------------------------------------------------------------------
+inoremap <c-x>( ()<esc>i
+inoremap <c-x>[ []<esc>i
+inoremap <c-x>' ''<esc>i
+inoremap <c-x>" ""<esc>i
+inoremap <c-x>< <><esc>i
+inoremap <c-x>{ {<esc>o}<esc>ko
+
+if has('gui_running')
+	inoremap <M-(> ()<esc>i
+	inoremap <M-[> []<esc>i
+	inoremap <M-'> ''<esc>i
+	inoremap <M-"> ""<esc>i
+	inoremap <M-<> <><esc>i
+	inoremap <M-{> {<esc>o}<esc>ko
+endif
+
+
+

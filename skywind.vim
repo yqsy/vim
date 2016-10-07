@@ -373,9 +373,7 @@ nnoremap <leader>p :call bufferhint#LoadPrevious()<CR>
 " Enable vim-diff-enhanced (Christian Brabandt)
 "----------------------------------------------------------------------
 function! EnableEnhancedDiff()
-	if &diff
-		let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
-	endif
+	let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 endfunc
 
 
