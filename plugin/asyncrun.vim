@@ -71,7 +71,7 @@
 "     The output of background job is redirected into quickfix by 
 "     AsyncRun in realtime. To see the result of AsyncRun you need 
 "     open quickfix window by using :copen (:help copen/cclose).
-"     or use ':AsyncToggle' to show/close it in a convenient way.
+"     or use ':call asyncrun#quickfix_toggle(8)' to show/close it.
 "
 "
 
@@ -582,9 +582,25 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" AsyncToggle
+" Commands
 "----------------------------------------------------------------------
-function! s:AsyncToggle(size)
+if has('patch-7.4.1900')
+	command! -bang -nargs=+ -complete=file AsyncRun 
+		\ call s:AsyncRun('<bang>', <q-mods>, <f-args>)
+else
+	command! -bang -nargs=+ -complete=file AsyncRun 
+		\ call s:AsyncRun('<bang>', '', <f-args>)
+endif
+
+
+command! -bang -nargs=0 AsyncStop call s:AsyncStop('<bang>')
+
+
+
+"----------------------------------------------------------------------
+" Fast command to toggle quickfix
+"----------------------------------------------------------------------
+function! asyncrun#quickfix_toggle(size)
 	function! s:WindowCheck(mode)
 		if getbufvar('%', '&buftype') == 'quickfix'
 			let s:quickfix_open = 1
@@ -598,13 +614,9 @@ function! s:AsyncToggle(size)
 	endfunc
 	let s:quickfix_open = 0
 	let l:winnr = winnr()			
-	let l:size = a:size
-	if l:size == ''
-		let l:size = 6
-	endif
 	windo call s:WindowCheck(0)
 	if s:quickfix_open == 0
-		exec 'botright copen '.l:size
+		exec 'botright copen '.a:size
 		wincmd k
 	else
 		cclose
@@ -615,25 +627,6 @@ function! s:AsyncToggle(size)
 	catch /.*/
 	endtry
 endfunc
-
-
-
-"----------------------------------------------------------------------
-" Commands
-"----------------------------------------------------------------------
-if has('patch-7.4.1900')
-	command! -bang -nargs=+ -complete=file AsyncRun 
-		\ call s:AsyncRun('<bang>', <q-mods>, <f-args>)
-else
-	command! -bang -nargs=+ -complete=file AsyncRun 
-		\ call s:AsyncRun('<bang>', '', <f-args>)
-endif
-
-
-command! -bang -nargs=0 AsyncStop call s:AsyncStop('<bang>')
-command! -nargs=? AsyncToggle call s:AsyncToggle(<q-args>)
-
-
 
 
 
