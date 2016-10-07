@@ -71,6 +71,7 @@
 "     The output of background job is redirected into quickfix by 
 "     AsyncRun in realtime. To see the result of AsyncRun you need 
 "     open quickfix window by using :copen (:help copen/cclose).
+"     or use ':AsyncToggle' to show/close it in a convenient way.
 "
 "
 
@@ -581,6 +582,43 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" AsyncToggle
+"----------------------------------------------------------------------
+function! s:AsyncToggle(size)
+	function! s:WindowCheck(mode)
+		if getbufvar('%', '&buftype') == 'quickfix'
+			let s:quickfix_open = 1
+			return
+		endif
+		if a:mode == 0
+			let w:quickfix_save = winsaveview()
+		else
+			call winrestview(w:quickfix_save)
+		endif
+	endfunc
+	let s:quickfix_open = 0
+	let l:winnr = winnr()			
+	let l:size = a:size
+	if l:size == ''
+		let l:size = 6
+	endif
+	windo call s:WindowCheck(0)
+	if s:quickfix_open == 0
+		exec 'botright copen '.l:size
+		wincmd k
+	else
+		cclose
+	endif
+	windo call s:WindowCheck(1)
+	try
+		silent exec ''.l:winnr.'wincmd w'
+	catch /.*/
+	endtry
+endfunc
+
+
+
+"----------------------------------------------------------------------
 " Commands
 "----------------------------------------------------------------------
 if has('patch-7.4.1900')
@@ -593,6 +631,10 @@ endif
 
 
 command! -bang -nargs=0 AsyncStop call s:AsyncStop('<bang>')
+command! -nargs=? AsyncToggle call s:AsyncToggle(<q-args>)
+
+
+
 
 
 
