@@ -122,6 +122,13 @@ noremap <space>en :call append(line('.'), '')<cr>
 "----------------------------------------------------------------------
 " insert mode fast
 "----------------------------------------------------------------------
+inoremap <c-b>( ()<esc>i
+inoremap <c-b>[ []<esc>i
+inoremap <c-b>' ''<esc>i
+inoremap <c-b>" ""<esc>i
+inoremap <c-b>< <><esc>i
+inoremap <c-b>{ {<esc>o}<esc>ko
+
 inoremap <c-x>( ()<esc>i
 inoremap <c-x>[ []<esc>i
 inoremap <c-x>' ''<esc>i
