@@ -63,7 +63,7 @@ let g:EchoFuncTrim = 1
 "----------------------------------------------------------------------
 "- OptImport
 "----------------------------------------------------------------------
-" VimImport site/echofunc.vim
+VimImport site/echofunc.vim
 VimImport site/calendar.vim
 
 
