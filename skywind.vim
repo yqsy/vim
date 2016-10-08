@@ -62,7 +62,7 @@ let g:calendar_navi = 'top'
 "----------------------------------------------------------------------
 "- OptImport
 "----------------------------------------------------------------------
-"VimImport site/echofunc.vim
+" VimImport site/echofunc.vim
 VimImport site/calendar.vim
 
 
