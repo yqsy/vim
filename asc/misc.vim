@@ -107,12 +107,48 @@ function! <SID>snip_copyright(author)
 endfunc
 
 
+"----------------------------------------------------------------------
+" bundle setup
+"----------------------------------------------------------------------
+function! <SID>snip_bundle()
+	let l:text = []
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ['" Bundle Header']
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ["set nocompatible"]
+	let l:text += ["filetype off"]
+	let l:text += ["set rtp+=~/.vim/bundle/Vundle.vim"]
+	let l:text += ["call vundle#begin()"]
+	let l:text += ["Plugin 'gmarik/Vundle.vim'"]
+	let l:text += [""]
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ['" Plugins']
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += [""]
+	let l:text += [""]
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ['" Bundle Footer']
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ["call vundle#end()"]
+	let l:text += ["filetype on"]
+	let l:text += [""]
+	let l:text += [""]
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ['" Local Config']
+	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += [""]
+	let l:text += [""]
+	call append(line('.') - 1, l:text)
+endfunc
+
+
 "-----------------------------------------------------------------------
 " hot keys
 "-----------------------------------------------------------------------
 noremap <space>e- :call <SID>snip_comment_block('-')<cr>
 noremap <space>e= :call <SID>snip_comment_block('=')<cr>
 noremap <space>ec :call <SID>snip_copyright('skywind')<cr>
+noremap <space>eb :call <SID>snip_bundle()<cr>
 noremap <space>et "=strftime("%Y/%m/%d %H:%M:%S")<CR>gp
 noremap <space>ep :call append(line('.') - 1, '')<cr>
 noremap <space>en :call append(line('.'), '')<cr>
