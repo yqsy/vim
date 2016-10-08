@@ -134,7 +134,7 @@ function! <SID>snip_bundle()
 	let l:text += [""]
 	let l:text += [""]
 	let l:text += ['"----------------------------------------------------------------------']
-	let l:text += ['" Local Config']
+	let l:text += ['" Settings']
 	let l:text += ['"----------------------------------------------------------------------']
 	let l:text += [""]
 	let l:text += [""]
