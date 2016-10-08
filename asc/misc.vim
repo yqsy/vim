@@ -124,6 +124,8 @@ function! <SID>snip_bundle()
 	let l:text += ['"----------------------------------------------------------------------']
 	let l:text += ['" Plugins']
 	let l:text += ['"----------------------------------------------------------------------']
+	let l:text += ["\" Plugin 'SirVer/ultisnips'"]
+	let l:text += ["\" Plugin 'honza/vim-snippets'"]
 	let l:text += [""]
 	let l:text += [""]
 	let l:text += ['"----------------------------------------------------------------------']
