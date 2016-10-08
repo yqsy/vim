@@ -118,7 +118,7 @@ let g:UltiSnipsExpandTrigger="<m-i>"
 let g:UltiSnipsJumpForwardTrigger="<m-j>"
 let g:UltiSnipsJumpBackwardTrigger="<m-k>"
 let g:UltiSnipsListSnippets="<m-l>"
-let g:UltiSnipsSnippetDirectories=['UltrSnips', s:home."/usnips"]
+let g:UltiSnipsSnippetDirectories=['UltiSnips', s:home."/usnips"]
 
 
 "----------------------------------------------------------------------
