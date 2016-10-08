@@ -88,6 +88,11 @@
 "               g:EchoFuncBallonOnly
 "                 Set to non-zero to show function only in ballons (no echo
 "                 in cmdline/statusline), default is 0.
+"                 Sometimes when running vim in a small window, functions
+"                 with long names will occupy to many lines in statusline, 
+"                 which will destroy the origin layout of windows.
+"                 This option allows you to use echofunc in a neat way in 
+"                 small windows.
 "
 "               g:EchoFuncTrimSize
 "                 Trim text length to fit window size, default is 0,
