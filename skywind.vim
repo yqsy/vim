@@ -216,8 +216,6 @@ let g:winManagerWidth=26
 "let g:bufferhint_KeepWindow = 1
 set completeopt=menu
 
-let g:Tagbar_title = "[Tagbar]"
-let g:tagbar_vertical = 28
 " let g:tagbar_left = 1
 function! Tagbar_Start()
     exe 'TagbarOpen'

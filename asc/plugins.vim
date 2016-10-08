@@ -29,8 +29,8 @@ set completeopt=menu
 "----------------------------------------------------------------------
 "- Tagbar
 "----------------------------------------------------------------------
-let g:Tagbar_title = "[Tagbar]"
-let g:tagbar_vertical = 28
+let g:tagbar_vertical = 0
+let g:tagbar_width = 28
 let g:tagbar_sort = 0
 
 
