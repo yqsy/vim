@@ -1,3 +1,5 @@
+extends c
+
 snippet ns2 "namespace2 .. (namespace2)"
 namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
 {
