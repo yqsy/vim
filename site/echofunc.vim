@@ -237,8 +237,8 @@ function! s:EchoFuncDisplay()
     let limit=wincols-reqspaces_lastline
     if g:EchoFuncTrimSize != 0 
         let allowedheight=&cmdheight
-        if width + 1 >= limit
-            let content=strpart(content, 0, limit - 4)
+        if width + 1 > limit
+            let content=strpart(content, 0, limit - 1)
             let width=len(content)
         endif
     endif
