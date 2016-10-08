@@ -6,7 +6,7 @@
 "               supports.
 " Authors:      Ming Bai <mbbill AT gmail DOT com>,
 "               Wu Yongwei <wuyongwei AT gmail DOT com>
-" Last Change:  2014-02-17 20:16:11
+" Last Change:  2016-10-08 19:13:42
 " Version:      2.0
 "
 " Install:      1. Put echofunc.vim to /plugin directory.
@@ -85,6 +85,14 @@
 "                 To add more mappings in g:EchoFuncPathMapping, search
 "                 this script and you will know how to do it.
 "
+"               g:EchoFuncEnabled
+"                 Enable show function in cmdline/statusline, default is 1
+"                 Set to zero to show function only in ballons
+"
+"               g:EchoFuncTrim
+"                 Trim text length to fit window size, default is 0,
+"                 cmdheight may not be changed if enable.
+"
 "
 " Thanks:       edyfox
 "               minux
@@ -116,6 +124,14 @@ endif
 
 if !exists("g:EchoFuncPathMappingEnabled")
     let g:EchoFuncPathMappingEnabled = 1
+endif
+
+if !exists("g:EchoFuncEnabled")
+    let g:EchoFuncEnabled = 1
+endif
+
+if !exists("g:EchoFuncTrim")
+    let g:EchoFuncTrim = 0
 endif
 
 func! g:EchoFuncTruncatePath(path, style)
@@ -213,6 +229,14 @@ function! s:EchoFuncDisplay()
     let statusline=(&laststatus==1 && winnr('$')>1) || (&laststatus==2)
     let reqspaces_lastline=(statusline || !&ruler) ? 12 : 29
     let width=len(content)
+    let limit=wincols-reqspaces_lastline
+    if g:EchoFuncTrim != 0 
+        let allowedheight=&cmdheight
+        if width + 1 >= limit
+            let content=strpart(content, 0, limit - 4)
+            let width=len(content)
+        endif
+    endif
     let height=width/wincols+1
     let cols_lastline=width%wincols
     if cols_lastline > wincols-reqspaces_lastline
@@ -681,7 +705,7 @@ function! s:CheckTagsLanguage(filetype)
 endfunction
 
 function! CheckedEchoFuncStart()
-    if s:CheckTagsLanguage(&filetype)
+    if s:CheckTagsLanguage(&filetype) && g:EchoFuncEnabled != 0
         call EchoFuncStart()
     endif
 endfunction
