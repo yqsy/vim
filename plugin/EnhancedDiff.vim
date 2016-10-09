@@ -17,9 +17,10 @@ let s:cpo= &cpo
 if exists("g:loaded_enhanced_diff") || &cp
     finish
 elseif v:version < 704
-    echohl WarningMsg
-    echomsg "The EnhancedDiff Plugin needs at least a Vim version 7.4"
-    echohl Normal
+    " echohl WarningMsg
+    " echomsg "The EnhancedDiff Plugin needs at least a Vim version 7.4"
+    " echohl Normal
+    finish
 endif
 set cpo&vim
 let g:loaded_enhanced_diff = 1
