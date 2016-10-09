@@ -55,7 +55,7 @@ endif
 "----------------------------------------------------------------------
 "- OptImport
 "----------------------------------------------------------------------
-VimImport site/echofunc.vim
+" VimImport site/echofunc.vim
 VimImport site/calendar.vim
 
 
