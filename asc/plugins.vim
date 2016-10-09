@@ -2,6 +2,7 @@
 " netrw
 "-----------------------------------------------------
 let g:netrw_liststyle = 1
+let g:netrw_winsize = 25
 let g:netrw_list_hide= '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn,\.obj'
 
 " fixed netrw underline bug in vim 7.3 and below
@@ -44,6 +45,33 @@ let Tlist_Inc_Winwidth = 0
 let Tlist_Enable_Fold_Column = 0
 let Tlist_Show_Menu = 0
 
+
+"----------------------------------------------------------------------
+"- CtrlP
+"----------------------------------------------------------------------
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll|mp3|wav|sdf|suo|mht)$',
+  \ 'link': 'some_bad_symbolic_links',
+  \ }
+
+
+"----------------------------------------------------------------------
+" UltiSnips
+"----------------------------------------------------------------------
+let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+let g:UltiSnipsExpandTrigger="<m-i>"
+let g:UltiSnipsJumpForwardTrigger="<m-j>"
+let g:UltiSnipsJumpBackwardTrigger="<m-k>"
+let g:UltiSnipsListSnippets="<m-l>"
+let g:UltiSnipsSnippetDirectories=['UltiSnips', s:home."/usnips"]
+
+
+"----------------------------------------------------------------------
+"- Misc
+"----------------------------------------------------------------------
+let g:calendar_navi = 'top'
+let g:EchoFuncTrimSize = 1
 
 
 

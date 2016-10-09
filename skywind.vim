@@ -53,11 +53,6 @@ endif
 
 
 
-"----------------------------------------------------------------------
-"- Misc
-"----------------------------------------------------------------------
-let g:calendar_navi = 'top'
-let g:EchoFuncTrimSize = 1
 
 
 "----------------------------------------------------------------------
@@ -66,17 +61,6 @@ let g:EchoFuncTrimSize = 1
 VimImport site/echofunc.vim
 VimImport site/calendar.vim
 
-
-
-"----------------------------------------------------------------------
-"- YCM config
-"----------------------------------------------------------------------
-let g:ycm_add_preview_to_completeopt = 0
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_server_log_level = 'info'
-let g:ycm_min_num_identifier_candidate_chars = 2
-let g:ycm_collect_identifiers_from_comments_and_strings = 1
-let g:ycm_complete_in_strings=1
 
 
 "----------------------------------------------------------------------
@@ -103,24 +87,6 @@ noremap <space>bn :BlogNew post<cr>
 noremap <space>bl :BlogList<cr>
 
 
-"----------------------------------------------------------------------
-"- CtrlP
-"----------------------------------------------------------------------
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll|mp3|wav|sdf|suo|mht)$',
-  \ 'link': 'some_bad_symbolic_links',
-  \ }
-
-
-"----------------------------------------------------------------------
-" UltiSnips
-"----------------------------------------------------------------------
-let g:UltiSnipsExpandTrigger="<m-i>"
-let g:UltiSnipsJumpForwardTrigger="<m-j>"
-let g:UltiSnipsJumpBackwardTrigger="<m-k>"
-let g:UltiSnipsListSnippets="<m-l>"
-let g:UltiSnipsSnippetDirectories=['UltiSnips', s:home."/usnips"]
 
 
 "----------------------------------------------------------------------
@@ -205,8 +171,6 @@ endif
 "- netrw / winmanager
 "----------------------------------------------------------------------
 let s:enter = 0
-let g:netrw_winsize = 25
-let g:netrw_list_hide= '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn'
 
 let g:bufExplorerWidth=26
 let g:winManagerWindowLayout = "FileExplorer|TagList"
@@ -353,27 +317,8 @@ noremap <leader>ft :NERDTree<cr>:vertical resize +3<cr>
 
 
 "----------------------------------------------------------------------
-"- Author info
+"- bufferhint
 "----------------------------------------------------------------------
-let g:skywind_name = 'skywind3000 (at) google.com'
-function! CopyrightSource()
-	let l:filename = expand("%:t")
-	let l:comment = '//'
-	while strlen(l:comment) < 72
-		let l:comment .= '='
-	endwhile
-	call append(line(".") - 1, l:comment)
-	call append(line(".") - 1, '//')
-	call append(line(".") - 1, '// '. l:filename . ' - '.g:skywind_name)
-	call append(line(".") - 1, '// ')
-	call append(line(".") - 1, '// NOTE:')
-	call append(line(".") - 1, '// This file is created by skywind in '. strftime("%c"))
-	call append(line(".") - 1, '// For more information, please see the readme file.')
-	call append(line(".") - 1, '//')
-	call append(line(".") - 1, l:comment)
-endfunc
-
-
 nnoremap - :call bufferhint#Popup()<CR>
 nnoremap <leader>p :call bufferhint#LoadPrevious()<CR>
 
