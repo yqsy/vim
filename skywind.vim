@@ -26,6 +26,8 @@ call Backup_Directory()
 "----------------------------------------------------------------------
 au BufNewFile,BufRead *.as setlocal filetype=actionscript
 au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
+" au FileType c,cpp set foldmethod=syntax 
+" au FileType python set foldmethod=syntax 
 
 
 "----------------------------------------------------------------------
