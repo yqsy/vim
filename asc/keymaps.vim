@@ -146,6 +146,8 @@ let s:filename = expand('<sfile>:p')
 exec 'noremap <space>hk :tabnew '.fnameescape(s:filename).'<cr>'
 let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
 exec 'noremap <space>hs :tabnew '.fnameescape(s:skywind).'<cr>'
+let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
+exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
 noremap <space>hp :tabnew ~/.vim/project.txt<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
