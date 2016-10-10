@@ -95,7 +95,7 @@ function! TerminalKeyInit(term)
 		exec "set <m-k>=\ek"
 		exec "set <m-l>=\el"
 	endif
-endif
+endfunc
 
 
 
