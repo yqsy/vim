@@ -78,14 +78,25 @@ let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
 
 
 "----------------------------------------------------------------------
-"- VimPress
+"- Terminal Keymaps
 "----------------------------------------------------------------------
-noremap <space>bp :BlogPreview local<cr>
-noremap <space>bb :BlogPreview publish<cr>
-noremap <space>bs :BlogSave<cr>
-noremap <space>bd :BlogSave draft<cr>
-noremap <space>bn :BlogNew post<cr>
-noremap <space>bl :BlogList<cr>
+function! TerminalKeyInit(term)
+	if has('gui_running')
+		return
+	endif
+	if a:term == 0
+		exec "set <m-i>=\e]{0}i~"
+		exec "set <m-j>=\e]{0}j~"
+		exec "set <m-k>=\e]{0}k~"
+		exec "set <m-l>=\e]{0}l~"
+	else
+		exec "set <m-i>=\ei"
+		exec "set <m-j>=\ej"
+		exec "set <m-k>=\ek"
+		exec "set <m-l>=\el"
+	endif
+endif
+
 
 
 "----------------------------------------------------------------------

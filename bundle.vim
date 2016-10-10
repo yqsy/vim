@@ -26,6 +26,8 @@ endif
 if has('win32') || has('win64') || has('win95') || has('win16')
 	let s:uname = 'windows'
 	let g:bundle_group += ['windows']
+elseif has('win32unix')
+	let s:uname = 'cygwin'
 elseif has('unix')
 	let s:uname = system("echo -n \"$(uname)\"")
 	if !v:shell_error && s:uname == "Linux"
@@ -85,6 +87,20 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
+
+	if !has('gui_running')
+		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
+			exec "set <m-i>=\e]{0}i~"
+			exec "set <m-j>=\e]{0}j~"
+			exec "set <m-k>=\e]{0}k~"
+			exec "set <m-l>=\e]{0}l~"
+		elseif has('win32unix')
+			exec "set <m-i>=\ei"
+			exec "set <m-j>=\ej"
+			exec "set <m-k>=\ek"
+			exec "set <m-l>=\el"
+		endif
+	endif
 endif
 
 
@@ -94,6 +110,13 @@ endif
 if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	Plugin 'skywind3000/vimpress'
 	Plugin 'vim-scripts/DrawIt'
+
+	noremap <space>bp :BlogPreview local<cr>
+	noremap <space>bb :BlogPreview publish<cr>
+	noremap <space>bs :BlogSave<cr>
+	noremap <space>bd :BlogSave draft<cr>
+	noremap <space>bn :BlogNew post<cr>
+	noremap <space>bl :BlogList<cr>
 endif
 
 
@@ -149,7 +172,6 @@ filetype on
 " Settings
 "----------------------------------------------------------------------
 let g:pydoc_cmd = 'python -m pydoc'
-
 let g:gist_use_password_in_gitconfig = 1
 
 if !exists('g:startify_disable_at_vimenter')
