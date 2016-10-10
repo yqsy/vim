@@ -2,6 +2,7 @@
 " check vundle existance
 "----------------------------------------------------------------------
 if !filereadable(expand('~/.vim/bundle/Vundle.vim/autoload/vundle.vim'))
+	echom "cannot find vundle in ~/.vim/bundle/Vundle.vim"
 	finish
 endif
 
@@ -50,7 +51,7 @@ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
 
 "----------------------------------------------------------------------
@@ -108,8 +109,11 @@ endif
 " Group - inter
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
-	Plugin 'skywind3000/vimpress'
 	Plugin 'vim-scripts/DrawIt'
+				
+	if has('python')
+		Plugin 'skywind3000/vimpress'
+	endif
 
 	noremap <space>bp :BlogPreview local<cr>
 	noremap <space>bb :BlogPreview publish<cr>
@@ -137,6 +141,13 @@ if index(g:bundle_group, 'neocomplete') >= 0
 	inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
 	"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 	let g:neocomplete#enable_at_startup = 1 
+endif
+
+
+"----------------------------------------------------------------------
+" Group - ymc
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'ymc') >= 0
 endif
 
 

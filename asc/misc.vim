@@ -119,7 +119,7 @@ function! <SID>snip_bundle()
 	let l:text += ["filetype off"]
 	let l:text += ["set rtp+=~/.vim/bundle/Vundle.vim"]
 	let l:text += ["call vundle#begin()"]
-	let l:text += ["Plugin 'gmarik/Vundle.vim'"]
+	let l:text += ["Plugin 'VundleVim/Vundle.vim'"]
 	let l:text += [""]
 	let l:text += ['"----------------------------------------------------------------------']
 	let l:text += ['" Plugins']
