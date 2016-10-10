@@ -152,7 +152,10 @@ let g:pydoc_cmd = 'python -m pydoc'
 
 let g:gist_use_password_in_gitconfig = 1
 
-let g:startify_disable_at_vimenter = 1
+if !exists('g:startify_disable_at_vimenter')
+	let g:startify_disable_at_vimenter = 1
+endif
+
 let g:startify_session_dir = '~/.vim/session'
 
 
