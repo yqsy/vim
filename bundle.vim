@@ -7,19 +7,37 @@ endif
 
 
 "----------------------------------------------------------------------
+" bundle group
+"----------------------------------------------------------------------
+if !exists('g:bundle_group')
+	let g:bundle_group = []
+endif
+
+let s:bundle_all = 0
+
+if index(g:bundle_group, 'all') >= 0 
+	let s:bundle_all = 1
+endif
+
+
+"----------------------------------------------------------------------
 " check os
 "----------------------------------------------------------------------
 if has('win32') || has('win64') || has('win95') || has('win16')
 	let s:uname = 'windows'
+	let g:bundle_group += ['windows']
 elseif has('unix')
 	let s:uname = system("echo -n \"$(uname)\"")
 	if !v:shell_error && s:uname == "Linux"
 		let s:uname = 'linux'
+		let g:bundle_group += ['linux']
 	else
 		let s:uname = 'darwin'
+		let g:bundle_group += ['darwin']
 	endif
 else
 	let s:uname = 'posix'
+	let g:bundle_group += ['posix']
 endif
 
 
@@ -36,28 +54,87 @@ Plugin 'gmarik/Vundle.vim'
 "----------------------------------------------------------------------
 " Plugins
 "----------------------------------------------------------------------
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
-Plugin 'tpope/vim-fugitive'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
+"Plugin 'tpope/vim-fugitive'
 "Plugin 'fs111/pydoc.vim'
 "Plugin 'mattn/webapi-vim'
 "Plugin 'mattn/gist-vim'
-Plugin 'lambdalisue/vim-gista'
-Plugin 'mhinz/vim-startify'
-Plugin 'easymotion/vim-easymotion'
+"Plugin 'lambdalisue/vim-gista'
+"Plugin 'mhinz/vim-startify'
+"Plugin 'easymotion/vim-easymotion'
 
 
 "----------------------------------------------------------------------
-" Platforms
+" Group - simple
 "----------------------------------------------------------------------
-if has('win32') || has('win16') || has('win95') || has('win64')
+if index(g:bundle_group, 'simple') >= 0 || s:bundle_all
+	Plugin 'scrooloose/nerdtree'
+	Plugin 'vim-scripts/Colour-Sampler-Pack'
+endif
 
-elseif s:uname == 'linux'
 
-elseif s:uname == 'darwin'
+"----------------------------------------------------------------------
+" Group - basic
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
+	Plugin 'SirVer/ultisnips'
+	Plugin 'honza/vim-snippets'
+	Plugin 'tpope/vim-fugitive'
+	Plugin 'lambdalisue/vim-gista'
+	Plugin 'mhinz/vim-startify'
+	Plugin 'easymotion/vim-easymotion'
+	Plugin 'kien/ctrlp.vim'
+endif
 
-else
 
+"----------------------------------------------------------------------
+" Group - inter
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
+	Plugin 'skywind3000/vimpress'
+	Plugin 'vim-scripts/DrawIt'
+endif
+
+
+"----------------------------------------------------------------------
+" Group - jedi
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'jedi') >= 0
+	Plugin 'davidhalter/jedi-vim'
+endif
+
+
+"----------------------------------------------------------------------
+" Group - neocomplete
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'neocomplete') >= 0
+	Plugin 'Shougo/neocomplete.vim'
+	set completeopt=longest,menuone
+	inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
+	"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+	let g:neocomplete#enable_at_startup = 1 
+endif
+
+
+"----------------------------------------------------------------------
+" Group - windows
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'windows') >= 0
+endif
+
+
+"----------------------------------------------------------------------
+" Group - linux
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'linux') >= 0
+endif
+
+
+"----------------------------------------------------------------------
+" Group - posix
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'posix') >= 0
 endif
 
 

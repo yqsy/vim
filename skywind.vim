@@ -51,6 +51,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_cflags = ['-O3', '-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
 else
 	let g:vimmake_cflags = ['-O3', '-lstdc++']
+	runtime ftplugin/man.vim
 endif
 
 
@@ -85,8 +86,6 @@ noremap <space>bs :BlogSave<cr>
 noremap <space>bd :BlogSave draft<cr>
 noremap <space>bn :BlogNew post<cr>
 noremap <space>bl :BlogList<cr>
-
-
 
 
 "----------------------------------------------------------------------
