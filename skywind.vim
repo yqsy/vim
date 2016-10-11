@@ -46,8 +46,8 @@ autocmd BufReadPost *
 let g:vimmake_cwd = 1
 let g:vimmake_run_guess = ['go']
 let g:vimmake_build_scroll = 3
-let g:vimmake_build_last = 1
-let g:asyncrun_last = 1
+let g:vimmake_build_last = 2
+let g:asyncrun_last = 2
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_cflags = ['-O3', '-lwinmm', '-lstdc++', '-lgdi32', '-lws2_32', '-msse3']
