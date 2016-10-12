@@ -61,7 +61,6 @@ endif
 VimImport site/echofunc.vim
 VimImport site/calendar.vim
 
-let g:EchoFuncBallonOnly = 1
 
 
 "----------------------------------------------------------------------

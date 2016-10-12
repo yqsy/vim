@@ -110,6 +110,7 @@ noremap <silent><space>tb :TagbarToggle<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
+	"exec "set <S-F11>=\e"
 endif
 
 " open tools
