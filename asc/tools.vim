@@ -466,4 +466,21 @@ function! Tools_SwitchLayout()
 endfunc
 
 
+function! Tools_SwitchSigns()
+	if (!has('signs')) || (!has('patch-7.4.2210'))
+		return 0
+	endif
+	if &signcolumn == 'auto'
+		set signcolumn=yes
+		echo ':signcolumn=yes'
+	elseif &signcolumn == 'yes'
+		set signcolumn=no
+		echo ':signcolumn=no'
+	else
+		set signcolumn=auto
+		echo ':signcolumn=auto'
+	endif
+endfunc
+
+
 

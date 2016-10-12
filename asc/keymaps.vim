@@ -1,4 +1,15 @@
-" keymaps is more personality with using <space> leader
+"======================================================================
+"
+" keymaps.vim - keymaps start with using <space> 
+"
+" Created by skywind on 2016/10/12
+" Last change: 2016/10/12 16:37:25
+"
+"======================================================================
+
+"----------------------------------------------------------------------
+" VimTools
+"----------------------------------------------------------------------
 for s:index in range(10)
 	let s:key = '' . s:index
 	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
@@ -38,7 +49,9 @@ else
 endif
 
 
-" window resizing shortcuts
+"----------------------------------------------------------------------
+" window control
+"----------------------------------------------------------------------
 noremap <silent><space>= :resize +3<cr>
 noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
@@ -51,6 +64,16 @@ noremap <silent><tab>. :call Tab_MoveRight()<cr>
 noremap <space>p viw"0p
 noremap <space>y yiw
 
+
+"----------------------------------------------------------------------
+" space + e : vim control
+"----------------------------------------------------------------------
+noremap <silent><space>eh :call Tools_SwitchSigns()<cr>
+
+
+"----------------------------------------------------------------------
+" gui hotkeys - alt + ?
+"----------------------------------------------------------------------
 if has('gui_running')
 	noremap <M-=> :resize +3<cr>
 	noremap <M--> :resize -3<cr>
@@ -90,7 +113,9 @@ if has('gui_running')
 endif
 
 
-" svn shortcut
+"----------------------------------------------------------------------
+" space + s : svn 
+"----------------------------------------------------------------------
 noremap <space>sc :!svn co -m "update from vim"<cr>
 noremap <space>su :!svn up<cr>
 noremap <space>st :!svn st<cr>
@@ -98,22 +123,29 @@ noremap <space>st :!svn st<cr>
 " editing commands
 noremap <space>a ggVG
 
-" toggle plugins
+
+"----------------------------------------------------------------------
+" space + t : toggle plugins
+"----------------------------------------------------------------------
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix(6)<cr>
+noremap <silent><space>tn :call Toggle_Number()<cr>
+noremap <silent><space>tb :TagbarToggle<cr>
+
 noremap <silent><S-F10> :call Toggle_Taglist()<cr>
 inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
 noremap <silent><C-F10> :call Toggle_Tagbar()<cr>
 inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
-noremap <silent><space>tn :call Toggle_Number()<cr>
-noremap <silent><space>tb :TagbarToggle<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
-	"exec "set <S-F11>=\e"
+	exec "set <S-F4>=\e[25~"
 endif
 
-" open tools
+
+"----------------------------------------------------------------------
+" space + f : open tools
+"----------------------------------------------------------------------
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile(1)<cr>
@@ -133,14 +165,27 @@ for s:index in range(10)
 	exec 'noremap <silent><space>f'.s:index.'l :so ~/.vim/session.'.s:index.'<cr>'
 endfor
 
-noremap <silent><leader>e :BufferClose<cr>
+
+"----------------------------------------------------------------------
+" leader + b/c : buffer
+"----------------------------------------------------------------------
+noremap <silent><leader>bc :BufferClose<cr>
 noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 
-" fast open file
+
+"----------------------------------------------------------------------
+" space + h : fast open files
+"----------------------------------------------------------------------
+noremap <space>hp :tabnew ~/.vim/project.txt<cr>
+noremap <space>hf <c-w>gf
+noremap <space>he :call Show_Explore()<cr>
+noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
+noremap <space>ho :only<cr>
+
 if has('win32') || has('win64')
-noremap <space>hr :tabnew ~/_vimrc<cr>
+	noremap <space>hr :tabnew ~/_vimrc<cr>
 else
-noremap <space>hr :tabnew ~/.vimrc<cr>
+	noremap <space>hr :tabnew ~/.vimrc<cr>
 endif
 
 let s:filename = expand('<sfile>:p')
@@ -149,13 +194,11 @@ let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
 exec 'noremap <space>hs :tabnew '.fnameescape(s:skywind).'<cr>'
 let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
 exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
-noremap <space>hp :tabnew ~/.vim/project.txt<cr>
-noremap <space>hf <c-w>gf
-noremap <space>he :call Show_Explore()<cr>
-noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
-noremap <space>ho :only<cr>
 
-" cscope in new tab
+
+"----------------------------------------------------------------------
+" space + c : cscope
+"----------------------------------------------------------------------
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>
 noremap <space>cg :scs find g <C-R>=expand("<cword>")<CR><CR>
 noremap <space>cc :scs find c <C-R>=expand("<cword>")<CR><CR>
