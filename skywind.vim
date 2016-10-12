@@ -8,14 +8,16 @@ filetype plugin indent on
 set hlsearch
 set incsearch
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
-set errorformat+=[%f:%l]:\ (%trror)\ %m
-set errorformat+=[%f:%l]:\ (%tarning)\ %m
-set errorformat+=[%f:%l]:\ (%ttyle)\ %m
-set errorformat+=[%f:%l]:\ (%terformance)\ %m
-set errorformat+=[%f:%l]:\ (%tortability)\ %m
-set errorformat+=[%f:%l]:\ (%tnformation)\ %m
-set errorformat+=[%f:%l]:\ (%tnconclusive)\ %m
-"set errorformat+=%-G%.%#
+if 0
+	set errorformat+=[%f:%l]:\ (%trror)\ %m
+	set errorformat+=[%f:%l]:\ (%tarning)\ %m
+	set errorformat+=[%f:%l]:\ (%ttyle)\ %m
+	set errorformat+=[%f:%l]:\ (%terformance)\ %m
+	set errorformat+=[%f:%l]:\ (%tortability)\ %m
+	set errorformat+=[%f:%l]:\ (%tnformation)\ %m
+	set errorformat+=[%f:%l]:\ (%tnconclusive)\ %m
+	"set errorformat+=%-G%.%#
+endif
 
 if !has('gui_running')
 	set ttimeoutlen=100
