@@ -89,6 +89,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
 	Plugin 'airblade/vim-gitgutter'
+	"Plugin 'ShowMarks'
 
 	if !has('gui_running')
 		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
@@ -151,6 +152,20 @@ endif
 " Group - ymc
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'ymc') >= 0
+endif
+
+
+"----------------------------------------------------------------------
+" Group - special
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'special') >= 0
+	Plugin 'kshenoy/vim-signature'
+	Plugin 'scrooloose/syntastic'
+
+	let g:syntastic_always_populate_loc_list = 1
+	let g:syntastic_auto_loc_list = 1
+	let g:syntastic_check_on_open = 0
+	let g:syntastic_check_on_wq = 0
 endif
 
 
