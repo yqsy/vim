@@ -69,6 +69,8 @@ noremap <space>y yiw
 " space + e : vim control
 "----------------------------------------------------------------------
 noremap <silent><space>eh :call Tools_SwitchSigns()<cr>
+noremap <silent><space>en :call Tools_SwitchNumber()<cr>
+noremap <silent><space>el :nohl<cr>
 
 
 "----------------------------------------------------------------------
@@ -129,7 +131,6 @@ noremap <space>a ggVG
 "----------------------------------------------------------------------
 noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix(6)<cr>
-noremap <silent><space>tn :call Toggle_Number()<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
 
 noremap <silent><S-F10> :call Toggle_Taglist()<cr>

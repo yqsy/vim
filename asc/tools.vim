@@ -34,14 +34,6 @@ function! Toggle_QuickFix(size)
 	silent exec ''.l:winnr.'wincmd w'
 endfunc
 
-" toggle number
-function! Toggle_Number()
-	if &number == 0
-		set number
-	else
-		set nonumber
-	endif
-endfunc
 
 " show content in a new vertical split window
 function! s:Show_Content(title, width, content)
@@ -453,8 +445,8 @@ endfunc
 
 function! Tools_SwitchLayout() 
 	set number
-    set showtabline=2
-    set laststatus=2
+	set showtabline=2
+	set laststatus=2
 	if !has('gui_running')
 		set t_Co=256
 		set ttimeoutlen=100
@@ -481,6 +473,16 @@ function! Tools_SwitchSigns()
 		echo ':signcolumn=auto'
 	endif
 endfunc
+
+" toggle number
+function! Tools_SwitchNumber()
+	if &number == 0
+		set number
+	else
+		set nonumber
+	endif
+endfunc
+
 
 
 
