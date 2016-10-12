@@ -88,6 +88,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
+	Plugin 'airblade/vim-gitgutter'
 
 	if !has('gui_running')
 		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
@@ -99,9 +100,11 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 			exec "set <m-i>=\ei"
 			exec "set <m-j>=\ej"
 			exec "set <m-k>=\ek"
-			exec "set <m-l>=\el"
+			exec "set <m-l>=\el"  
 		endif
 	endif
+
+	let g:gitgutter_enabled = 0
 endif
 
 
