@@ -161,7 +161,7 @@ endif
 if index(g:bundle_group, 'special') >= 0
 	Plugin 'kshenoy/vim-signature'
 	"Plugin 'scrooloose/syntastic'
-	Plugin 'tpope/vim-dispatch'
+	"Plugin 'tpope/vim-dispatch'
 
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 0
