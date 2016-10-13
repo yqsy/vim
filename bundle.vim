@@ -114,6 +114,7 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	Plugin 'vim-scripts/DrawIt'
+	Plugin 'mbbill/VimExplorer'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
