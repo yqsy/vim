@@ -1,0 +1,34 @@
+let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
+exec 'so '.fnameescape(s:home).'/asc.vim'
+exec 'so '.fnameescape(s:home).'/skywind.vim'
+
+set t_Co=256
+color desert256
+let g:vimmake_cflags = ["-lstdc++"]
+
+if exists('g:vim_startup')
+	let g:bundle_group = ['simple']
+
+	if g:vim_startup == 'nvim'
+		let g:bundle_group += ['basic']
+	elseif g:vim_startup == 'mvim'
+		let g:bundle_group += ['basic', 'inter', 'special']
+	endif
+
+	exec 'so '.fnameescape(s:home).'/bundle.vim'
+else
+	let g:vim_startup = ''
+endif
+
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+
+if has('patch-7.4.2100')
+	call Tools_SwitchLayout()
+endif
+
+if v:version >= 704
+	call EnableEnhancedDiff()
+endif
+
+
