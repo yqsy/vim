@@ -503,7 +503,6 @@ endfunc
 
 
 
-
 "----------------------------------------------------------------------
 " Replace string
 "----------------------------------------------------------------------
@@ -712,7 +711,6 @@ endfunc
 "----------------------------------------------------------------------
 command! -bang -nargs=+ -complete=file AsyncRun 
 	\ call s:AsyncRun('<bang>', '', <q-args>)
-
 
 command! -bang -nargs=0 AsyncStop call s:AsyncStop('<bang>')
 
