@@ -12,11 +12,6 @@
 "     parameters are splited by space, if a parameter contains space,
 "     it should be quoted or escaped as backslash + space (unix only).
 "
-" Options accepts:
-"     -mode=?    - start mode: 0(async,default), 1(makeprg), 2(!)
-"     -cwd=?     - initial directory, (current directory by default)
-"     -save=0/1  - non-zero to save unsaved files before executing
-"
 " Parameters will be expanded if they start with '%', '#' or '<' :
 "     %:p     - File name of current buffer with full path
 "     %:t     - File name of current buffer without path
@@ -48,6 +43,16 @@
 "
 "     parameters also accept these environment variables wrapped by 
 "     "$(...)", and "$(VIM_FILEDIR)" will be expanded as file directory
+"
+" There can be some options before [cmd]:
+"     -mode=0/1/2  - start mode: 0(async,default), 1(makeprg), 2(!)
+"     -cwd=?       - initial directory, (use current directory if unset)
+"     -save=0/1    - non-zero to save unsaved files before executing
+"     -program=?   - set to 'make' to use '&makeprg'
+"
+"     All options must start with a minus and position **before** `[cmd]`.
+"     Since no shell command starts with a minus. So they can be 
+"     distinguished from shell command easily without any ambiguity.
 "
 " Stop the running job by signal TERM:
 "     :AsyncStop{!}
