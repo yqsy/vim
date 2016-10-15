@@ -654,7 +654,7 @@ function! s:AsyncRun(bang, mods, args)
 		exec "make!"
 		call s:MakeRestore()
 	elseif l:mode <= 3
-		if s:asyncrun_windows != 0
+		if s:asyncrun_windows != 0 && has('gui_running')
 			let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
 			let l:run = ['@echo off', l:command, 'pause']
 			if v:version >= 700
