@@ -250,9 +250,13 @@ endfunc
 
 " neoview will reset cursor when caddexpr is invoked
 function! s:AsyncRun_Job_NeoRestore()
-	let l:winnr = winnr()
-	windo call s:AsyncRun_Job_NeoReset()
-	silent exec ''.l:winnr.'wincmd w'
+	if &buftype == 'quickfix'
+		call s:AsyncRun_Job_NeoReset()
+	else
+		let l:winnr = winnr()
+		windo call s:AsyncRun_Job_NeoReset()
+		silent exec ''.l:winnr.'wincmd w'
+	endif
 endfunc
 
 " check if quickfix window can scroll now
@@ -318,7 +322,7 @@ function! s:AsyncRun_Job_Update(count)
 	endwhile
 	if s:async_scroll != 0 && l:total > 0 && l:check != 0
 		call s:AsyncRun_Job_AutoScroll()
-	elseif s:async_neovim != 0
+	elseif s:async_neovim != 0 
 		call s:AsyncRun_Job_NeoRestore()
 	endif
 	return l:count

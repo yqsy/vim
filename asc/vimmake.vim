@@ -488,9 +488,13 @@ endfunc
 
 " neoview will reset cursor when caddexpr is invoked
 function! s:Vimmake_Build_NeoRestore()
-	let l:winnr = winnr()
-	windo call s:Vimmake_Build_NeoReset()
-	silent exec ''.l:winnr.'wincmd w'
+	if &buftype == 'quickfix'
+		call s:Vimmake_Build_NeoReset()
+	else
+		let l:winnr = winnr()
+		windo call s:Vimmake_Build_NeoReset()
+		silent exec ''.l:winnr.'wincmd w'
+	endif
 endfunc
 
 " check if quickfix window can scroll now
@@ -564,6 +568,8 @@ function! s:Vimmake_Build_Update(count)
 		if and(g:vimmake_build_scroll, 8) != 0
 			silent clast
 		endif
+	elseif s:build_neovim != 0
+		call s:Vimmake_Build_NeoRestore()
 	endif
 	if g:vimmake_build_update != ''
 		exec g:vimmake_build_update
