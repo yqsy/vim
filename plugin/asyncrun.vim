@@ -201,6 +201,7 @@ let s:async_start = 0.0
 let s:async_debug = 0
 let s:async_quick = 0
 let s:async_scroll = 0
+let s:async_neovim = has('nvim')? 1 : 0
 
 " check :cbottom available
 if has('patch-7.4.1997') && (!has('nvim'))
@@ -217,6 +218,9 @@ endfunc
 " quickfix window cursor check
 function! s:AsyncRun_Job_Cursor()
 	if &buftype == 'quickfix'
+		if s:async_neovim != 0
+			let w:async_qfview = winsaveview()
+		endif
 		if line('.') != line('$')
 			let s:async_check_last = 0
 		endif
@@ -234,10 +238,28 @@ function! s:AsyncRun_Job_AutoScroll()
 	endif
 endfunc
 
+" restore view in neovim
+function! s:AsyncRun_Job_NeoReset()
+	if &buftype == 'quickfix'
+		if exists('w:async_qfview')
+			call winrestview(w:async_qfview)
+			unlet w:async_qfview
+		endif
+	endif
+endfunc
+
+" neoview will reset cursor when caddexpr is invoked
+function! s:AsyncRun_Job_NeoRestore()
+	let l:winnr = winnr()
+	windo call s:AsyncRun_Job_NeoReset()
+	silent exec ''.l:winnr.'wincmd w'
+endfunc
+
 " check if quickfix window can scroll now
 function! s:AsyncRun_Job_CheckScroll()
 	if g:asyncrun_last == 0
 		if &buftype == 'quickfix'
+			let w:async_qfview = winsaveview()
 			return (line('.') == line('$'))
 		else
 			return 1
@@ -291,6 +313,8 @@ function! s:AsyncRun_Job_Update(count)
 	endwhile
 	if s:async_scroll != 0 && l:total > 0 && l:check != 0
 		call s:AsyncRun_Job_AutoScroll()
+	elseif s:async_neovim != 0
+		call s:AsyncRun_Job_NeoRestore()
 	endif
 	return l:count
 endfunc
@@ -359,6 +383,8 @@ function! s:AsyncRun_Job_OnFinish(what)
 	let s:async_state = 0
 	if s:async_scroll != 0 && l:check != 0
 		call s:AsyncRun_Job_AutoScroll()
+	elseif has('nvim')
+		call s:AsyncRun_Job_NeoRestore()
 	endif
 	let g:asyncrun_code = s:async_code
 	if g:asyncrun_bell != 0
@@ -400,17 +426,17 @@ function! g:AsyncRun_Job_OnExit(job, message)
 endfunc
 
 " invoked on neovim when stderr/stdout/exit
-function! s:AsyncRun_Job_NeoVim(job_id, data, event)
-	if event == 'stdout' || event == 'stderr'
+function! g:AsyncRun_Job_NeoVim(job_id, data, event)
+	if a:event == 'stdout' || a:event == 'stderr'
 		let l:index = 0
-		let l:size = len(data)
+		let l:size = len(a:data)
 		while l:index < l:size
 			let s:async_output[s:async_head] = a:data[l:index]
 			let s:async_head += 1
 			let l:index += 1
 		endwhile
 		call s:AsyncRun_Job_Update(-1)
-	elseif event == 'exit'
+	elseif a:event == 'exit'
 		call s:AsyncRun_Job_OnFinish(2)
 	endif
 endfunc
@@ -424,8 +450,14 @@ function! g:AsyncRun_Job_Start(cmd)
 		return -1
 	endif
 	if exists('s:async_job')
-		if job_status(s:async_job) == 'run'
-			let l:running = 1
+		if !has('nvim')
+			if job_status(s:async_job) == 'run'
+				let l:running = 1
+			endif
+		else
+			if s:async_job > 0
+				let l:running = 1
+			endif
 		endif
 	endif
 	if type(a:cmd) == 1
@@ -502,7 +534,11 @@ function! g:AsyncRun_Job_Start(cmd)
 		let s:async_tail = 0
 		let l:arguments = "[".l:name."]"
 		let l:title = ':AsyncRun '.l:name
-		call setqflist([], ' ', {'title':l:title})
+		if !has('nvim')
+			call setqflist([], ' ', {'title':l:title})
+		else
+			call setqflist([], ' ', l:title)
+		endif
 		call setqflist([{'text':l:arguments}], 'a')
 		let s:async_start = float2nr(reltimefloat(reltime()))
 		if g:asyncrun_timer > 0 && (!has('nvim'))
@@ -530,10 +566,14 @@ function! g:AsyncRun_Job_Stop(how)
 	endif
 	if l:how == '' | let l:how = 'term' | endif
 	if exists('s:async_job')
-		if job_status(s:async_job) == 'run'
-			call job_stop(s:async_job, l:how)
+		if s:async_neovim == 0
+			if job_status(s:async_job) == 'run'
+				call job_stop(s:async_job, l:how)
+			else
+				return -2
+			endif
 		else
-			return -2
+			call jobstop(s:async_job)
 		endif
 	else
 		return -3
@@ -544,7 +584,11 @@ endfunc
 " get job status
 function! g:AsyncRun_Job_Status()
 	if exists('s:async_job')
-		return job_status(s:async_job)
+		if s:async_neovim == 0
+			return job_status(s:async_job)
+		else
+			return 'run'
+		endif
 	else
 		return 'none'
 	endif
