@@ -166,8 +166,11 @@ if has('win32') || has('win64') || has('win95') || has('win16')
 endif
 
 " check has advanced mode
-if v:version >= 800 || has('patch-7.4.1829')
+if v:version >= 800 || has('patch-7.4.1829') || has('nvim')
 	if has('job') && has('channel') && has('timers') && has('reltime') 
+		let s:asyncrun_support = 1
+		let g:asyncrun_support = 1
+	elseif has('nvim')
 		let s:asyncrun_support = 1
 		let g:asyncrun_support = 1
 	endif
@@ -262,7 +265,9 @@ function! s:AsyncRun_Job_Update(count)
 	let l:count = 0
 	let l:total = 0
 	let l:check = s:AsyncRun_Job_CheckScroll()
-	if g:asyncrun_encs == &encoding | let l:iconv = 0 | endif
+	if g:asyncrun_encs == &encoding || (!has('iconv'))
+		let l:iconv = 0 
+	endif
 	while s:async_tail < s:async_head
 		let l:text = s:async_output[s:async_tail]
 		if l:iconv != 0

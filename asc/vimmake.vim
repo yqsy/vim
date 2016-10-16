@@ -500,7 +500,9 @@ function! s:Vimmake_Build_Update(count)
 	let l:count = 0
 	let l:total = 0
 	let l:check = s:Vimmake_Build_CheckScroll()
-	if g:vimmake_build_encoding == &encoding | let l:iconv = 0 | endif
+	if g:vimmake_build_encoding == &encoding || (!has('iconv'))
+		let l:iconv = 0 
+	endif
 	while s:build_tail < s:build_head
 		let l:text = s:build_output[s:build_tail]
 		if l:iconv != 0
