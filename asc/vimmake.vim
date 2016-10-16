@@ -130,6 +130,21 @@ if !exists('g:vimmake_build_encoding')
 	let g:vimmake_build_encoding = ''
 endif
 
+" trim empty lines ?
+if !exists('g:vimmake_build_trim')
+	let g:vimmake_build_trim = 1
+endif
+
+" shell executable
+if !exists('g:vimmake_build_shell')
+	let g:vimmake_build_shell = &shell
+endif
+
+" shell flags
+if !exists('g:vimmake_build_shellcmdflag')
+	let g:vimmake_build_shellcmdflag = &shellcmdflag
+endif
+
 " external runner
 if !exists('g:vimmake_runner')
 	let g:vimmake_runner = ''
@@ -423,7 +438,7 @@ let s:build_debug = 0
 let s:build_quick = 0
 
 " check :cbottom available
-if has('patch-7.4.1997')
+if has('patch-7.4.1997') && (!has('nvim'))
 	let s:build_quick = 1
 endif
 
@@ -488,17 +503,19 @@ function! s:Vimmake_Build_Update(count)
 	if g:vimmake_build_encoding == &encoding | let l:iconv = 0 | endif
 	while s:build_tail < s:build_head
 		let l:text = s:build_output[s:build_tail]
-		if l:text != '' 
-			if l:iconv != 0
-				try
-					let l:text = iconv(l:text, 
-						\ g:vimmake_build_encoding, &encoding)
-				catch /.*/
-				endtry
-			endif
-			caddexpr l:text
-			let l:total += 1
+		if l:iconv != 0
+			try
+				let l:text = iconv(l:text, 
+					\ g:vimmake_build_encoding, &encoding)
+			catch /.*/
+			endtry
 		endif
+		if l:text != ''
+			caddexpr l:text
+		elseif g:vimmake_build_trim == 0
+			caddexpr "\n"
+		endif
+		let l:total += 1
 		unlet s:build_output[s:build_tail]
 		let s:build_tail += 1
 		let l:count += 1
@@ -536,9 +553,6 @@ function! g:Vimmake_Build_OnCallback(channel, text)
 	if type(a:text) != 1
 		return
 	endif
-	if a:text == ''
-		return
-	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
 	if g:vimmake_build_timer <= 0
@@ -555,8 +569,10 @@ function! s:Vimmake_Build_OnFinish(what)
 	endif
 	if a:what == 0
 		let s:build_state = or(s:build_state, 2)
-	else
+	elseif a:what == 1
 		let s:build_state = or(s:build_state, 4)
+	else
+		let s:build_state = 7
 	endif
 	if and(s:build_state, 7) != 7
 		return -2
@@ -650,39 +666,44 @@ function! g:Vimmake_Build_Start(cmd)
 	if s:build_state != 0 || l:running != 0
 		call s:ErrorMsg("background job is still running")
 		return -2
-	elseif l:empty == 0
-		let l:args = [&shell, &shellcmdflag]
-		let l:name = []
-		if type(a:cmd) == 1
-			let l:name = a:cmd
-			if s:vimmake_windows == 0
-				let l:args += [a:cmd]
-			else
-				let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
-				let l:run = ['@echo off', a:cmd]
-				call writefile(l:run, l:tmp)
-				let l:args += [shellescape(l:tmp)]
-			endif
-		elseif type(a:cmd) == 3
-			if s:vimmake_windows == 0
-				let l:temp = []
-				for l:item in a:cmd
-					if index(['|', '`'], l:item) < 0
-						let l:temp += [fnameescape(l:item)]
-					else
-						let l:temp += ['|']
-					endif
-				endfor
-				let l:args += [join(l:temp, ' ')]
-			else
-				let l:args += a:cmd
-			endif
-			let l:vector = []
-			for l:x in a:cmd
-				let l:vector += ['"'.l:x.'"']
-			endfor
-			let l:name = join(l:vector, ', ')
+	endif
+	if l:empty != 0
+		echo "empty cmd"
+		return -3
+	endif
+	let l:args = [g:vimmake_build_shell, g:vimmake_build_shellcmdflag]
+	let l:name = []
+	if type(a:cmd) == 1
+		let l:name = a:cmd
+		if s:vimmake_windows == 0
+			let l:args += [a:cmd]
+		else
+			let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
+			let l:run = ['@echo off', a:cmd]
+			call writefile(l:run, l:tmp)
+			let l:args += [shellescape(l:tmp)]
 		endif
+	elseif type(a:cmd) == 3
+		if s:vimmake_windows == 0
+			let l:temp = []
+			for l:item in a:cmd
+				if index(['|', '`'], l:item) < 0
+					let l:temp += [fnameescape(l:item)]
+				else
+					let l:temp += ['|']
+				endif
+			endfor
+			let l:args += [join(l:temp, ' ')]
+		else
+			let l:args += a:cmd
+		endif
+		let l:vector = []
+		for l:x in a:cmd
+			let l:vector += ['"'.l:x.'"']
+		endfor
+		let l:name = join(l:vector, ', ')
+	endif
+	if !has('nvim')
 		let l:options = {}
 		let l:options['callback'] = 'g:Vimmake_Build_OnCallback'
 		let l:options['close_cb'] = 'g:Vimmake_Build_OnClose'
@@ -696,30 +717,30 @@ function! g:Vimmake_Build_Start(cmd)
 			let l:options['stoponexit'] = g:vimmake_build_stop
 		endif
 		let s:build_job = job_start(l:args, l:options)
-		if job_status(s:build_job) != 'fail'
-			let s:build_output = {}
-			let s:build_head = 0
-			let s:build_tail = 0
-			let l:arguments = "[".l:name."]"
-			let l:title = ':VimMake '.l:name
-			call setqflist([], ' ', {'title':l:title})
-			call setqflist([{'text':l:arguments}], 'a')
-			let s:build_start = float2nr(reltimefloat(reltime()))
-			if g:vimmake_build_timer > 0
-				let l:options = {'repeat':-1}
-				let l:name = 'g:Vimmake_Build_OnTimer'
-				let s:build_timer = timer_start(100, l:name, l:options)
-			endif
-			let s:build_state = 1
-			let g:vimmake_build_status = "running"
-			redrawstatus!
-		else
-			unlet s:build_job
-			call s:ErrorMsg("Background job start failed '".a:cmd."'")
-			return -3
-		endif
+		let l:success = (job_status(s:build_job) != 'fail')? 1 : 0
 	else
-		echo "empty cmd"
+
+	endif
+	if l:success != 0
+		let s:build_output = {}
+		let s:build_head = 0
+		let s:build_tail = 0
+		let l:arguments = "[".l:name."]"
+		let l:title = ':VimMake '.l:name
+		call setqflist([], ' ', {'title':l:title})
+		call setqflist([{'text':l:arguments}], 'a')
+		let s:build_start = float2nr(reltimefloat(reltime()))
+		if g:vimmake_build_timer > 0 && (!has('nvim'))
+			let l:options = {'repeat':-1}
+			let l:name = 'g:Vimmake_Build_OnTimer'
+			let s:build_timer = timer_start(100, l:name, l:options)
+		endif
+		let s:build_state = 1
+		let g:vimmake_build_status = "running"
+		redrawstatus!
+	else
+		unlet s:build_job
+		call s:ErrorMsg("Background job start failed '".a:cmd."'")
 		return -4
 	endif
 	return 0

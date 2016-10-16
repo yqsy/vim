@@ -124,6 +124,18 @@ if !exists('g:asyncrun_encs')
 	let g:asyncrun_encs = ''
 endif
 
+if !exists('g:asyncrun_trim')
+	let g:asyncrun_trim = 1
+endif
+
+if !exists('g:asyncrun_shell')
+	let g:asyncrun_shell = &shell
+endif
+
+if !exists('g:asyncrun_shellcmdflag')
+	let g:asyncrun_shellcmdflag = &shellcmdflag
+endif
+
 
 "----------------------------------------------------------------------
 "- Internal Functions
@@ -188,7 +200,7 @@ let s:async_quick = 0
 let s:async_scroll = 0
 
 " check :cbottom available
-if has('patch-7.4.1997')
+if has('patch-7.4.1997') && (!has('nvim'))
 	let s:async_quick = 1
 endif
 
@@ -253,16 +265,18 @@ function! s:AsyncRun_Job_Update(count)
 	if g:asyncrun_encs == &encoding | let l:iconv = 0 | endif
 	while s:async_tail < s:async_head
 		let l:text = s:async_output[s:async_tail]
-		if l:text != '' 
-			if l:iconv != 0
-				try
-					let l:text = iconv(l:text, g:asyncrun_encs, &encoding)
-				catch /.*/
-				endtry
-			endif
-			caddexpr l:text
-			let l:total += 1
+		if l:iconv != 0
+			try
+				let l:text = iconv(l:text, g:asyncrun_encs, &encoding)
+			catch /.*/
+			endtry
 		endif
+		if l:text != ''
+			caddexpr l:text
+		elseif g:asyncrun_trim == 0
+			caddexpr "\n"
+		endif
+		let l:total += 1
 		unlet s:async_output[s:async_tail]
 		let s:async_tail += 1
 		let l:count += 1
@@ -292,9 +306,6 @@ function! g:AsyncRun_Job_OnCallback(channel, text)
 	if type(a:text) != 1
 		return
 	endif
-	if a:text == ''
-		return
-	endif
 	let s:async_output[s:async_head] = a:text
 	let s:async_head += 1
 	if g:asyncrun_timer <= 0
@@ -311,8 +322,10 @@ function! s:AsyncRun_Job_OnFinish(what)
 	endif
 	if a:what == 0
 		let s:async_state = or(s:async_state, 2)
-	else
+	elseif a:what == 1
 		let s:async_state = or(s:async_state, 4)
+	else
+		let s:async_state = 7
 	endif
 	if and(s:async_state, 7) != 7
 		return -2
@@ -381,6 +394,22 @@ function! g:AsyncRun_Job_OnExit(job, message)
 	call s:AsyncRun_Job_OnFinish(0)
 endfunc
 
+" invoked on neovim when stderr/stdout/exit
+function! s:AsyncRun_Job_NeoVim(job_id, data, event)
+	if event == 'stdout' || event == 'stderr'
+		let l:index = 0
+		let l:size = len(data)
+		while l:index < l:size
+			let s:async_output[s:async_head] = a:data[l:index]
+			let s:async_head += 1
+			let l:index += 1
+		endwhile
+		call s:AsyncRun_Job_Update(-1)
+	elseif event == 'exit'
+		call s:AsyncRun_Job_OnFinish(2)
+	endif
+endfunc
+
 " start background build
 function! g:AsyncRun_Job_Start(cmd)
 	let l:running = 0
@@ -402,39 +431,44 @@ function! g:AsyncRun_Job_Start(cmd)
 	if s:async_state != 0 || l:running != 0
 		call s:ErrorMsg("background job is still running")
 		return -2
-	elseif l:empty == 0
-		let l:args = [&shell, &shellcmdflag]
-		let l:name = []
-		if type(a:cmd) == 1
-			let l:name = a:cmd
-			if s:asyncrun_windows == 0
-				let l:args += [a:cmd]
-			else
-				let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
-				let l:run = ['@echo off', a:cmd]
-				call writefile(l:run, l:tmp)
-				let l:args += [shellescape(l:tmp)]
-			endif
-		elseif type(a:cmd) == 3
-			if s:asyncrun_windows == 0
-				let l:temp = []
-				for l:item in a:cmd
-					if index(['|', '`'], l:item) < 0
-						let l:temp += [fnameescape(l:item)]
-					else
-						let l:temp += ['|']
-					endif
-				endfor
-				let l:args += [join(l:temp, ' ')]
-			else
-				let l:args += a:cmd
-			endif
-			let l:vector = []
-			for l:x in a:cmd
-				let l:vector += ['"'.l:x.'"']
-			endfor
-			let l:name = join(l:vector, ', ')
+	endif
+	if l:empty != 0
+		call s:ErrorMsg("empty arguments")
+		return -3
+	endif
+	let l:args = [g:asyncrun_shell, g:asyncrun_shellcmdflag]
+	let l:name = []
+	if type(a:cmd) == 1
+		let l:name = a:cmd
+		if s:asyncrun_windows == 0
+			let l:args += [a:cmd]
+		else
+			let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
+			let l:run = ['@echo off', a:cmd]
+			call writefile(l:run, l:tmp)
+			let l:args += [shellescape(l:tmp)]
 		endif
+	elseif type(a:cmd) == 3
+		if s:asyncrun_windows == 0
+			let l:temp = []
+			for l:item in a:cmd
+				if index(['|', '`'], l:item) < 0
+					let l:temp += [fnameescape(l:item)]
+				else
+					let l:temp += ['|']
+				endif
+			endfor
+			let l:args += [join(l:temp, ' ')]
+		else
+			let l:args += a:cmd
+		endif
+		let l:vector = []
+		for l:x in a:cmd
+			let l:vector += ['"'.l:x.'"']
+		endfor
+		let l:name = join(l:vector, ', ')
+	endif
+	if !has('nvim')
 		let l:options = {}
 		let l:options['callback'] = 'g:AsyncRun_Job_OnCallback'
 		let l:options['close_cb'] = 'g:AsyncRun_Job_OnClose'
@@ -448,30 +482,35 @@ function! g:AsyncRun_Job_Start(cmd)
 			let l:options['stoponexit'] = g:asyncrun_stop
 		endif
 		let s:async_job = job_start(l:args, l:options)
-		if job_status(s:async_job) != 'fail'
-			let s:async_output = {}
-			let s:async_head = 0
-			let s:async_tail = 0
-			let l:arguments = "[".l:name."]"
-			let l:title = ':AsyncRun '.l:name
-			call setqflist([], ' ', {'title':l:title})
-			call setqflist([{'text':l:arguments}], 'a')
-			let s:async_start = float2nr(reltimefloat(reltime()))
-			if g:asyncrun_timer > 0
-				let l:options = {'repeat':-1}
-				let l:name = 'g:AsyncRun_Job_OnTimer'
-				let s:async_timer = timer_start(100, l:name, l:options)
-			endif
-			let s:async_state = 1
-			let g:asyncrun_status = "running"
-			redrawstatus!
-		else
-			unlet s:async_job
-			call s:ErrorMsg("Background job start failed '".a:cmd."'")
-			return -3
-		endif
+		let l:success = (job_status(s:async_job) != 'fail')? 1 : 0
 	else
-		call s:ErrorMsg("empty arguments")
+		let l:callbacks = {'shell': 'AsyncRun'}
+		let l:callbacks['on_stdout'] = function('g:AsyncRun_Job_NeoVim')
+		let l:callbacks['on_stderr'] = function('g:AsyncRun_Job_NeoVim')
+		let l:callbacks['on_exit'] = function('g:AsyncRun_Job_NeoVim')
+		let s:async_job = jobstart(l:args, l:callbacks)
+		let l:success = (s:async_job > 0)? 1 : 0
+	endif
+	if l:success != 0
+		let s:async_output = {}
+		let s:async_head = 0
+		let s:async_tail = 0
+		let l:arguments = "[".l:name."]"
+		let l:title = ':AsyncRun '.l:name
+		call setqflist([], ' ', {'title':l:title})
+		call setqflist([{'text':l:arguments}], 'a')
+		let s:async_start = float2nr(reltimefloat(reltime()))
+		if g:asyncrun_timer > 0 && (!has('nvim'))
+			let l:options = {'repeat':-1}
+			let l:name = 'g:AsyncRun_Job_OnTimer'
+			let s:async_timer = timer_start(100, l:name, l:options)
+		endif
+		let s:async_state = 1
+		let g:asyncrun_status = "running"
+		redrawstatus!
+	else
+		unlet s:async_job
+		call s:ErrorMsg("Background job start failed '".a:cmd."'")
 		return -4
 	endif
 	return 0
