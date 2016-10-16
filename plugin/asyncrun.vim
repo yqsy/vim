@@ -552,7 +552,6 @@ function! s:ExtractOpt(command)
 	let opts.save = get(opts, 'save', '')
 	let opts.program = get(opts, 'program', '')
 	if 0
-		messages clear
 		echom 'cwd:'. opts.cwd
 		echom 'mode:'. opts.mode
 		echom 'save:'. opts.save
