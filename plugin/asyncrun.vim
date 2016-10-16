@@ -259,7 +259,9 @@ endfunc
 function! s:AsyncRun_Job_CheckScroll()
 	if g:asyncrun_last == 0
 		if &buftype == 'quickfix'
-			let w:async_qfview = winsaveview()
+			if s:async_neovim != 0
+				let w:async_qfview = winsaveview()
+			endif
 			return (line('.') == line('$'))
 		else
 			return 1
@@ -274,6 +276,9 @@ function! s:AsyncRun_Job_CheckScroll()
 		return 1
 	else
 		if &buftype == 'quickfix'
+			if s:async_neovim != 0
+				let w:async_qfview = winsaveview()
+			endif
 			return (line('.') == line('$'))
 		else
 			return (!pumvisible())
@@ -287,7 +292,7 @@ function! s:AsyncRun_Job_Update(count)
 	let l:count = 0
 	let l:total = 0
 	let l:check = s:AsyncRun_Job_CheckScroll()
-	if g:asyncrun_encs == &encoding || (!has('iconv'))
+	if g:asyncrun_encs == &encoding
 		let l:iconv = 0 
 	endif
 	while s:async_tail < s:async_head
@@ -505,7 +510,7 @@ function! g:AsyncRun_Job_Start(cmd)
 		endfor
 		let l:name = join(l:vector, ', ')
 	endif
-	if !has('nvim')
+	if s:async_neovim == 0
 		let l:options = {}
 		let l:options['callback'] = 'g:AsyncRun_Job_OnCallback'
 		let l:options['close_cb'] = 'g:AsyncRun_Job_OnClose'
@@ -534,14 +539,18 @@ function! g:AsyncRun_Job_Start(cmd)
 		let s:async_tail = 0
 		let l:arguments = "[".l:name."]"
 		let l:title = ':AsyncRun '.l:name
-		if !has('nvim')
-			call setqflist([], ' ', {'title':l:title})
+		if s:async_neovim == 0
+			if has('patch-7.4.2210')
+				call setqflist([], ' ', {'title':l:title})
+			else
+				call setqflist([], '')
+			endif
 		else
 			call setqflist([], ' ', l:title)
 		endif
 		call setqflist([{'text':l:arguments}], 'a')
 		let s:async_start = float2nr(reltimefloat(reltime()))
-		if g:asyncrun_timer > 0 && (!has('nvim'))
+		if g:asyncrun_timer > 0 && s:async_neovim == 0
 			let l:options = {'repeat':-1}
 			let l:name = 'g:AsyncRun_Job_OnTimer'
 			let s:async_timer = timer_start(100, l:name, l:options)
@@ -573,7 +582,9 @@ function! g:AsyncRun_Job_Stop(how)
 				return -2
 			endif
 		else
-			call jobstop(s:async_job)
+			if s:async_job > 0
+				call jobstop(s:async_job)
+			endif
 		endif
 	else
 		return -3
