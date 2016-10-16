@@ -176,7 +176,9 @@ function! Terminal_SwitchTab()
 	for i in range(10)
 		exec "noremap <silent><M-".i."> :tabn ".i."<cr>"
 		exec "inoremap <silent><M-".i."> <ESC>:tabn ".i."<cr>"
-		exec "set <M-".i.">=\e]{0}".i."~"
+		if !has('nvim')
+			exec "set <M-".i.">=\e]{0}".i."~"
+		endif
 	endfor
 	set ttimeout ttimeoutlen=100
 endfunc
