@@ -359,7 +359,7 @@ endfunc
 
 
 
-command! -bang -nargs=* -complete=file Make VimMake -program=make <args>
+command! -bang -nargs=* -complete=file Make VimMake -program=make @ <args>
 
 
 
