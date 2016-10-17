@@ -691,6 +691,9 @@ function! g:Vimmake_Build_NeoVim(job_id, data, event)
 		endwhile
 		call s:Vimmake_Build_Update(-1)
 	elseif a:event == 'exit'
+		if type(a:data) == type(1)
+			let s:build_code = a:data
+		endif
 		call s:Vimmake_Build_OnFinish(2)
 	endif
 endfunc
