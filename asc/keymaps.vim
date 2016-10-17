@@ -183,10 +183,12 @@ noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
 noremap <space>ho :only<cr>
 
-if has('win32') || has('win64')
+if (!has('nvim')) && (has('win32') || has('win64'))
 	noremap <space>hr :tabnew ~/_vimrc<cr>
-else
+elseif !has('nvim')
 	noremap <space>hr :tabnew ~/.vimrc<cr>
+else
+	noremap <space>hr :tabnew ~/.config/nvim/init.vim<cr>
 endif
 
 let s:filename = expand('<sfile>:p')
