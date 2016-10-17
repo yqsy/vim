@@ -71,6 +71,11 @@ else
 	runtime ftplugin/man.vim
 endif
 
+if has('nvim')
+	let g:asyncrun_trim = 1
+	let g:vimmake_build_trim = 1
+endif
+
 
 "----------------------------------------------------------------------
 "- OptImport
