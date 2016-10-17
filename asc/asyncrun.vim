@@ -458,7 +458,7 @@ endfunc
 "----------------------------------------------------------------------
 
 " start background build
-function! g:AsyncRun_Job_Start(cmd)
+function! s:AsyncRun_Job_Start(cmd)
 	let l:running = 0
 	let l:empty = 0
 	if s:asyncrun_support == 0
@@ -584,19 +584,22 @@ endfunc
 
 
 " stop background job
-function! g:AsyncRun_Job_Stop(how)
-	let l:how = a:how
+function! s:AsyncRun_Job_Stop(how)
+	let l:how = (a:how != '')? a:how : 'term'
 	if s:asyncrun_support == 0
 		call s:NotSupport()
 		return -1
 	endif
-	if l:how == '' | let l:how = 'term' | endif
 	if exists('s:async_job')
 		if s:async_nvim == 0
 			if job_status(s:async_job) == 'run'
-				call job_stop(s:async_job, l:how)
+				if job_stop(s:async_job, l:how)
+					return 0
+				else
+					return -2
+				endif
 			else
-				return -2
+				return -3
 			endif
 		else
 			if s:async_job > 0
@@ -604,14 +607,14 @@ function! g:AsyncRun_Job_Stop(how)
 			endif
 		endif
 	else
-		return -3
+		return -4
 	endif
 	return 0
 endfunc
 
 
 " get job status
-function! g:AsyncRun_Job_Status()
+function! s:AsyncRun_Job_Status()
 	if exists('s:async_job')
 		if s:async_nvim == 0
 			return job_status(s:async_job)
@@ -676,9 +679,9 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" AsyncRun
+" asyncrun - run
 "----------------------------------------------------------------------
-function! s:AsyncRun(bang, mods, args)
+function! asyncrun#run(bang, mode, args)
 	let l:macros = {}
 	let l:macros['VIM_FILEPATH'] = expand("%:p")
 	let l:macros['VIM_FILENAME'] = expand("%:t")
@@ -773,7 +776,7 @@ function! s:AsyncRun(bang, mods, args)
 	endif
 
 	if l:mode == 0 && s:asyncrun_support != 0
-		call g:AsyncRun_Job_Start(l:command)
+		call s:AsyncRun_Job_Start(l:command)
 	elseif l:mode <= 1 && has('quickfix')
 		call s:MakeSave()
 		let &l:makeprg = l:command
@@ -821,14 +824,32 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" AsyncStop
+" asyncrun - stop
 "----------------------------------------------------------------------
-function! s:AsyncStop(bang)
+function! asyncrun#stop(bang)
 	if a:bang == ''
-		call g:AsyncRun_Job_Stop('term')
+		return s:AsyncRun_Job_Stop('term')
 	else
-		call g:AsyncRun_Job_Stop('kill')
+		return s:AsyncRun_Job_Stop('kill')
 	endif
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" asyncrun - status
+"----------------------------------------------------------------------
+function! asyncrun#status()
+	return s:AsyncRun_Job_Status()
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" asyncrun -version
+"----------------------------------------------------------------------
+function! asyncrun#version()
+	return '1.3.0'
 endfunc
 
 
@@ -836,9 +857,9 @@ endfunc
 " Commands
 "----------------------------------------------------------------------
 command! -bang -nargs=+ -complete=file AsyncRun 
-	\ call s:AsyncRun('<bang>', '', <q-args>)
+	\ call asyncrun#run('<bang>', '', <q-args>)
 
-command! -bang -nargs=0 AsyncStop call s:AsyncStop('<bang>')
+command! -bang -nargs=0 AsyncStop call asyncrun#stop('<bang>')
 
 
 
