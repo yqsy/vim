@@ -489,7 +489,7 @@ function! s:AsyncRun_Job_Start(cmd)
 		call s:ErrorMsg("empty arguments")
 		return -3
 	endif
-	if !filereadable(&shell)
+	if !executable(&shell)
 		let l:text = "invalid config in &shell and &shellcmdflag"
 		call s:ErrorMsg(l:text . ", &shell must be an executable.")
 		return -4
