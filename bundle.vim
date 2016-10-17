@@ -163,11 +163,17 @@ if index(g:bundle_group, 'special') >= 0
 	Plugin 'kshenoy/vim-signature'
 	"Plugin 'scrooloose/syntastic'
 	"Plugin 'tpope/vim-dispatch'
+	Plugin 'bling/vim-airline'
 
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 0
 	let g:syntastic_check_on_open = 0
 	let g:syntastic_check_on_wq = 0
+
+	let g:airline_left_sep = ''
+	let g:airline_left_sep = ''
+	let g:airline_right_sep = ''
+	let g:airline_right_sep = ''
 endif
 
 
