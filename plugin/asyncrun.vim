@@ -396,6 +396,8 @@ function! s:AsyncRun_Job_OnFinish(what)
 	if s:async_info.post != ''
 		exec s:async_info.post
 		let s:async_info.post = ''
+	else
+		echom "fuck2"
 	endif
 	if g:asyncrun_exit != ""
 		exec g:asyncrun_exit
@@ -572,7 +574,8 @@ function! s:AsyncRun_Job_Start(cmd)
 		let g:asyncrun_status = "running"
 		redrawstatus!
 		let s:async_info.post = s:async_info.postsave
-		let s:async_info.ready = ''
+		let s:async_info.postsave = ''
+		echo "text:".s:async_info.text
 		let s:asyncrun_text = s:async_info.text
 	else
 		unlet s:async_job
@@ -703,6 +706,7 @@ function! asyncrun#run(bang, mode, args)
 	let l:macros['<cwd>'] = getcwd()
 	let l:command = s:StringStrip(a:args)
 	let cd = haslocaldir()? 'lcd ' : 'cd '
+	let l:retval = ''
 
 	" extract options
 	let [l:command, l:opts] = s:ExtractOpt(l:command)
@@ -715,15 +719,12 @@ function! asyncrun#run(bang, mode, args)
 		endif
 		let l:command = s:StringReplace(l:command, l:replace, l:val)
 		let l:opts.cwd = s:StringReplace(l:opts.cwd, l:replace, l:val)
-		let l:opts.text = s:StringReplace(l:opts.cwd, l:replace, l:val)
+		let l:opts.text = s:StringReplace(l:opts.text, l:replace, l:val)
 	endfor
 
 	" check if need to save
 	if get(l:opts, 'save', '')
-		try
-			silent update
-		catch /.*/
-		endtry
+		try | silent update | catch | endtry
 	endif
 
 	if a:bang == '!'
@@ -769,7 +770,7 @@ function! asyncrun#run(bang, mode, args)
 	if l:opts.cwd != ''
 		let l:opts.savecwd = getcwd()
 		try
-			exec cd . fnameescape(l:opts.cwd)
+			silent exec cd . fnameescape(l:opts.cwd)
 		catch /.*/
 			echohl ErrorMsg
 			echom "E344: Can't find directory \"".l:opts.cwd."\" in -cwd"
@@ -779,23 +780,24 @@ function! asyncrun#run(bang, mode, args)
 	endif
 
 	if l:mode == 0 && s:asyncrun_support != 0
-		let s:async_info.postsave = opt.post
-		let s:async_info.text = opt.text
+		let s:async_info.postsave = opts.post
+		let s:async_info.text = opts.text
+		echom "opts.text: ".opts.text
 		call s:AsyncRun_Job_Start(l:command)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
 		let &l:makeprg = l:command
 		exec "make!"
 		let &l:makeprg = l:makesave
-		let g:asyncrun_text = opt.text
-		if opt.post != ''
-			exec opt.post
+		let g:asyncrun_text = opts.text
+		if opts.post != ''
+			exec opts.post
 		endif
 	elseif l:mode == 2
 		exec '!'. l:command
-		let g:asyncrun_text = opt.text
-		if opt.post != ''
-			exec opt.post
+		let g:asyncrun_text = opts.text
+		if opts.post != ''
+			exec opts.post
 		endif
 	elseif l:mode == 3
 		if s:asyncrun_windows != 0 && has('python')
@@ -819,20 +821,20 @@ function! asyncrun#run(bang, mode, args)
 		else
 			let l:retval = system(l:command)
 		endif
-		let g:asyncrun_text = opt.text
-		if opt.post != ''
-			exec opt.post
+		let g:asyncrun_text = opts.text
+		if opts.post != ''
+			exec opts.post
 		endif
 	elseif l:mode <= 5
 		if s:asyncrun_windows != 0 && has('gui_running')
 			let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
-			let l:run = ['@echo off', l:command, 'pause']
+			let l:run = ['@echo off', "call ". l:command, 'pause']
 			if v:version >= 700
 				call writefile(l:run, l:tmp)
 			else
 				exe 'redir ! > '.fnameescape(l:tmp)
 				silent echo "@echo off"
-				silent echo l:cmd
+				silent echo "call ". l:command
 				silent echo "pause"
 				redir END
 			endif
@@ -853,7 +855,7 @@ function! asyncrun#run(bang, mode, args)
 	endif
 
 	if l:opts.cwd != ''
-		exec cd fnameescape(l:opts.savecwd)
+		silent exec cd fnameescape(l:opts.savecwd)
 	endif
 
 	return l:retval
