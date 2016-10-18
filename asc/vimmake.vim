@@ -713,6 +713,7 @@ function! s:ScriptWrite(command, pause)
 			let l:line += ['pause']
 		endif
 	else
+		let l:tmp = tempname()
 		let l:line = ['#! '.&shell]
 		let l:line += [a:command]
 		if a:pause != 0
