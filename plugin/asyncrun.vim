@@ -396,8 +396,6 @@ function! s:AsyncRun_Job_OnFinish(what)
 	if s:async_info.post != ''
 		exec s:async_info.post
 		let s:async_info.post = ''
-	else
-		echom "fuck2"
 	endif
 	if g:asyncrun_exit != ""
 		exec g:asyncrun_exit
@@ -575,8 +573,7 @@ function! s:AsyncRun_Job_Start(cmd)
 		redrawstatus!
 		let s:async_info.post = s:async_info.postsave
 		let s:async_info.postsave = ''
-		echo "text:".s:async_info.text
-		let s:asyncrun_text = s:async_info.text
+		let g:asyncrun_text = s:async_info.text
 	else
 		unlet s:async_job
 		call s:ErrorMsg("Background job start failed '".a:cmd."'")
@@ -682,6 +679,28 @@ function! s:ExtractOpt(command)
 	return [cmd, opts]
 endfunc
 
+" write script to a file and return filename
+function! s:ScriptWrite(command, pause)
+	let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
+	let l:run = ['@echo off', "call ". a:command, 'pause']
+	if v:version >= 700
+		if a:pause != 0
+			call writefile(["@echo off", "call ". a:command, "pause"], l:tmp)
+		else
+			call writefile(["@echo off", "call ". a:command], l:tmp)
+		endif
+	else
+		exe 'redir ! > '.fnameescape(l:tmp)
+		silent echo "@echo off"
+		silent echo "call ". a:command
+		if a:pause != 0
+			silent echo "pause"
+		endif
+		redir END
+	endif
+	return l:tmp
+endfunc
+
 
 "----------------------------------------------------------------------
 " asyncrun - run
@@ -782,11 +801,14 @@ function! asyncrun#run(bang, mode, args)
 	if l:mode == 0 && s:asyncrun_support != 0
 		let s:async_info.postsave = opts.post
 		let s:async_info.text = opts.text
-		echom "opts.text: ".opts.text
 		call s:AsyncRun_Job_Start(l:command)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
-		let &l:makeprg = l:command
+		if s:asyncrun_windows == 0
+			let &l:makeprg = l:command
+		else
+			let &l:makeprg = s:ScriptWrite(l:command, 0)
+		endif
 		exec "make!"
 		let &l:makeprg = l:makesave
 		let g:asyncrun_text = opts.text
@@ -801,15 +823,12 @@ function! asyncrun#run(bang, mode, args)
 		endif
 	elseif l:mode == 3
 		if s:asyncrun_windows != 0 && has('python')
+			let l:script = s:ScriptWrite(l:command, 0)
 			python import vim, subprocess
-			if type(a:command) == 1
-				python x = [vim.eval('a:command')]
-			else
-				python x = vim.eval('a:command')
-			endif
+			python x = [vim.eval('l:script')]
 			python m = subprocess.PIPE
 			python n = subprocess.STDOUT
-			python s = sys.platform[:3] == 'win' and True or False
+			python s = True
 			python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
 			python t = p.stdout.read()
 			python p.stdout.close()
@@ -851,6 +870,10 @@ function! asyncrun#run(bang, mode, args)
 			else
 				call system(l:command . ' &')
 			endif
+		endif
+		let g:asyncrun_text = opts.text
+		if opts.post != ''
+			exec opts.post
 		endif
 	endif
 

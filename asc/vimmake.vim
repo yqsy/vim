@@ -426,7 +426,7 @@ function! s:Vimmake_Build_OnFinish(what)
 	endif
 	redrawstatus!
 	redraw
-	if s:build_info.post
+	if s:build_info.post != ''
 		exec s:build_info.post
 		let s:build_info.post = ''
 	endif
@@ -699,6 +699,28 @@ function! s:ExtractOpt(command)
 	return [cmd, opts]
 endfunc
 
+" write script to a file and return filename
+function! s:ScriptWrite(command, pause)
+	let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
+	let l:run = ['@echo off', "call ". a:command, 'pause']
+	if v:version >= 700
+		if a:pause != 0
+			call writefile(["@echo off", "call ". a:command, "pause"], l:tmp)
+		else
+			call writefile(["@echo off", "call ". a:command], l:tmp)
+		endif
+	else
+		exe 'redir ! > '.fnameescape(l:tmp)
+		silent echo "@echo off"
+		silent echo "call ". a:command
+		if a:pause != 0
+			silent echo "pause"
+		endif
+		redir END
+	endif
+	return l:tmp
+endfunc
+
 
 "----------------------------------------------------------------------
 " run commands
@@ -805,7 +827,11 @@ function! vimmake#run(bang, mods, args)
 		call s:Vimmake_Build_Start(l:command)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
-		let &l:makeprg = l:command
+		if s:vimmake_windows == 0
+			let &l:makeprg = l:command
+		else
+			let &l:makeprg = s:ScriptWrite(l:command, 0)
+		endif
 		exec "make!"
 		let &l:makeprg = l:makesave
 		let g:vimmake_text = opts.text
@@ -820,15 +846,12 @@ function! vimmake#run(bang, mods, args)
 		endif
 	elseif l:mode == 3
 		if s:vimmake_windows != 0 && has('python')
+			let l:script = s:ScriptWrite(l:command, 0)
 			python import vim, subprocess
-			if type(a:command) == 1
-				python x = [vim.eval('a:command')]
-			else
-				python x = vim.eval('a:command')
-			endif
+			python x = [vim.eval('l:script')]
 			python m = subprocess.PIPE
 			python n = subprocess.STDOUT
-			python s = sys.platform[:3] == 'win' and True or False
+			python s = True
 			python p = subprocess.Popen(x, shell = s, stdout = m, stderr = n)
 			python t = p.stdout.read()
 			python p.stdout.close()
@@ -870,6 +893,10 @@ function! vimmake#run(bang, mods, args)
 			else
 				call system(l:command . ' &')
 			endif
+		endif
+		let g:vimmake_text = opts.text
+		if opts.post != '' 
+			exec opts.post
 		endif
 	endif
 
