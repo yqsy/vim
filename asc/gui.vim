@@ -81,7 +81,10 @@ if has('gui_running')
 		au QuickfixCmdPost make call QuickfixChineseConvert()
 		let g:config_vim_gui_label = 3
 		"color desert256
-		color seoul256
+		try
+			color seoul256
+		catch
+		endtry
 		set guioptions-=t
 		set guioptions=egrmT
 	elseif has('gui_macvim')
