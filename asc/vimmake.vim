@@ -713,7 +713,6 @@ function! s:ScriptWrite(command, pause)
 			let l:line += ['pause']
 		endif
 	else
-		let l:tmp = tempname()
 		let l:line = ['#! '.&shell]
 		let l:line += [a:command]
 		if a:pause != 0
@@ -888,7 +887,6 @@ function! vimmake#run(bang, mods, args)
 		else
 			let &l:makeprg = 'source '. shellescape(l:script)
 		endif
-		let &l:makeprg = l:script
 		exec "make!"
 		let &l:makeprg = l:makesave
 		if s:vimmake_windows == 0
