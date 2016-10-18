@@ -702,13 +702,13 @@ endfunc
 " write script to a file and return filename
 function! s:ScriptWrite(command, pause)
 	let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
-	if s:vimmake_windows == 0
+	if s:vimmake_windows != 0
 		let l:line = ['@echo off', 'call '.a:command]
 		if a:pause != 0
 			let l:line += ['pause']
 		endif
 	else
-		let l:line = ['#! '.&shell.' '.&shellcmdflag]
+		let l:line = ['#! '.&shell]
 		let l:line += [a:command]
 		if a:pause != 0
 			let l:line += ['read -n1 -rsp "press any key to confinue ..."']
@@ -837,6 +837,11 @@ function! vimmake#run(bang, mods, args)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
 		let l:script = s:ScriptWrite(l:command, 0)
+		if s:vimmake_windows != 0
+			let &l:makeprg = shellescape(l:script)
+		else
+			let &l:makeprg = 'source '. shellescape(l:script)
+		endif
 		let &l:makeprg = l:script
 		exec "make!"
 		let &l:makeprg = l:makesave
