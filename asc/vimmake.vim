@@ -701,22 +701,31 @@ endfunc
 
 " write script to a file and return filename
 function! s:ScriptWrite(command, pause)
-	let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
-	let l:run = ['@echo off', "call ". a:command, 'pause']
-	if v:version >= 700
+	let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
+	if s:vimmake_windows == 0
+		let l:line = ['@echo off', 'call '.a:command]
 		if a:pause != 0
-			call writefile(["@echo off", "call ". a:command, "pause"], l:tmp)
-		else
-			call writefile(["@echo off", "call ". a:command], l:tmp)
+			let l:line += ['pause']
 		endif
 	else
-		exe 'redir ! > '.fnameescape(l:tmp)
-		silent echo "@echo off"
-		silent echo "call ". a:command
+		let l:line = ['#! '.&shell.' '.&shellcmdflag]
+		let l:line += [a:command]
 		if a:pause != 0
-			silent echo "pause"
+			let l:line += ['read -n1 -rsp "press any key to confinue ..."']
 		endif
+		let l:tmp = tempname()
+	endif
+	if v:version >= 700
+		call writefile(l:line, l:tmp)
+	else
+		exe 'redir ! > '.fnameescape(l:tmp)
+		for l:index in range(len(l:line))
+			silent echo l:line[l:index]
+		endfor
 		redir END
+	endif
+	if s:vimmake_windows == 0
+		call setfperm(l:tmp, 'rwx------')
 	endif
 	return l:tmp
 endfunc
@@ -827,13 +836,13 @@ function! vimmake#run(bang, mods, args)
 		call s:Vimmake_Build_Start(l:command)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
-		if s:vimmake_windows == 0
-			let &l:makeprg = l:command
-		else
-			let &l:makeprg = s:ScriptWrite(l:command, 0)
-		endif
+		let l:script = s:ScriptWrite(l:command, 0)
+		let &l:makeprg = l:script
 		exec "make!"
 		let &l:makeprg = l:makesave
+		if vimmake_windows == 0
+			call delete(l:script)
+		endif
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
 			exec opts.post
@@ -869,18 +878,7 @@ function! vimmake#run(bang, mods, args)
 		endif
 	elseif l:mode <= 5
 		if s:vimmake_windows != 0 && has('gui_running')
-			let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
-			let l:run = ['@echo off', "call ". l:command, 'pause']
-			if v:version >= 700
-				call writefile(l:run, l:tmp)
-			else
-				exe 'redir ! > '.fnameescape(l:tmp)
-				silent echo "@echo off"
-				silent echo "call ". l:command
-				silent echo "pause"
-				redir END
-			endif
-			let l:ccc = shellescape(l:tmp)
+			let l:ccc = shellescape(s:ScriptWrite(l:command, 1))
 			if l:mode == 4
 				silent exec '!start cmd /C '. l:ccc
 			else
