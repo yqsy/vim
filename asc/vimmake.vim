@@ -729,9 +729,6 @@ function! s:ScriptWrite(command, pause)
 		endfor
 		redir END
 	endif
-	if s:vimmake_windows == 0
-		try | call setfperm(l:tmp, 'rwx------') | catch | endtry
-	endif
 	return l:tmp
 endfunc
 
