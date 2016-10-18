@@ -514,7 +514,7 @@ function! s:Vimmake_Build_Start(cmd)
 		echo "empty cmd"
 		return -3
 	endif
-	if !filereadable(&shell)
+	if !executable(&shell)
 		let l:text = "invalid config in &shell and &shellcmdflag"
 		call s:ErrorMsg(l:text . ", &shell must be an executable.")
 		return -4
