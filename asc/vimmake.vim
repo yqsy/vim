@@ -879,7 +879,7 @@ function! vimmake#run(bang, mods, args)
 			call s:QuickfixToggle(1, g:vimmake_quickfix)
 		endif
 		call s:Vimmake_Build_Start(l:command)
-	elseif l:mode == 1 && has('quickfix')
+	elseif l:mode <= 1 && has('quickfix')
 		let l:makesave = &l:makeprg
 		let l:script = s:ScriptWrite(l:command, 0)
 		if s:vimmake_windows != 0
@@ -900,7 +900,7 @@ function! vimmake#run(bang, mods, args)
 		if opts.post != '' 
 			exec opts.post
 		endif
-	elseif l:mode == 2
+	elseif l:mode <= 2
 		exec '!'. l:command
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
