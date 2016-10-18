@@ -845,7 +845,7 @@ function! vimmake#run(bang, mods, args)
 		let &l:makeprg = l:script
 		exec "make!"
 		let &l:makeprg = l:makesave
-		if vimmake_windows == 0
+		if s:vimmake_windows == 0
 			call delete(l:script)
 		endif
 		let g:vimmake_text = opts.text
