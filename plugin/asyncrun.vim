@@ -705,7 +705,7 @@ function! s:ScriptWrite(command, pause)
 		redir END
 	endif
 	if s:asyncrun_windows == 0
-		call setfperm(l:tmp, 'rwx------')
+		try | call setfperm(l:tmp, 'rwx------') | catch | endtry
 	endif
 	return l:tmp
 endfunc
@@ -822,7 +822,7 @@ function! asyncrun#run(bang, mode, args)
 		exec "make!"
 		let &l:makeprg = l:makesave
 		if s:asyncrun_windows == 0
-			call delete(l:script)
+			try | call delete(l:script) | catch | endtry
 		endif
 		let g:asyncrun_text = opts.text
 		if opts.post != ''

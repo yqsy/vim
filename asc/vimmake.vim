@@ -701,7 +701,7 @@ endfunc
 
 " write script to a file and return filename
 function! s:ScriptWrite(command, pause)
-	let l:tmp = fnamemodify(tempname(), ':h') . '\asyncrun.cmd'
+	let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
 	if s:vimmake_windows != 0
 		let l:line = ['@echo off', 'call '.a:command]
 		if a:pause != 0
@@ -725,7 +725,7 @@ function! s:ScriptWrite(command, pause)
 		redir END
 	endif
 	if s:vimmake_windows == 0
-		call setfperm(l:tmp, 'rwx------')
+		try | call setfperm(l:tmp, 'rwx------') | catch | endtry
 	endif
 	return l:tmp
 endfunc
@@ -846,7 +846,7 @@ function! vimmake#run(bang, mods, args)
 		exec "make!"
 		let &l:makeprg = l:makesave
 		if s:vimmake_windows == 0
-			call delete(l:script)
+			try | call delete(l:script) | catch | endtry
 		endif
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
