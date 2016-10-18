@@ -75,6 +75,11 @@ if !exists("g:vimmake_mode")
 	let g:vimmake_mode = {}
 endif
 
+" open quick fix 
+if !exists("g:vimmake_quickfix")
+	let g:vimmake_quickfix = 0
+endif
+
 " using timer to update quickfix
 if !exists('g:vimmake_build_timer')
 	let g:vimmake_build_timer = 0
@@ -730,6 +735,46 @@ function! s:ScriptWrite(command, pause)
 	return l:tmp
 endfunc
 
+" toggle quickfix: mode=0/close, 1/open, 2/toggle
+function! s:QuickfixToggle(mode, size)
+	function! s:WindowCheck(mode)
+		if getbufvar('%', '&buftype') == 'quickfix'
+			let s:quickfix_open = 1
+			return
+		endif
+		if a:mode == 0
+			let w:quickfix_save = winsaveview()
+		else
+			call winrestview(w:quickfix_save)
+		endif
+	endfunc
+	let s:quickfix_open = 0
+	let l:winnr = winnr()			
+	windo call s:WindowCheck(0)
+	if a:mode == 0
+		if s:quickfix_open != 0
+			cclose
+		endif
+	elseif a:mode == 1
+		if s:quickfix_open == 0
+			exec 'botright copen '. ((a:size > 0)? a:size : ' ')
+			wincmd k
+		endif
+	elseif a:mode == 2
+		if s:quickfix_open == 0
+			exec 'botright copen '. ((a:size > 0)? a:size : ' ')
+			wincmd k
+		else
+			cclose
+		endif
+	endif
+	windo call s:WindowCheck(1)
+	try
+		silent exec ''.l:winnr.'wincmd w'
+	catch /.*/
+	endtry
+endfunc
+
 
 "----------------------------------------------------------------------
 " run commands
@@ -833,6 +878,9 @@ function! vimmake#run(bang, mods, args)
 	if l:mode == 0 && s:vimmake_advance != 0
 		let s:build_info.postsave = opts.post
 		let s:build_info.text = opts.text
+		if g:vimmake_quickfix != 0
+			call s:QuickfixToggle(1, g:vimmake_quickfix)
+		endif
 		call s:Vimmake_Build_Start(l:command)
 	elseif l:mode == 1 && has('quickfix')
 		let l:makesave = &l:makeprg
@@ -847,6 +895,9 @@ function! vimmake#run(bang, mods, args)
 		let &l:makeprg = l:makesave
 		if s:vimmake_windows == 0
 			try | call delete(l:script) | catch | endtry
+		endif
+		if g:vimmake_quickfix != 0
+			call s:QuickfixToggle(1, g:vimmake_quickfix)
 		endif
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
@@ -1044,7 +1095,11 @@ function! s:Cmd_VimExecute(bang, ...)
 	let l:ext = expand("%:e")
 	let l:savecwd = getcwd()
 	if l:cwd > 0
-		"silent exec 
+		let l:dest = expand('%:p:h')
+		try
+			silent exec cd . l:dest
+		catch
+		endtry
 	endif
 	if index(['', '0', 'file', 'filename'], l:mode) >= 0
 		call s:ExecuteMe(0)
@@ -1338,32 +1393,9 @@ endfunc
 function! vimmake#Load()
 endfunc
 
-function! vimmake#Toggle_Quickfix(size)
-	function! s:WindowCheck(mode)
-		if getbufvar('%', '&buftype') == 'quickfix'
-			let s:quickfix_open = 1
-			return
-		endif
-		if a:mode == 0
-			let w:quickfix_save = winsaveview()
-		else
-			call winrestview(w:quickfix_save)
-		endif
-	endfunc
-	let s:quickfix_open = 0
-	let l:winnr = winnr()			
-	windo call s:WindowCheck(0)
-	if s:quickfix_open == 0
-		exec 'botright copen '.a:size
-		wincmd k
-	else
-		cclose
-	endif
-	windo call s:WindowCheck(1)
-	try
-		silent exec ''.l:winnr.'wincmd w'
-	catch /.*/
-	endtry
+function! vimmake#Toggle_Quickfix(size, ...)
+	let l:mode = (a:0 == 0)? 2 : (a:1)
+	call s:QuickfixToggle(l:mode, a:size)
 endfunc
 
 function! vimmake#Update_FileList(outname)
