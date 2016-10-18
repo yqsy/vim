@@ -3,8 +3,6 @@ command! -nargs=1 IncScript exec 'so '.s:home.'/'.'<args>'
 exec 'set rtp+='.s:home
 
 IncScript asc/viminit.vim
-
-IncScript asc/asyncrun.vim
 IncScript asc/vimmake.vim
 
 MakeKeymap
