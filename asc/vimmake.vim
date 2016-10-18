@@ -429,24 +429,29 @@ let s:build_state = 0
 let s:build_start = 0.0
 let s:build_debug = 0
 let s:build_quick = 0
-let s:build_neovim = has('nvim')? 1 : 0
+let s:build_nvim = has('nvim')? 1 : 0
+let s:build_hold = 0
 
-" check :cbottom available
-if has('patch-7.4.1997') && (!has('nvim'))
-	let s:build_quick = 1
+" check :cbottom available, cursor in quick need to hold ?
+if s:build_nvim == 0
+	let s:build_quick = (v:version >= 800 || has('patch-7.4.1997'))? 1 : 0
+	let s:build_hold = (v:version >= 800 || has('patch-7.4.2100'))? 0 : 1
+else
+	let s:build_quick = 0
+	let s:build_hold = 1
 endif
 
 " scroll quickfix down
 function! s:Vimmake_Build_Scroll()
 	if getbufvar('%', '&buftype') == 'quickfix'
-		silent normal G
+		silent exec 'normal! G'
 	endif
 endfunc
 
 " check last line
 function! s:Vimmake_Build_Cursor()
 	if &buftype == 'quickfix'
-		if s:build_neovim != 0
+		if s:build_hold != 0
 			let w:vimmake_build_qfview = winsaveview()
 		endif
 		if line('.') != line('$')
@@ -467,7 +472,7 @@ function! s:Vimmake_Build_AutoScroll()
 endfunc
 
 " restore view in neovim
-function! s:Vimmake_Build_NeoReset()
+function! s:Vimmake_Build_ViewReset()
 	if &buftype == 'quickfix'
 		if exists('w:vimmake_build_qfview')
 			call winrestview(w:vimmake_build_qfview)
@@ -477,12 +482,12 @@ function! s:Vimmake_Build_NeoReset()
 endfunc
 
 " neoview will reset cursor when caddexpr is invoked
-function! s:Vimmake_Build_NeoRestore()
+function! s:Vimmake_Build_QuickReset()
 	if &buftype == 'quickfix'
-		call s:Vimmake_Build_NeoReset()
+		call s:Vimmake_Build_ViewReset()
 	else
 		let l:winnr = winnr()
-		windo call s:Vimmake_Build_NeoReset()
+		windo call s:Vimmake_Build_ViewReset()
 		silent exec ''.l:winnr.'wincmd w'
 	endif
 endfunc
@@ -491,7 +496,7 @@ endfunc
 function! s:Vimmake_Build_CheckScroll()
 	if g:vimmake_build_last == 0
 		if &buftype == 'quickfix'
-			if s:build_neovim != 0
+			if s:build_hold != 0
 				let w:vimmake_build_qfview = winsaveview()
 			endif
 			return (line('.') == line('$'))
@@ -508,7 +513,7 @@ function! s:Vimmake_Build_CheckScroll()
 		return 1
 	else
 		if &buftype == 'quickfix'
-			if s:build_neovim != 0
+			if s:build_hold != 0
 				let w:vimmake_build_qfview = winsaveview()
 			endif
 			return (line('.') == line('$'))
@@ -523,6 +528,7 @@ function! s:Vimmake_Build_Update(count)
 	let l:iconv = (g:vimmake_build_encoding != "")? 1 : 0
 	let l:count = 0
 	let l:total = 0
+	let l:empty = [{'text':''}]
 	let l:check = s:Vimmake_Build_CheckScroll()
 	if g:vimmake_build_encoding == &encoding
 		let l:iconv = 0 
@@ -539,7 +545,7 @@ function! s:Vimmake_Build_Update(count)
 		if l:text != ''
 			caddexpr l:text
 		elseif g:vimmake_build_trim == 0
-			caddexpr "\n"
+			call setqflist(l:empty, 'a')
 		endif
 		let l:total += 1
 		unlet s:build_output[s:build_tail]
@@ -549,17 +555,10 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
-	if l:check != 0
-		if and(g:vimmake_build_scroll, 1) != 0 && l:total > 0
-			call s:Vimmake_Build_AutoScroll()
-		elseif s:build_neovim != 0
-			call s:Vimmake_Build_NeoRestore()
-		endif
-		if and(g:vimmake_build_scroll, 8) != 0
-			silent clast
-		endif
-	elseif s:build_neovim != 0
-		call s:Vimmake_Build_NeoRestore()
+	if g:vimmake_build_scroll != 0 && l:total > 0 && l:check != 0
+		call s:Vimmake_Build_AutoScroll()
+	elseif s:build_hold != 0
+		call s:Vimmake_Build_QuickReset()
 	endif
 	if g:vimmake_build_update != ''
 		exec g:vimmake_build_update
@@ -629,17 +628,10 @@ function! s:Vimmake_Build_OnFinish(what)
 		let g:vimmake_build_status = "failure"
 	endif
 	let s:build_state = 0
-	if l:check != 0
-		if and(g:vimmake_build_scroll, 1) != 0
-			call s:Vimmake_Build_AutoScroll()
-		elseif s:build_neovim != 0
-			call s:Vimmake_Build_NeoRestore()
-		endif
-		if and(g:vimmake_build_scroll, 4) != 0
-			silent clast
-		endif
+	if g:vimmake_build_scroll != 0 && l:check != 0
+		call s:Vimmake_Build_AutoScroll()
 	else
-		call s:Vimmake_Build_NeoRestore()
+		call s:Vimmake_Build_QuickReset()
 	endif
 	if g:vimmake_build_bell != 0
 		exec 'norm! \<esc>'
@@ -707,7 +699,7 @@ function! g:Vimmake_Build_Start(cmd)
 		return -1
 	endif
 	if exists('s:build_job')
-		if s:build_neovim == 0
+		if s:build_nvim == 0
 			if job_status(s:build_job) == 'run'
 				let l:running = 1
 			endif
@@ -767,7 +759,7 @@ function! g:Vimmake_Build_Start(cmd)
 		endfor
 		let l:name = join(l:vector, ', ')
 	endif
-	if s:build_neovim == 0
+	if s:build_nvim == 0
 		let l:options = {}
 		let l:options['callback'] = 'g:Vimmake_Build_OnCallback'
 		let l:options['close_cb'] = 'g:Vimmake_Build_OnClose'
@@ -796,8 +788,8 @@ function! g:Vimmake_Build_Start(cmd)
 		let s:build_tail = 0
 		let l:arguments = "[".l:name."]"
 		let l:title = ':VimMake '.l:name
-		if s:build_neovim == 0
-			if has('patch-7.4.2210')
+		if s:build_nvim == 0
+			if v:version >= 800 || has('patch-7.4.2210')
 				call setqflist([], ' ', {'title':l:title})
 			else
 				call setqflist([], ' ')
@@ -807,7 +799,7 @@ function! g:Vimmake_Build_Start(cmd)
 		endif
 		call setqflist([{'text':l:arguments}], 'a')
 		let s:build_start = float2nr(reltimefloat(reltime()))
-		if g:vimmake_build_timer > 0 && s:build_neovim == 0
+		if g:vimmake_build_timer > 0 && s:build_nvim == 0
 			let l:options = {'repeat':-1}
 			let l:name = 'g:Vimmake_Build_OnTimer'
 			let s:build_timer = timer_start(100, l:name, l:options)
@@ -832,7 +824,7 @@ function! g:Vimmake_Build_Stop(how)
 	endif
 	if l:how == '' | let l:how = 'term' | endif
 	if exists('s:build_job')
-		if s:build_neovim == 0
+		if s:build_nvim == 0
 			if job_status(s:build_job) == 'run'
 				call job_stop(s:build_job, l:how)
 			else
@@ -852,7 +844,7 @@ endfunc
 " get job status
 function! g:Vimmake_Build_Status()
 	if exists('s:build_job')
-		if s:build_neovim == 0
+		if s:build_nvim == 0
 			return job_status(s:build_job)
 		else
 			return 'run'
@@ -1385,7 +1377,7 @@ function! s:Cmd_MakeKeymap()
 		noremap <leader>ca :VimScope a <C-R>=expand("<cword>")<CR><CR>
 		noremap <leader>cf :VimScope f <C-R>=expand("<cfile>")<CR><CR>
 		noremap <leader>ci :VimScope i <C-R>=expand("<cfile>")<CR><CR>
-		if has('patch-7.4.2038')
+		if v:version >= 800 || has('patch-7.4.2038')
 			set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
 		else
 			set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
