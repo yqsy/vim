@@ -1166,10 +1166,11 @@ function! s:Cmd_VimBuild(bang, ...)
 			exec 'VimMake make '.shellescape(l:conf)
 		endif
 	elseif index(['2', 'emake'], l:what) >= 0
+		let l:source = shellescape(expand("%"))
 		if l:conf == ''
-			exec 'VimMake emake "%"'
+			exec 'VimMake emake "$(VIM_FILEPATH)"'
 		else
-			exec 'VimMake emake --ini='.shellescape(l:conf).' "%"'
+			exec 'VimMake emake --ini='.shellescape(l:conf).' '.l:source
 		endif
 	endif
 endfunc
