@@ -913,9 +913,9 @@ endfunc
 "----------------------------------------------------------------------
 function! vimmake#stop(bang)
 	if a:bang == ''
-		call s:Vimmake_Build_Stop('term')
+		return s:Vimmake_Build_Stop('term')
 	else
-		call s:Vimmake_Build_Stop('kill')
+		return s:Vimmake_Build_Stop('kill')
 	endif
 endfunc
 
@@ -1193,12 +1193,14 @@ function! s:Cmd_GrepCode(text)
 			let l:inc .= '*.'.l:item.' '
 		endfor
 		exec 'grep! /s /C:"'. a:text . '" '. l:inc
+		"exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grepinc
 			let l:inc .= " --include \\*." . l:item
 		endfor
 		exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
+		"exec 'VimMake -program=grep -R ' . shellescape(a:text) . l:inc. ' *'
 	endif
 endfunc
 
