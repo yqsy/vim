@@ -529,7 +529,7 @@ function! s:Vimmake_Build_Start(cmd)
 			let l:tmp = fnamemodify(tempname(), ':h') . '\vimmake.cmd'
 			let l:run = ['@echo off', a:cmd]
 			call writefile(l:run, l:tmp)
-			let l:args += [shellescape(l:tmp)]
+			let l:args += [l:tmp]
 		endif
 	elseif type(a:cmd) == 3
 		if s:vimmake_windows == 0
