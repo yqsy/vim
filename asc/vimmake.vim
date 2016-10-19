@@ -125,9 +125,9 @@ if !exists('g:vimmake_text')
 	let g:vimmake_text = ''
 endif
 
-" external runner
-if !exists('g:vimmake_runner')
-	let g:vimmake_runner = ''
+" whether to change directory
+if !exists('g:vimmake_cwd')
+	let g:vimmake_cwd = 0
 endif
 
 " main run
@@ -1024,7 +1024,7 @@ endfunc
 function! s:Cmd_VimExecute(bang, ...)
 	let cd = haslocaldir()? 'lcd ' : 'cd '
 	let l:mode = ''
-	let l:cwd = 0
+	let l:cwd = g:vimmake_cwd
 	if a:0 >= 1
 		let l:mode = a:1
 	endif
@@ -1042,7 +1042,7 @@ function! s:Cmd_VimExecute(bang, ...)
 	if l:cwd > 0
 		let l:dest = expand('%:p:h')
 		try
-			silent exec cd . l:dest
+			silent exec cd . fnameescape(l:dest)
 		catch
 		endtry
 	endif
@@ -1110,7 +1110,12 @@ function! s:Cmd_VimExecute(bang, ...)
 			call s:ExecuteMe(0)
 		endif
 	endif
-	call s:CwdRestore(l:cwd)
+	if l:cwd > 0 
+		try
+			silent exec cd . fnameescape(l:savecwd)
+		catch
+		endtry
+	endif
 endfunc
 
 
@@ -1118,45 +1123,6 @@ endfunc
 command! -bang -nargs=* VimExecute call s:Cmd_VimExecute('<bang>', <f-args>)
 command! -bang -nargs=? VimRun call s:Cmd_VimExecute('<bang>', '?', <f-args>)
 
-
-"----------------------------------------------------------------------
-"- make via gcc
-"----------------------------------------------------------------------
-function! s:Make_Gcc(filename, mode)
-	let l:source = shellescape(a:filename)
-	let l:output = shellescape(fnamemodify(a:filename, ':r'))
-	let l:cc = 'gcc'
-	if g:vimmake_cc != ''
-		let l:cc = g:vimmake_cc
-	endif
-	let l:flags = join(g:vimmake_cflags, ' ')
-	let l:extname = expand("%:e")
-	if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
-		let l:flags .= ' -lstdc++'
-	endif
-	if a:mode == 0 && s:vimmake_advance != 0
-		let l:output = fnamemodify(a:filename, ':r')
-		let l:cmd = [l:cc, '-Wall', a:filename, '-o', l:output]
-		let l:cmd += g:vimmake_cflags
-		if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
-			let l:cmd += ['-lstdc++']
-		endif
-		call Vimmake_Build_Start(l:cmd)
-	elseif a:mode <= 1 && has('quickfix')
-		call s:MakeSave()
-		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
-		let &l:makeprg = l:cmd . ' ' . l:flags
-		exec 'make!'
-		call s:MakeRestore()
-	else
-		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
-		if s:vimmake_windows == 0
-			exec '!'.l:cmd . ' ' . l:flags
-		else
-			exec '!start cmd.exe /C '.l:cmd. ' '.l:flags.' & pause'
-		endif
-	endif
-endfunc
 
 
 "----------------------------------------------------------------------
@@ -1179,7 +1145,20 @@ function! s:Cmd_VimBuild(bang, ...)
 		let l:conf = a:2
 	endif
 	if index(['0', 'gcc', 'cc'], l:what) >= 0
-		call s:Make_Gcc(expand("%"), g:vimmake_mode)
+		let l:filename = expand("%")
+		let l:source = shellescape(l:filename)
+		let l:output = shellescape(fnamemodify(l:filename, ':r'))
+		let l:cc = 'gcc'
+		if g:vimmake_cc != ''
+			let l:cc = g:vimmake_cc
+		endif
+		let l:flags = join(g:vimmake_cflags, ' ')
+		let l:extname = expand("%:e")
+		if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
+			let l:flags .= ' -lstdc++'
+		endif
+		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
+		exec 'VimMake '.l:cmd . ' ' . l:flags
 	elseif index(['1', 'make'], l:what) >= 0
 		if l:conf == ''
 			exec 'VimMake make'
@@ -1188,7 +1167,7 @@ function! s:Cmd_VimBuild(bang, ...)
 		endif
 	elseif index(['2', 'emake'], l:what) >= 0
 		if l:conf == ''
-			exec 'VimMake emake '. shellescape('%')
+			exec 'VimMake emake "%"'
 		else
 			exec 'VimMake emake --ini='.shellescape(l:conf).' "%"'
 		endif
