@@ -446,7 +446,7 @@ function! s:Vimmake_Build_OnClose(channel)
 			let l:limit -= 1
 			if l:limit < 0 | break | endif
 		endif
-		call g:Vimmake_Build_OnCallback(a:channel, l:text)
+		call s:Vimmake_Build_OnCallback(a:channel, l:text)
 	endwhile
 	let s:build_debug = 0
 	call s:Vimmake_Build_Update(-1)
