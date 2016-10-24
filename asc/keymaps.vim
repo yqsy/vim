@@ -200,6 +200,13 @@ exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
 
 
 "----------------------------------------------------------------------
+" space + g : misc
+"----------------------------------------------------------------------
+nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+nnoremap <space>gs :VimStop<cr>
+
+
+"----------------------------------------------------------------------
 " space + c : cscope
 "----------------------------------------------------------------------
 noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>

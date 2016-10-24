@@ -32,6 +32,8 @@ highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 
 call Backup_Directory()
 
+let g:ycm_goto_buffer_command = 'new-or-existing-tab'
+
 
 "----------------------------------------------------------------------
 "- Autocmds

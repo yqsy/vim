@@ -143,7 +143,7 @@ endif
 if index(g:bundle_group, 'neocomplete') >= 0
 	Plugin 'Shougo/neocomplete.vim'
 	set completeopt=longest,menuone
-	inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
+	"inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
 	"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 	let g:neocomplete#enable_at_startup = 1 
 endif
@@ -181,8 +181,16 @@ endif
 "----------------------------------------------------------------------
 " experiment
 "----------------------------------------------------------------------
-if index(g:bundle_group, 'experiment')
+if index(g:bundle_group, 'experiment') >= 0
 	Plugin 'mattn/vim-terminal'
+endif
+
+
+"----------------------------------------------------------------------
+" completor
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'completor') >= 0
+	Plugin 'maralla/completor.vim'
 endif
 
 
