@@ -33,6 +33,15 @@ let g:ycm_collect_identifiers_from_comments_and_strings = 1
 let g:ycm_complete_in_strings=1
 set completeopt=menu
 
+let g:ycm_filetype_blacklist = { 
+			\ "text": 1,
+			\ "help": 1,
+			\ "tagbar": 1, 
+			\ "quickfix":1,
+			\ "qf":1,
+			\ "taglist":1, 
+			\ }
+
 
 "----------------------------------------------------------------------
 "- Tagbar
