@@ -107,11 +107,9 @@ if has('gui_running')
 	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 	noremap <M-a> ggVG
 	inoremap <M-a> <ESC>ggVG
-	if has('gui_running')
-		noremap <m-_> :call Change_Transparency(-2)<cr>
-		noremap <m-+> :call Change_Transparency(+2)<cr>
-		noremap <m-\|> :call Toggle_Transparency(9)<cr>
-	endif
+	noremap <m-_> :call Change_Transparency(-2)<cr>
+	noremap <m-+> :call Change_Transparency(+2)<cr>
+	noremap <m-\|> :call Toggle_Transparency(9)<cr>
 endif
 
 
@@ -217,5 +215,18 @@ noremap <space>ce :scs find e <C-R>=expand("<cword>")<CR><CR>
 noremap <space>cf :scs find f <C-R>=expand("<cword>")<CR><CR>
 noremap <space>ci :scs find i <C-R>=expand("<cword>")<CR><CR>
 noremap <space>cd :scs find d <C-R>=expand("<cword>")<CR><CR>
+
+
+"----------------------------------------------------------------------
+" more personal in gvim
+"----------------------------------------------------------------------
+if has('gui_running') && (has('win32') || has('win64'))
+	noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
+	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
+	noremap <C-F12> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+	inoremap <C-F12> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+endif
+
+
 
 
