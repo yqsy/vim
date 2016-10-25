@@ -183,6 +183,8 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'experiment') >= 0
 	Plugin 'mattn/vim-terminal'
+	Plugin 'Shougo/vimshell.vim'
+	Plugin 'Shougo/vimproc.vim'
 endif
 
 
