@@ -120,13 +120,15 @@ amenu B&uild.User\ Tool\ 0 :VimTool 0<cr>
 
 amenu PopUp.-s9- :
 amenu PopUp.Open\ &Header :call Open_HeaderFile(2)<cr>
+amenu PopUp.Grep\ &Project :GrepCode! <C-R>=expand("<cword>")<cr><cr>
+amenu PopUp.Grep\ H&ere :GrepCode <C-R>=expand("<cword>")<cr><cr>
 amenu PopUp.-s10- :
 amenu PopUp.Search\ &Symbol :VimScope s <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Search\ &Defininition :VimScope g <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Functions\ &Called by :VimScope d <C-R>=expand("<cword>")<CR><CR>
-amenu PopUp.Functions\ &Calling :VimScope c <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Functions\ C&alling :VimScope c <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Search\ &String :VimScope t <C-R>=expand("<cword>")<CR><CR>
-amenu PopUp.Search\ &Pattern :VimScope e <C-R>=expand("<cword>")<CR><CR>
+amenu PopUp.Search\ Pa&ttern :VimScope e <C-R>=expand("<cword>")<CR><CR>
 amenu PopUp.Search\ &File :VimScope f <C-R>=expand("<cfile>")<CR><CR>
 amenu PopUp.Search\ &Include :VimScope i <C-R>=expand("<cfile>")<CR><CR>
 
