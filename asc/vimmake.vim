@@ -751,7 +751,7 @@ endfunc
 "----------------------------------------------------------------------
 " run commands
 "----------------------------------------------------------------------
-function! vimmake#run(bang, mods, args)
+function! vimmake#run(bang, opts, args)
 	let l:macros = {}
 	let l:macros['VIM_FILEPATH'] = expand("%:p")
 	let l:macros['VIM_FILENAME'] = expand("%:t")
@@ -786,6 +786,13 @@ function! vimmake#run(bang, mods, args)
 		let l:opts.cwd = s:StringReplace(l:opts.cwd, l:replace, l:val)
 		let l:opts.text = s:StringReplace(l:opts.text, l:replace, l:val)
 	endfor
+
+	" combine options
+	if type(a:opts) == type({})
+		for [l:key, l:val] in items(a:opts)
+			let l:opts[l:key] = l:val
+		endfor
+	endif
 
 	" check if need to save
 	if get(l:opts, 'save', '')
@@ -1213,15 +1220,15 @@ function! s:Cmd_GrepCode(text)
 		for l:item in g:vimmake_grepinc
 			let l:inc .= '*.'.l:item.' '
 		endfor
-		exec 'grep! /s /C:"'. a:text . '" '. l:inc
-		"exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
+		"exec 'grep! /s /C:"'. a:text . '" '. l:inc
+		exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grepinc
 			let l:inc .= " --include \\*." . l:item
 		endfor
-		exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
-		"exec 'VimMake -program=grep -R ' . shellescape(a:text) . l:inc. ' *'
+		"exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
+		exec 'VimMake -program=grep -R ' .shellescape(a:text). l:inc. ' *'
 	endif
 endfunc
 
@@ -1407,15 +1414,19 @@ function! vimmake#Update_Tags(ctags, cscope)
 	if a:ctags != "" 
 		if filereadable(a:ctags) | call delete(a:ctags) | endif
 		let l:parameters = ' --fields=+iaS --extra=+q --c++-kinds=+px '
-		exec '!ctags -R -f '.a:ctags. l:parameters . ' .'
+		"exec '!ctags -R -f '.a:ctags. l:parameters . ' .'
+		exec 'VimMake ctags -R -f '.a:ctags . l:parameters . ' .'
 	endif
 	if has("cscope") && a:cscope != ""
-		silent! exec "cs kill -1"
-		if filereadable(a:cscope) | call delete(a:cscope) | endif
-		exec '!cscope -b -R -f '.a:cscope
-		if filereadable(a:cscope)
-			exec 'cs add '.a:cscope
+		let l:cscope = fnamemodify(a:cscope, ":p")
+		let l:cscope = fnameescape(l:cscope)
+		try | silent! exec "cs kill ".l:cscope | catch | endtry
+		let l:options = {}
+		let l:options['post'] = 'cs add '.l:cscope
+		if filereadable(a:cscope) 
+			try | call delete(a:cscope) | catch | endtry
 		endif
+		call vimmake#run('', l:options, 'cscope -b -R -f '.l:cscope)
 	endif
 	redraw!
 endfunc
