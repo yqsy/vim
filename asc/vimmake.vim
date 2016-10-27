@@ -120,6 +120,11 @@ if !exists('g:vimmake_build_trim')
 	let g:vimmake_build_trim = 0
 endif
 
+" use local errorformat
+if !exists('g:vimmake_build_local')
+	let g:vimmake_build_local = 0
+endif
+
 " build info
 if !exists('g:vimmake_text')
 	let g:vimmake_text = ''
@@ -219,6 +224,7 @@ let s:build_debug = 0
 let s:build_quick = 0
 let s:build_hold = 0
 let s:build_scroll = 0
+let s:build_efm = &errorformat
 
 " check :cbottom available, cursor in quick need to hold ?
 if s:build_nvim == 0
@@ -318,9 +324,16 @@ function! s:Vimmake_Build_Update(count)
 	let l:total = 0
 	let l:empty = [{'text':''}]
 	let l:check = s:Vimmake_Build_CheckScroll()
+	let l:efm1 = &g:efm
+	let l:efm2 = &l:efm
 	if g:vimmake_build_encoding == &encoding
 		let l:iconv = 0 
 	endif
+	if &g:efm != s:build_efm && g:vimmake_build_local != 0
+		let &l:efm = s:build_efm
+		let &g:efm = s:build_efm
+	endif
+	let l:raw = (s:build_efm == '')? 1 : 0
 	while s:build_tail < s:build_head
 		let l:text = s:build_output[s:build_tail]
 		if l:iconv != 0
@@ -331,7 +344,11 @@ function! s:Vimmake_Build_Update(count)
 			endtry
 		endif
 		if l:text != ''
-			caddexpr l:text
+			if l:raw == 0
+				caddexpr l:text
+			else
+				call setqflist([{'text':l:text}], 'a')
+			endif
 		elseif g:vimmake_build_trim == 0
 			call setqflist(l:empty, 'a')
 		endif
@@ -343,6 +360,10 @@ function! s:Vimmake_Build_Update(count)
 			break
 		endif
 	endwhile
+	if g:vimmake_build_local != 0
+		if l:efm1 != &g:efm | let &g:efm = l:efm1 | endif
+		if l:efm2 != &l:efm | let &l:efm = l:efm2 | endif
+	endif
 	if s:build_scroll != 0 && l:total > 0 && l:check != 0
 		call s:Vimmake_Build_AutoScroll()
 	elseif s:build_hold != 0
@@ -552,6 +573,7 @@ function! s:Vimmake_Build_Start(cmd)
 		endfor
 		let l:name = join(l:vector, ', ')
 	endif
+	let s:build_efm = &errorformat
 	if s:build_nvim == 0
 		let l:options = {}
 		let l:options['callback'] = function('s:Vimmake_Build_OnCallback')
