@@ -29,11 +29,6 @@ if has('multi_byte')
 	set enc=utf-8
 endif
 
-if has('syntax')  
-	syntax enable 
-	syntax on 
-endif
-
 if has('mouse')
 	"set mouse=c
 endif

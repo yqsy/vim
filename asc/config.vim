@@ -1,8 +1,18 @@
-if !exists('g:config_vim_gui_label')
-	let g:config_vim_gui_label = 0
+"----------------------------------------------------------------------
+" syntax config
+"----------------------------------------------------------------------
+if has('syntax')  
+	syntax enable 
+	syntax on 
 endif
 
 
+"----------------------------------------------------------------------
+" Tab Label config
+"----------------------------------------------------------------------
+if !exists('g:config_vim_gui_label')
+	let g:config_vim_gui_label = 0
+endif
 
 " make tabline in terminal mode
 function! Vim_NeatTabLine()
