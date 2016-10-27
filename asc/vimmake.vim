@@ -1207,6 +1207,78 @@ command! -bang -nargs=* VimBuild call s:Cmd_VimBuild('<bang>', <f-args>)
 
 
 
+
+"----------------------------------------------------------------------
+" get full filename
+"----------------------------------------------------------------------
+function! vimmake#fullname(f)
+  let f = a:f
+  if f =~ "'."
+	  try
+		  redir => m
+		  silent exe ':marks' f[1]
+		  redir END
+		  let f = split(split(m, '\n')[-1])[-1]
+		  let f = filereadable(f)? f : ''
+	  catch
+		  let f = ''
+	  endtry
+  endif
+  let f = len(f) ? f : expand('%')
+  return fnamemodify(f, ':p')
+endfunc
+
+
+"----------------------------------------------------------------------
+" guess root
+"----------------------------------------------------------------------
+if !exists('g:vimmake_rootmarks')
+    let g:vimmake_rootmarks = ['.projectroot', '.git', '.hg', '.svn', '.bzr']
+    let g:vimmake_rootmarks += ['_darcs', 'build.xml']
+endif
+
+function! vimmake#get_root(...)
+    function! s:guess_root(filename)
+        let fullfile = vimmake#fullname(a:filename)
+        if exists('b:vimmake_root')
+            let l:vimmake_root = fnamemodify(b:vimmake_root, ':p')
+            if stridx(fullfile, l:vimmake_root) == 0
+                return b:vimmake_root
+            endif
+        endif
+        if fullfile =~ '^fugitive:/'
+            if exists('b:git_dir')
+                return fnamemodify(b:git_dir, ':h')
+            endif
+            return '' " skip any fugitive buffers early
+        endif
+        for marker in g:vimmake_rootmarks
+            let pivot=fullfile
+            while 1
+                let prev = pivot
+                let pivot = fnamemodify(pivot, ':h')
+                if filereadable(pivot.'/'.marker)
+                    return pivot
+                elseif isdirectory(pivot.'/'.marker)
+                    return pivot
+                endif
+                if pivot == prev
+                    break
+                endif
+            endwhile
+        endfor
+        return ''
+    endfunc
+	let root = s:guess_root(a:0 ? a:1 : '')
+	if len(root)
+		return root
+	endif
+	" Not found: return parent directory of current file / file itself.
+	let fullfile = vimmake#fullname(a:0 ? a:1 : '')
+	return !isdirectory(fullfile) ? fnamemodify(fullfile, ':h') : fullfile
+endfunc
+
+
 "----------------------------------------------------------------------
 " grep code
 "----------------------------------------------------------------------
@@ -1217,27 +1289,46 @@ if !exists('g:vimmake_grepinc')
 	let g:vimmake_grepinc += ['rb', 'pl']
 endif
 
-function! s:Cmd_GrepCode(text)
+function! vimmake#grep(text, cwd)
 	let l:grep = &grepprg
 	if strpart(l:grep, 0, 8) == 'findstr '
 		let l:inc = ''
 		for l:item in g:vimmake_grepinc
-			let l:inc .= '*.'.l:item.' '
+            if a:cwd == '.' || a:cwd == ''
+                let l:inc .= '*.'.l:item.' '
+            else
+                let l:full = vimmake#fullname(a:cwd)
+                let l:inc .= '"'.l:full . '*.'.l:item.'" '
+            endif
 		endfor
-		"exec 'grep! /s /C:"'. a:text . '" '. l:inc
 		exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grepinc
 			let l:inc .= " --include \\*." . l:item
 		endfor
-		"exec 'grep! -R ' . shellescape(a:text) . l:inc. ' *'
-		exec 'VimMake -program=grep -R ' .shellescape(a:text). l:inc. ' *'
+        if a:cwd == '.' || a:cwd == ''
+            let l:inc .= ' *'
+        else
+            let l:full = vimmake#fullname(a:cwd)
+            let l:inc .= ' '.shellescape(l:full)
+        endif
+		exec 'VimMake -program=grep -R ' .shellescape(a:text). l:inc
 	endif
 endfunc
 
+function! s:Cmd_GrepCode(bang, what, ...)
+    let l:cwd = (a:0 == 0)? '' : a:1
+    if a:bang != ''
+        let l:cwd = vimmake#get_root(l:cwd)
+    endif
+    if l:cwd != ''
+        let l:cwd = vimmake#fullname(l:cwd)
+    endif
+    call vimmake#grep(a:what, l:cwd)
+endfunc
 
-command! -nargs=1 GrepCode call s:Cmd_GrepCode(<f-args>)
+command! -bang -nargs=+ GrepCode call s:Cmd_GrepCode('<bang>', <f-args>)
 
 
 
