@@ -1385,13 +1385,13 @@ function! vimmake#keymap()
 	noremap <silent><F7> :VimBuild emake<cr>
 	noremap <silent><F8> :VimExecute emake<cr>
 	noremap <silent><F9> :VimBuild gcc<cr>
-	noremap <silent><F10> :call vimmake#Toggle_Quickfix(6)<cr>
+	noremap <silent><F10> :call vimmake#toggle_quickfix(6)<cr>
 	inoremap <silent><F5> <ESC>:VimExecute run<cr>
 	inoremap <silent><F6> <ESC>:VimExecute filename<cr>
 	inoremap <silent><F7> <ESC>:VimBuild emake<cr>
 	inoremap <silent><F8> <ESC>:VimExecute emake<cr>
 	inoremap <silent><F9> <ESC>:VimBuild gcc<cr>
-	inoremap <silent><F10> <ESC>:call vimmake#Toggle_Quickfix(6)<cr>
+	inoremap <silent><F10> <ESC>:call vimmake#toggle_quickfix(6)<cr>
 
 	noremap <silent><F11> :cp<cr>
 	noremap <silent><F12> :cn<cr>
