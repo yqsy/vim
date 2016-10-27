@@ -1266,7 +1266,7 @@ function! s:Cmd_VimScope(what, name)
 		exec 'cs find '.a:what.' '.fnameescape(a:name)
 	catch /^Vim\%((\a\+)\)\=:E259/
 		echohl ErrorMsg
-		echo "E259: not find "'.a:name.'"'
+		echo "E259: not find '".a:name."'"
 		echohl NONE
 	catch /^Vim\%((\a\+)\)\=:E567/
 		echohl ErrorMsg
