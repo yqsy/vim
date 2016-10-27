@@ -1313,7 +1313,7 @@ function! vimmake#grep(text, cwd)
             let l:full = vimmake#fullname(a:cwd)
             let l:inc .= ' '.shellescape(l:full)
         endif
-		exec 'VimMake -program=grep -R ' .shellescape(a:text). l:inc
+		exec 'VimMake -program=grep @ -R ' .shellescape(a:text). l:inc
 	endif
 endfunc
 
