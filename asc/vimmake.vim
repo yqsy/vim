@@ -1210,8 +1210,12 @@ command! -bang -nargs=* VimBuild call s:Cmd_VimBuild('<bang>', <f-args>)
 "----------------------------------------------------------------------
 " grep code
 "----------------------------------------------------------------------
-let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh']
-let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
+if !exists('g:vimmake_grepinc')
+	let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'as', 'rs']
+	let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
+	let g:vimmake_grepinc += ['asm', 's', 'bas', 'pyw', 'lua', 'erl', 'go']
+	let g:vimmake_grepinc += ['rb', 'pl']
+endif
 
 function! s:Cmd_GrepCode(text)
 	let l:grep = &grepprg
