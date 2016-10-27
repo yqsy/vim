@@ -203,6 +203,12 @@ exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
 nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <space>gs :VimStop<cr>
 
+if has('win32') || has('win64')
+	noremap <space>gc :silent !start cmd.exe<cr>
+else
+
+endif
+
 
 "----------------------------------------------------------------------
 " space + c : cscope
