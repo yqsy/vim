@@ -1282,18 +1282,17 @@ endfunc
 "----------------------------------------------------------------------
 " grep code
 "----------------------------------------------------------------------
-if !exists('g:vimmake_grepinc')
-	let g:vimmake_grepinc = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'as', 'rs']
-	let g:vimmake_grepinc += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
-	let g:vimmake_grepinc += ['asm', 's', 'bas', 'pyw', 'lua', 'erl', 'go']
-	let g:vimmake_grepinc += ['rb', 'pl']
+if !exists('g:vimmake_grep')
+	let g:vimmake_grep = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'as']
+	let g:vimmake_grep += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
+	let g:vimmake_grep += ['asm', 's', 'pyw', 'lua', 'go']
 endif
 
 function! vimmake#grep(text, cwd)
 	let l:grep = &grepprg
 	if strpart(l:grep, 0, 8) == 'findstr '
 		let l:inc = ''
-		for l:item in g:vimmake_grepinc
+		for l:item in g:vimmake_grep
             if a:cwd == '.' || a:cwd == ''
                 let l:inc .= '*.'.l:item.' '
             else
@@ -1304,7 +1303,7 @@ function! vimmake#grep(text, cwd)
 		exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
 	else
 		let l:inc = ''
-		for l:item in g:vimmake_grepinc
+		for l:item in g:vimmake_grep
 			let l:inc .= " --include \\*." . l:item
 		endfor
         if a:cwd == '.' || a:cwd == ''
@@ -1406,6 +1405,7 @@ function! s:Cmd_MakeKeymap()
 	
 	" set keymap to GrepCode 
 	noremap <silent><leader>cr :GrepCode <C-R>=expand("<cword>")<cr><cr>
+	noremap <silent><leader>cv :GrepCode! <C-R>=expand("<cword>")<cr><cr>
 
 	" set keymap to cscope
 	if has("cscope")
