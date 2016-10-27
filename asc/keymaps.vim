@@ -202,6 +202,7 @@ exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
 "----------------------------------------------------------------------
 nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <space>gs :VimStop<cr>
+nnoremap <space>gc :AsyncStop<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
 
 if has('win32') || has('win64')
