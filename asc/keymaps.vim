@@ -207,6 +207,7 @@ nnoremap <space>gj :%!python -m json.tool<cr>
 
 if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
+	noremap <space>ge :silent !start /b cmd.exe /C start .<cr>
 else
 
 endif
