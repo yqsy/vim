@@ -1379,7 +1379,7 @@ command! -nargs=* VimScope call s:Cmd_VimScope(<f-args>)
 "----------------------------------------------------------------------
 " Keymap Setup
 "----------------------------------------------------------------------
-function! s:Cmd_MakeKeymap()
+function! vimmake#keymap()
 	noremap <silent><F5> :VimExecute run<cr>
 	noremap <silent><F6> :VimExecute filename<cr>
 	noremap <silent><F7> :VimBuild emake<cr>
@@ -1429,20 +1429,18 @@ function! s:Cmd_MakeKeymap()
 	endif
 	
 	" cscope update
-	noremap <leader>cb :call vimmake#Update_Tags('.tags', '')<cr>
-	noremap <leader>cm :call vimmake#Update_Tags('', '.cscope')<cr>
+	noremap <leader>cb :call vimmake#update_tags('', '.tags', '')<cr>
+	noremap <leader>cm :call vimmake#update_tags('', '', '.cscope')<cr>
+	noremap <leader>ck :call vimmake#update_tags('!', '.tags', '')<cr>
+	noremap <leader>cx :call vimmake#update_tags('!', '', '.cscope')<cr>
 endfunc
 
-command! -nargs=0 MakeKeymap call s:Cmd_MakeKeymap()
+command! -nargs=0 VimmakeKeymap call vimmake#keymap()
 
-function! vimmake#MakeKeymap()
-	MakeKeymap
+function! vimmake#load()
 endfunc
 
-function! vimmake#Load()
-endfunc
-
-function! vimmake#Toggle_Quickfix(size, ...)
+function! vimmake#toggle_quickfix(size, ...)
 	let l:mode = (a:0 == 0)? 2 : (a:1)
 	function! s:WindowCheck(mode)
 		if getbufvar('%', '&buftype') == 'quickfix'
@@ -1483,7 +1481,7 @@ function! vimmake#Toggle_Quickfix(size, ...)
 endfunc
 
 
-function! vimmake#Update_FileList(outname)
+function! vimmake#update_filelist(outname)
 	let l:names = ['*.c', '*.cpp', '*.cc', '*.cxx']
 	let l:names += ['*.h', '*.hpp', '*.hh', '*.py', '*.pyw', '*.java', '*.js']
 	if has('win32') || has("win64") || has("win16")
@@ -1504,24 +1502,39 @@ function! vimmake#Update_FileList(outname)
 	redraw!
 endfunc
 
-function! vimmake#Update_Tags(ctags, cscope)
-	echo "update tags"
+function! vimmake#update_tags(cwd, ctags, cscope)
+    if a:cwd == '!'
+        let l:cwd = vimmake#get_root('')
+    else
+        let l:cwd = vimmake#fullname((a:cwd != '')? a:cwd : '.')
+        let l:cwd = fnamemodify(l:cwd, ':p:h')
+    endif
+    let l:cwd = substitute(l:cwd, '\\', '/', 'g')
 	if a:ctags != "" 
-		if filereadable(a:ctags) | call delete(a:ctags) | endif
+        let l:ctags = s:PathJoin(l:cwd, a:ctags)
+		if filereadable(l:ctags) | call delete(l:ctags) | endif
 		let l:parameters = ' --fields=+iaS --extra=+q --c++-kinds=+px '
-		"exec '!ctags -R -f '.a:ctags. l:parameters . ' .'
-		exec 'VimMake ctags -R -f '.a:ctags . l:parameters . ' .'
+        let l:ctags = shellescape(l:ctags)
+        let l:options = {}
+        let l:options['cwd'] = l:cwd
+        let l:command = 'ctags -R -f '. shellescape(a:ctags) 
+        call vimmake#run('', l:options, l:command . l:parameters . ' .')
 	endif
 	if has("cscope") && a:cscope != ""
-		let l:cscope = fnamemodify(a:cscope, ":p")
-		let l:cscope = fnameescape(l:cscope)
-		try | silent! exec "cs kill ".l:cscope | catch | endtry
+		let l:fullname = s:PathJoin(l:cwd, a:cscope)
+        let l:fullname = vimmake#fullname(l:fullname)
+        let l:fullname = substitute(l:fullname, '\\', '/', 'g')
+		let l:cscope = fnameescape(l:fullname)
+		silent! exec "cs kill ".l:cscope
+        let l:command = 'cs add '.l:cscope.' '.fnameescape(l:cwd).' '
 		let l:options = {}
-		let l:options['post'] = 'cs add '.l:cscope
-		if filereadable(a:cscope) 
-			try | call delete(a:cscope) | catch | endtry
+        let l:options['post'] = 'silent! '.l:command
+        let l:options['cwd'] = l:cwd
+		if filereadable(l:fullname) 
+			try | call delete(l:fullname) | catch | endtry
 		endif
-		call vimmake#run('', l:options, 'cscope -b -R -f '.l:cscope)
+        let l:fullname = shellescape(l:fullname)
+		call vimmake#run('', l:options, 'cscope -b -R -f '.l:fullname)
 	endif
 	redraw!
 endfunc
