@@ -116,6 +116,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	Plugin 'vim-scripts/DrawIt'
 	Plugin 'mbbill/VimExplorer'
 	Plugin 'rust-lang/rust.vim'
+	Plugin 'vim-scripts/CRefVim'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
@@ -127,6 +128,9 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	noremap <space>bd :BlogSave draft<cr>
 	noremap <space>bn :BlogNew post<cr>
 	noremap <space>bl :BlogList<cr>
+
+	map <silent> <leader>ck <Plug>CRV_CRefVimAsk
+	map <silent> <leader>cj <Plug>CRV_CRefVimInvoke
 endif
 
 

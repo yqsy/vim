@@ -109,7 +109,11 @@ if has('gui_running')
 	inoremap <M-a> <ESC>ggVG
 	noremap <m-_> :call Change_Transparency(-2)<cr>
 	noremap <m-+> :call Change_Transparency(+2)<cr>
-	noremap <m-\|> :call Toggle_Transparency(9)<cr>
+	if has('gui_macvim')
+		noremap <m-\|> :call Toggle_Transparency(9)<cr>
+	else
+		noremap <m-\|> :call Toggle_Transparency(15)<cr>
+	endif
 endif
 
 
