@@ -120,9 +120,9 @@ endif
 "----------------------------------------------------------------------
 " space + s : svn 
 "----------------------------------------------------------------------
-noremap <space>sc :!svn co -m "update from vim"<cr>
-noremap <space>su :!svn up<cr>
-noremap <space>st :!svn st<cr>
+noremap <space>sc :VimMake svn co -m "update from vim"<cr>
+noremap <space>su :VimMake svn up<cr>
+noremap <space>st :VimMake svn st<cr>
 
 " editing commands
 noremap <space>a ggVG
