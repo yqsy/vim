@@ -11,80 +11,43 @@
 "----------------------------------------------------------------------
 " basic interface
 "----------------------------------------------------------------------
-
-if !exists('g:rootmarkers')
-  let g:asc_rootmarkers = ['.projectroot', '.git', '.hg', '.svn', '.bzr']
-  let g:asc_rootmarkers += ['_darcs', 'build.xml']
-endif
-
-function! s:getfullname(f)
-  let f = a:f
-  if f =~ "'."
-	  try
-		  redir => m
-		  silent exe ':marks' f[1]
-		  redir END
-		  let f = split(split(m, '\n')[-1])[-1]
-		  let f = filereadable(f)? f : ''
-	  catch
-		  let f = ''
-	  endtry
-  endif
-  let f = len(f) ? f : expand('%')
-  return fnamemodify(f, ':p')
-endfunc
-
-
-" asckit#findroot([file]): get the project root (if any) {{{1
-function! asckit#findroot(...)
-	let fullfile = s:getfullname(a:0 ? a:1 : '')
-	if exists('b:projectroot')
-		if stridx(fullfile, fnamemodify(b:projectroot, ':p')) == 0
-			return b:projectroot
+function! s:smooth_scroll(dir, dist, duration, speed)
+	for i in range(a:dist/a:speed)
+		let start = reltime()
+		if a:dir ==# 'd'
+			exec 'normal! '. a:speed."\<C-e>".a:speed."j"
+		else
+			exec 'normal! '. a:speed."\<C-y>".a:speed."k"
 		endif
-	endif
-	if fullfile =~ '^fugitive:/'
-		if exists('b:git_dir')
-			return fnamemodify(b:git_dir, ':h')
+		redraw
+		let elapsed = s:get_ms_since(start)
+		let snooze = float2nr(a:duration - elapsed)
+		if snooze > 0
+			exec "sleep ".snooze."m"
 		endif
-		return '' " skip any fugitive buffers early
-	endif
-	for marker in g:asc_rootmarkers
-		let pivot=fullfile
-		while 1
-			let prev = pivot
-			let pivot = fnamemodify(pivot, ':h')
-			if filereadable(pivot.'/'.marker)
-				return pivot
-			elseif isdirectory(pivot.'/'.marker)
-				return pivot
-			endif
-			if pivot == prev
-				break
-			endif
-		endwhile
 	endfor
-	return ''
+endfunc
+
+function! s:get_ms_since(time)
+	let cost = split(reltimestr(reltime(a:time)), '\.')
+	return str2nr(cost[0]) * 1000 + str2nr(cost[1]) / 1000.0
+endfunc
+
+function! asckit#smooth_scroll_up(dist, duration, speed)
+	call s:smooth_scroll('u', a:dist, a:duration, a:speed)
+endfunc
+
+function! asckit#smooth_scroll_down(dist, duration, speed)
+	call s:smooth_scroll('d', a:dist, a:duration, a:speed)
 endfunc
 
 
-" guess file root
-function! asckit#guessroot(...)
-	let projroot = asckit#findroot(a:0 ? a:1 : '')
-	if len(projroot)
-		return projroot
-	endif
-	" Not found: return parent directory of current file / file itself.
-	let fullfile = s:getfullname(a:0 ? a:1 : '')
-	return !isdirectory(fullfile) ? fnamemodify(fullfile, ':h') : fullfile
-endfunc
-
-
-"----------------------------------------------------------------------
-" update root tags
-"----------------------------------------------------------------------
-function! asckit#root_update_tags(ctags, cscope)
-endfunc
+noremap <silent> <m-u> :call asckit#smooth_scroll_up(&scroll, 0, 2)<CR>
+noremap <silent> <m-d> :call asckit#smooth_scroll_down(&scroll, 0, 2)<CR>
+noremap <silent> <m-U> :call asckit#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
+noremap <silent> <m-D> :call asckit#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
+" noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+" noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 
 
 
