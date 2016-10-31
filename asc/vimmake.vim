@@ -1404,9 +1404,28 @@ function! vimmake#keymap()
 	noremap <silent><leader>co :copen 6<cr>
 	noremap <silent><leader>cl :cclose<cr>
 	
+	" VimTool startup
+	for l:index in range(10)
+		exec 'noremap <leader>c'.l:index.' :VimTool ' . l:index . '<cr>'
+		if has('gui_running')
+			let l:button = 'F'.l:index
+			if l:index == 0 | let l:button = 'F10' | endif
+			exec 'noremap <S-'.l:button.'> :VimTool '. l:index .'<cr>'
+			exec 'inoremap <S-'.l:button.'> <ESC>:VimTool '. l:index .'<cr>'
+		endif
+	endfor
+	
 	" set keymap to GrepCode 
+	noremap <silent><leader>cq :VimStop<cr>
+	noremap <silent><leader>cQ :VimStop!<cr>
 	noremap <silent><leader>cv :GrepCode <C-R>=expand("<cword>")<cr><cr>
 	noremap <silent><leader>cx :GrepCode! <C-R>=expand("<cword>")<cr><cr>
+	
+	" cscope update
+	noremap <leader>cz1 :call vimmake#update_tags('', '.tags', '')<cr>
+	noremap <leader>cz2 :call vimmake#update_tags('', '', '.cscope')<cr>
+	noremap <leader>cz3 :call vimmake#update_tags('!', '.tags', '')<cr>
+	noremap <leader>cz4 :call vimmake#update_tags('!', '', '.cscope')<cr>
 
 	" set keymap to cscope
 	if has("cscope")
@@ -1428,12 +1447,6 @@ function! vimmake#keymap()
 		set cst
 		set csverb
 	endif
-	
-	" cscope update
-	noremap <leader>c1 :call vimmake#update_tags('', '.tags', '')<cr>
-	noremap <leader>c2 :call vimmake#update_tags('', '', '.cscope')<cr>
-	noremap <leader>c3 :call vimmake#update_tags('!', '.tags', '')<cr>
-	noremap <leader>c4 :call vimmake#update_tags('!', '', '.cscope')<cr>
 endfunc
 
 command! -nargs=0 VimmakeKeymap call vimmake#keymap()
@@ -1537,7 +1550,6 @@ function! vimmake#update_tags(cwd, ctags, cscope)
         let l:fullname = shellescape(l:fullname)
 		call vimmake#run('', l:options, 'cscope -b -R -f '.l:fullname)
 	endif
-	redraw!
 endfunc
 
 

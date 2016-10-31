@@ -11,14 +11,7 @@
 " VimTools
 "----------------------------------------------------------------------
 for s:index in range(10)
-	let s:key = '' . s:index
-	exec 'noremap <space>'.s:key.' :VimTool ' . s:key . '<cr>'
-	if has('gui_running')
-		let s:button = 'F'.s:index
-		if s:index == 0 | let s:button = 'F10' | endif
-		exec 'noremap <S-'.s:button.'> :VimTool '. s:key .'<cr>'
-		exec 'inoremap <S-'.s:button.'> <ESC>:VimTool '. s:key .'<cr>'
-	endif
+	exec 'noremap <space>'.s:index.' :VimTool ' . s:index . '<cr>'
 endfor
 
 noremap <F1> :VimTool 1<cr>
@@ -205,8 +198,8 @@ exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
 " space + g : misc
 "----------------------------------------------------------------------
 nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
-nnoremap <space>gs :VimStop<cr>
-nnoremap <space>gc :AsyncStop<cr>
+nnoremap <space>gq :AsyncStop<cr>
+nnoremap <space>gQ :AsyncStop!<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
 
 if has('win32') || has('win64')
