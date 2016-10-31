@@ -6,8 +6,15 @@ exec 'so '.fnameescape(s:home).'/skywind.vim'
 set t_Co=256
 color desert256
 
-let g:vimmake_path = s:home . '/tools/linux'
+if has('win32unix')
+	let g:vimmake_path = s:home. '/tools/cygwin'
+else
+	let g:vimmake_path = s:home . '/tools/linux'
+endif
+
 let g:vimmake_cflags = ["-lstdc++"]
+
+
 
 if exists('g:vim_startup')
 	let g:bundle_group = ['simple']
