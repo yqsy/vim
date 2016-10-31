@@ -34,6 +34,10 @@ call Backup_Directory()
 
 let g:ycm_goto_buffer_command = 'new-or-existing-tab'
 
+if has('patch-7.4.500') || v:version >= 800
+	set cryptmethod=blowfish2
+endif
+
 
 "----------------------------------------------------------------------
 "- Autocmds
