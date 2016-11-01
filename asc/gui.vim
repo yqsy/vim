@@ -78,7 +78,7 @@ if has('gui_running')
 		set langmenu=en_US
 		set guifont=inconsolata:h11
 		"set guifont=fixedsys
-		au QuickfixCmdPost make call QuickfixChineseConvert()
+		"au QuickfixCmdPost make call QuickfixChineseConvert()
 		let g:config_vim_gui_label = 3
 		"color desert256
 		try
