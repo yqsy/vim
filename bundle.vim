@@ -187,6 +187,8 @@ if index(g:bundle_group, 'special') >= 0
 	let g:airline_left_sep = ''
 	let g:airline_right_sep = ''
 	let g:airline_right_sep = ''
+
+	nnoremap <silent> <leader>cm :ErrorAtCursor<CR>
 endif
 
 
