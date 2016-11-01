@@ -1421,14 +1421,6 @@ function! vimmake#keymap()
 	noremap <silent><leader>cv :GrepCode <C-R>=expand("<cword>")<cr><cr>
 	noremap <silent><leader>cx :GrepCode! <C-R>=expand("<cword>")<cr><cr>
 	
-	" cscope update
-	noremap <leader>cz1 :call vimmake#update_tags('', 'ctags', '.tags')<cr>
-	noremap <leader>cz2 :call vimmake#update_tags('', 'cscope', '.cscope')<cr>
-	noremap <leader>cz3 :call vimmake#update_tags('!', 'ctags', '.tags')<cr>
-	noremap <leader>cz4 :call vimmake#update_tags('!', 'cscope', '.cscope')<cr>
-	noremap <leader>cz5 :call vimmake#update_tags('', 'pycscope', '.cscopy')<cr>
-	noremap <leader>cz6 :call vimmake#update_tags('!', 'pycscope', '.cscopy')<cr>
-
 	" set keymap to cscope
 	if has("cscope")
 		noremap <leader>cs :VimScope s <C-R>=expand("<cword>")<CR><CR>
@@ -1449,6 +1441,14 @@ function! vimmake#keymap()
 		set cst
 		set csverb
 	endif
+	
+	" cscope update
+	noremap <leader>cz1 :call vimmake#update_tags('', 'ctags', '.tags')<cr>
+	noremap <leader>cz2 :call vimmake#update_tags('', 'cscope', '.cscope')<cr>
+	noremap <leader>cz3 :call vimmake#update_tags('!', 'ctags', '.tags')<cr>
+	noremap <leader>cz4 :call vimmake#update_tags('!', 'cscope', '.cscope')<cr>
+	noremap <leader>cz5 :call vimmake#update_tags('', 'pycscope', '.cscopy')<cr>
+	noremap <leader>cz6 :call vimmake#update_tags('!', 'pycscope', '.cscopy')<cr>
 endfunc
 
 command! -nargs=0 VimmakeKeymap call vimmake#keymap()
