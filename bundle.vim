@@ -176,6 +176,7 @@ if index(g:bundle_group, 'special') >= 0
 	"Plugin 'scrooloose/syntastic'
 	"Plugin 'tpope/vim-dispatch'
 	"Plugin 'bling/vim-airline'
+	Plugin 'mh21/errormarker.vim'
 
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 0
