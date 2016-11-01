@@ -64,6 +64,31 @@ command! -nargs=1 GuiTheme call s:GuiTheme(<f-args>)
 
 
 "----------------------------------------------------------------------
+" remove signs
+"----------------------------------------------------------------------
+function! s:GuiSignRemove(...)
+	if a:0 == 0 | return | endif
+	redir => x
+	silent sign place
+	redir END
+	let lines = split(x, '\n')
+	for line in lines
+		if line =~ '^\s*line=\d*\s*id=\d*\s*name='
+			let name = matchstr(line, '^\s*line=.*name=\zs\w*')
+			let id = matchstr(line, '^\s*line=\d*\s*id=\zs\w*')
+			for x in range(a:0)
+				if name == a:{x + 1}
+					silent exec 'sign unplace '.id
+				endif
+			endfor
+		endif
+	endfor
+endfunc
+
+command! -nargs=+ GuiSignRemove call s:GuiSignRemove(<f-args>)
+
+
+"----------------------------------------------------------------------
 "- GUI Setting
 "----------------------------------------------------------------------
 if has('gui_running')

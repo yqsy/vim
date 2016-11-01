@@ -45,6 +45,29 @@ endif
 
 
 "----------------------------------------------------------------------
+" remove_signs
+"----------------------------------------------------------------------
+function! <SID>remove_signs(...)
+	if a:0 == 0 | return | endif
+	redir => x
+	silent sign place
+	redir END
+	let lines = split(x, '\n')
+	for line in lines
+		if line =~ '^\s*line=\d*\s*id=\d*\s*name='
+			let name = matchstr(line, '^\s*line=.*name=\zs\w*')
+			let id = matchstr(line, '^\s*line=\d*\s*id=\zs\w*')
+			for x in range(a:0)
+				if name == a:{x + 1}
+					silent exec 'sign unplace '.id
+				endif
+			endfor
+		endif
+	endfor
+endfunc
+
+
+"----------------------------------------------------------------------
 " Bundle Header
 "----------------------------------------------------------------------
 set nocompatible
@@ -190,6 +213,8 @@ if index(g:bundle_group, 'special') >= 0
 
 	let g:errormarker_disablemappings = 1
 	nnoremap <silent> <leader>cm :ErrorAtCursor<CR>
+	nnoremap <silent> <leader>cM :call 
+		\ <SID>remove_signs('errormarker_error', 'errormarker_warning')<cr>
 endif
 
 
