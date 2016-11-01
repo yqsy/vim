@@ -13,7 +13,8 @@ else
 endif
 
 let g:vimmake_cflags = ["-lstdc++"]
-
+let g:asyncrun_auto = "make"
+let g:vimmake_build_auto = "make"
 
 
 if exists('g:vim_startup')
