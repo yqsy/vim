@@ -136,6 +136,10 @@ if !exists('g:asyncrun_local')
 	let g:asyncrun_local = 1
 endif
 
+if !exists('g:asyncrun_auto')
+	let g:asyncrun_auto = ''
+endif
+
 
 "----------------------------------------------------------------------
 "- Internal Functions
@@ -419,6 +423,9 @@ function! s:AsyncRun_Job_OnFinish(what)
 	if g:asyncrun_exit != ""
 		exec g:asyncrun_exit
 	endif
+	if g:asyncrun_auto != '' && has('autocmd')
+		exec 'silent doautocmd QuickFixCmdPost '. g:asyncrun_auto
+	endif
 endfunc
 
 " invoked on "close_cb" when channel closed
@@ -592,10 +599,13 @@ function! s:AsyncRun_Job_Start(cmd)
 		endif
 		let s:async_state = 1
 		let g:asyncrun_status = "running"
-		redrawstatus!
 		let s:async_info.post = s:async_info.postsave
 		let s:async_info.postsave = ''
 		let g:asyncrun_text = s:async_info.text
+		redrawstatus!
+		if g:asyncrun_auto != '' && has('autocmd')
+			exec 'silent doautocmd QuickFixCmdPre '. g:asyncrun_auto
+		endif
 	else
 		unlet s:async_job
 		call s:ErrorMsg("Background job start failed '".a:cmd."'")

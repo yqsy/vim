@@ -125,6 +125,11 @@ if !exists('g:vimmake_build_local')
 	let g:vimmake_build_local = 0
 endif
 
+" trigger autocmd
+if !exists('g:vimmake_build_auto')
+	let g:vimmake_build_auto = ''
+endif
+
 " build info
 if !exists('g:vimmake_text')
 	let g:vimmake_text = ''
@@ -454,6 +459,9 @@ function! s:Vimmake_Build_OnFinish(what)
 	if g:vimmake_build_post != ""
 		exec g:vimmake_build_post
 	endif
+	if g:vimmake_build_auto != '' && has('autocmd')
+		exec 'silent doautocmd QuickFixCmdPost '. g:vimmake_build_auto
+	endif
 endfunc
 
 " invoked on "close_cb" when channel closed
@@ -622,10 +630,13 @@ function! s:Vimmake_Build_Start(cmd)
 		endif
 		let s:build_state = 1
 		let g:vimmake_build_status = "running"
-		redrawstatus!
 		let s:build_info.post = s:build_info.postsave
 		let s:build_info.postsave = ''
 		let g:vimmake_text = s:build_info.text
+		redrawstatus!
+		if g:vimmake_build_auto != '' && has('autocmd')
+			exec 'silent doautocmd QuickFixCmdPre '. g:vimmake_build_auto
+		endif
 	else
 		unlet s:build_job
 		call s:ErrorMsg("Background job start failed '".a:cmd."'")
