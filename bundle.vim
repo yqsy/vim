@@ -188,6 +188,7 @@ if index(g:bundle_group, 'special') >= 0
 	let g:airline_right_sep = ''
 	let g:airline_right_sep = ''
 
+	let g:errormarker_disablemappings = 1
 	nnoremap <silent> <leader>cm :ErrorAtCursor<CR>
 endif
 
