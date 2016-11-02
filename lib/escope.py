@@ -11,6 +11,7 @@
 import sys
 import time
 import os
+import json
 import hashlib
 
 
@@ -290,6 +291,8 @@ class configure (object):
 		return 0
 
 	def pathdb (self, root):
+		if root == None:
+			return None
 		root = root.strip()
 		root = self.abspath(root)
 		hash = hashlib.md5(root).hexdigest()
@@ -297,6 +300,8 @@ class configure (object):
 		return (self.unix) and path or path.replace('\\', '/')
 
 	def select (self, root):
+		if root == None:
+			return None
 		root = root.strip()
 		root = self.abspath(root)
 		db = self.pathdb(root)
@@ -317,6 +322,7 @@ if __name__ == '__main__':
 		print config.select('e:/lab/casuald\\src/')
 		print os.environ['GTAGSROOT']
 		print os.environ['GTAGSDBPATH']
+		print config.abspath('')
 		return 0
 
 	test1()
