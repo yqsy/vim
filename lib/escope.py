@@ -498,7 +498,10 @@ class escope (object):
 		if (self.desc == None) or (self.root == None):
 			return -1
 		args = ['-a', '--result', 'grep']
-		if mode in (1, '1', 'g', 'definition'):
+		if mode in (0, '0', 's', 'symbol'):
+			self.config.execute('global', args + ['-d', '-e', name])
+			self.config.execute('global', args + ['-r', '-e', name])
+		elif mode in (1, '1', 'g', 'definition'):
 			self.config.execute('global', args + ['-d', '-e', name])
 		elif mode in (3, '3', 'c', 'reference'):
 			self.config.execute('global', args + ['-r', '-e', name])
@@ -533,10 +536,10 @@ if __name__ == '__main__':
 		sc = escope()
 		sc.init()
 		sc.select('e:/lab/casuald/src/')
-		sc.generate(label = 'pygments', update = True, verbose = True)
+		sc.generate(label = 'pygments', update = True, verbose = False)
 		print ''
 		sys.stdout.flush()
-		sc.find(3, 'itm_send')
+		sc.find(0, 'itm_send')
 		return 0
 
 	test2()
