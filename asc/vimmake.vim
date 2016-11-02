@@ -130,6 +130,11 @@ if !exists('g:vimmake_build_auto')
 	let g:vimmake_build_auto = ''
 endif
 
+" trigger autocmd event name for VimBuild
+if !exists('g:vimmake_build_name')
+	let g:vimmake_build_name = ''
+endif
+
 " build info
 if !exists('g:vimmake_text')
 	let g:vimmake_text = ''
@@ -1202,33 +1207,34 @@ function! s:Cmd_VimBuild(bang, ...)
 	if a:0 >= 2
 		let l:conf = a:2
 	endif
+	let vimmake = 'VimMake '
+	if g:vimmake_build_name != ''
+		let vimmake .= '-auto='.fnameescape(g:vimmake_build_name).' @ '
+	endif
 	if index(['0', 'gcc', 'cc'], l:what) >= 0
 		let l:filename = expand("%")
 		let l:source = shellescape(l:filename)
 		let l:output = shellescape(fnamemodify(l:filename, ':r'))
-		let l:cc = 'gcc'
-		if g:vimmake_cc != ''
-			let l:cc = g:vimmake_cc
-		endif
+		let l:cc = (g:vimmake_cc == '')? 'gcc' : g:vimmake_cc
 		let l:flags = join(g:vimmake_cflags, ' ')
 		let l:extname = expand("%:e")
 		if index(['cpp', 'cc', 'cxx', 'mm'], l:extname) >= 0
 			let l:flags .= ' -lstdc++'
 		endif
 		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
-		exec 'VimMake '.l:cmd . ' ' . l:flags
+		exec vimmake .l:cmd . ' ' . l:flags
 	elseif index(['1', 'make'], l:what) >= 0
 		if l:conf == ''
-			exec 'VimMake make'
+			exec vimmake .'make'
 		else
-			exec 'VimMake make '.shellescape(l:conf)
+			exec vimmake .'make '.shellescape(l:conf)
 		endif
 	elseif index(['2', 'emake'], l:what) >= 0
 		let l:source = shellescape(expand("%"))
 		if l:conf == ''
-			exec 'VimMake emake "$(VIM_FILEPATH)"'
+			exec vimmake .'emake "$(VIM_FILEPATH)"'
 		else
-			exec 'VimMake emake --ini='.shellescape(l:conf).' '.l:source
+			exec vimmake .'emake --ini='.shellescape(l:conf).' '.l:source
 		endif
 	endif
 endfunc
