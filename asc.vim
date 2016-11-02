@@ -16,10 +16,7 @@ IncScript asc/keymaps.vim
 IncScript asc/plugins.vim
 
 IncScript asc/misc.vim
-
-if has('gui_running')
-	IncScript asc/gui.vim
-endif
+IncScript asc/gui.vim
 
 if has('python')
 	IncScript asc/tweak.vim
