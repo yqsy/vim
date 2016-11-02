@@ -526,7 +526,7 @@ if __name__ == '__main__':
 		for hash, root, desc in config.list():
 			print hash, root, desc['ctime']
 		config.clear()
-		os.system('cmd /c start cmd')
+		#os.system('cmd /c start cmd')
 		return 0
 
 	def test2():
