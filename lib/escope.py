@@ -287,6 +287,7 @@ class configure (object):
 			raise Exception('Cannot find GNU Global in $PATH or config')
 		if os.path.exists(self.rc):
 			os.environ['GTAGSCONF'] = os.path.abspath(self.rc)
+		os.environ['GTAGSFORCECPP'] = '1'
 		PATH = os.environ.get('PATH', '')
 		if self.unix:
 			PATH = self.dirhome + ':' + PATH
@@ -481,13 +482,32 @@ class escope (object):
 		if verbose:
 			args += ['-v']
 		if update:
-			args += ['-i']
+			if not type(update) in (type(''), type(u'')):
+				args += ['-i']
+			else:
+				args += ['--single-update', update]
 		db = self.desc['db']
 		args += [db]
 		cwd = os.getcwd()
 		os.chdir(self.root)
 		self.config.execute('gtags', args)
 		os.chdir(cwd)
+		return 0
+
+	def find (self, mode, name):
+		if (self.desc == None) or (self.root == None):
+			return -1
+		args = ['-a', '--result', 'grep']
+		if mode in (1, '1', 'g', 'definition'):
+			self.config.execute('global', args + ['-d', '-e', name])
+		elif mode in (3, '3', 'c', 'reference'):
+			self.config.execute('global', args + ['-r', '-e', name])
+		elif mode in (4, '4', 't', 'string', 'text'):
+			self.config.execute('global', args + ['-gGo', '-e', name])
+		elif mode in (6, '6', 'e', 'grep', 'egrep'):
+			self.config.execute('global', args + ['-gEo', '-e', name])
+		elif mode in (7, '7', 'f', 'file'):
+			self.config.execute('global', args + ['-P', '-e', name])
 		return 0
 
 
@@ -502,9 +522,11 @@ if __name__ == '__main__':
 		config.init()
 		print config.select('e:/lab/casuald/src/')
 		print ''
+		sys.stdout.flush()
 		for hash, root, desc in config.list():
 			print hash, root, desc['ctime']
 		config.clear()
+		os.system('cmd /c start cmd')
 		return 0
 
 	def test2():
@@ -512,6 +534,9 @@ if __name__ == '__main__':
 		sc.init()
 		sc.select('e:/lab/casuald/src/')
 		sc.generate(label = 'pygments', update = True, verbose = True)
+		print ''
+		sys.stdout.flush()
+		sc.find(3, 'itm_send')
 		return 0
 
 	test2()
