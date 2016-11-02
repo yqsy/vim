@@ -13,6 +13,7 @@ import time
 import os
 import json
 import hashlib
+import datetime
 
 
 #----------------------------------------------------------------------
@@ -88,7 +89,7 @@ class configure (object):
 
 	def __init__ (self, ininame = None):
 		self.ininame = ininame
-		self.unix = (sys.platform[:3] != 'win')
+		self.unix = (sys.platform[:3] != 'win') and 1 or 0
 		self.config = {}
 		self.dirhome = None
 		self.rc = None
@@ -114,6 +115,7 @@ class configure (object):
 		self.GetShortPathName = None
 		self.database = None
 
+	# search escope config
 	def _search_config (self):
 		self.config = {}
 		self.config['default'] = {}
@@ -145,6 +147,7 @@ class configure (object):
 		fp.close()
 		return 0
 
+	# read option 
 	def option (self, sect, item, default = None):
 		if not sect in self.config:
 			return default
@@ -169,6 +172,7 @@ class configure (object):
 				return False
 		return True
 
+	# search gtags executables
 	def _search_binary (self):
 		dirhome = self.option('default', 'home')
 		if dirhome:
@@ -186,7 +190,8 @@ class configure (object):
 				return 0
 		return -1
 
-	def abspath (self, path):
+	# abspath 
+	def abspath (self, path, resolve = False):
 		if path == None:
 			return None
 		if '~' in path:
@@ -194,8 +199,11 @@ class configure (object):
 		path = os.path.abspath(path)
 		if not self.unix:
 			return path.lower().replace('\\', '/')
+		if resolve:
+			return os.path.abspath(os.path.realpath(path))
 		return path
 
+	# search gtags rc
 	def _search_rc (self):
 		rc = self.option('default', 'rc', None)
 		if rc != None:
@@ -224,6 +232,7 @@ class configure (object):
 			self.config['default']['rc'] = rc
 		return -1
 
+	# short name in windows
 	def pathshort (self, path):
 		path = os.path.abspath(path)
 		if self.unix:
@@ -248,6 +257,7 @@ class configure (object):
 			return ''
 		return shortpath
 
+	# recursion make directory
 	def mkdir (self, path):
 		path = os.path.abspath(path)
 		if os.path.exists(path):
@@ -264,12 +274,14 @@ class configure (object):
 				os.mkdir(name)
 		return 0
 
+	# execute a gnu global executable
 	def execute (self, name, args, capture = False):
 		if name in self.exename:
 			name = self.exename[name]
 		name = self.pathshort(name)
 		return execute([name] + args, False, capture)
 
+	# initialize environment
 	def init (self):
 		if self.dirhome == None:
 			raise Exception('Cannot find GNU Global in $PATH or config')
@@ -282,23 +294,110 @@ class configure (object):
 			PATH = os.path.abspath(self.dirhome) + ';' + PATH
 		os.environ['PATH'] = PATH
 		database = self.option('default', 'database', None)
-		if not database:
-			database = self.abspath('~/.local/var/escope')
-		self.mkdir(database)
+		if database:
+			database = self.abspath(database, True)
+		else:
+			database = self.abspath('~/.local/var/escope', True)
+		if not os.path.exists(database):
+			self.mkdir(database)
 		if not os.path.exists(database):
 			raise Exception('Cannot create database folder: %s'%database)
 		self.database = database
 		return 0
 
+	# get project db path
 	def pathdb (self, root):
-		if root == None:
+		if (self.database == None) or (root == None):
 			return None
 		root = root.strip()
 		root = self.abspath(root)
-		hash = hashlib.md5(root).hexdigest()
+		hash = hashlib.md5(root).hexdigest().lower()
 		path = os.path.abspath(os.path.join(self.database, hash))
 		return (self.unix) and path or path.replace('\\', '/')
 
+	# load project desc
+	def load (self, root):
+		db = self.pathdb(root)
+		if db == None:
+			return None
+		cfg = os.path.join(db, 'config.json')
+		if not os.path.exists(cfg):
+			return None
+		fp = open(cfg, 'r')
+		content = fp.read()
+		fp.close()
+		try:
+			obj = json.loads(content)
+		except:
+			return None
+		if type(obj) != type({}):
+			return None
+		return obj
+
+	# save project desc
+	def save (self, root, obj):
+		db = self.pathdb(root)
+		if db == None or type(obj) != type({}):
+			return -1
+		cfg = os.path.join(db, 'config.json')
+		text = json.dumps(obj, indent = 4)
+		fp = open(cfg, 'w')
+		fp.write(text)
+		fp.close()
+		return 0
+
+	def timestamp (self):
+		return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+	def get_size (path = '.'):
+		total_size = 0
+		for dirpath, dirnames, filenames in os.walk(path):
+			for f in filenames:
+				fp = os.path.join(dirpath, f)
+				total_size += os.path.getsize(fp)
+		return total_size
+
+	# list all projects in database
+	def list (self, garbage = None):
+		roots = []
+		if garbage == None:
+			garbage = []
+		if self.database == None:
+			return None
+		if not os.path.exists(self.database):
+			return None
+		for name in os.listdir(self.database):
+			name = name.strip()
+			if len(name) != 32:
+				garbage.append(name)
+				continue
+			path = os.path.join(self.database, name)
+			if not os.path.isdir(path):
+				garbage.append(name)
+				continue
+			desc = None
+			cfg = os.path.join(path, 'config.json')
+			if os.path.exists(cfg):
+				try:
+					fp = open(cfg, 'r')
+					text = fp.read()
+					fp.close()
+					desc = json.loads(text)
+				except:
+					desc = None
+				if type(desc) != type({}):
+					desc = None
+			root = (desc != None) and desc.get('root', '') or ''
+			if desc == None or root == '':
+				garbage.append(name)
+				continue
+			if desc.get('db', '') == '':
+				garbage.append(name)
+				continue
+			roots.append((name, root, desc))
+		return roots
+
+	# select and initialize a project
 	def select (self, root):
 		if root == None:
 			return None
@@ -308,7 +407,88 @@ class configure (object):
 		self.mkdir(db)
 		os.environ['GTAGSROOT'] = os.path.abspath(root)
 		os.environ['GTAGSDBPATH'] = os.path.abspath(db)
-		return db
+		desc = self.load(root)
+		if desc == None:
+			desc = {}
+			desc['root'] = root
+			desc['db'] = db
+			desc['ctime'] = self.timestamp()
+			desc['mtime'] = self.timestamp()
+			desc['version'] = 0
+			desc['size'] = 0
+			self.save(root, desc)
+		return desc
+
+	# clear invalid files in the database path
+	def clear (self):
+		if self.database == None:
+			return -1
+		if not os.path.exists(self.database):
+			return -2
+		if self.database == '/':
+			return -3
+		database = os.path.abspath(self.database)
+		if len(self.database) == 3 and self.unix == 0:
+			if self.database[1] == ':':
+				return -4
+		garbage = []
+		self.list(garbage)
+		import shutil
+		for name in garbage:
+			path = os.path.join(self.database, name)
+			if not os.path.exists(path):
+				continue
+			if os.path.isdir(path):
+				shutil.rmtree(path, True)
+			else:
+				try: os.remove(path)
+				except: pass
+		return 0
+
+
+#----------------------------------------------------------------------
+# escope - gtags wrapper
+#----------------------------------------------------------------------
+class escope (object):
+
+	def __init__ (self, ininame = None):
+		self.config = configure(ininame)
+		self.desc = None
+		self.root = None
+
+	def init (self):
+		if self.config.database != None:
+			return 0
+		self.config.init()
+		return 0
+
+	def select (self, root):
+		self.desc = None
+		self.root = None
+		desc = self.config.select(root)
+		if desc == None:
+			return -1
+		self.desc = desc
+		self.root = self.config.abspath(root)
+		return 0
+
+	def generate (self, label = None, update = False, verbose = False):
+		if (self.desc == None) or (self.root == None):
+			return -1
+		args = ['--skip-unreadable']
+		if label:
+			args += ['--gtagslabel', label]
+		if verbose:
+			args += ['-v']
+		if update:
+			args += ['-i']
+		db = self.desc['db']
+		args += [db]
+		cwd = os.getcwd()
+		os.chdir(self.root)
+		self.config.execute('gtags', args)
+		os.chdir(cwd)
+		return 0
 
 
 
@@ -316,16 +496,25 @@ class configure (object):
 # testing case
 #----------------------------------------------------------------------
 if __name__ == '__main__':
+
 	def test1():
 		config = configure()
 		config.init()
-		print config.select('e:/lab/casuald\\src/')
-		print os.environ['GTAGSROOT']
-		print os.environ['GTAGSDBPATH']
-		print config.abspath('')
+		print config.select('e:/lab/casuald/src/')
+		print ''
+		for hash, root, desc in config.list():
+			print hash, root, desc['ctime']
+		config.clear()
 		return 0
 
-	test1()
+	def test2():
+		sc = escope()
+		sc.init()
+		sc.select('e:/lab/casuald/src/')
+		sc.generate(label = 'pygments', update = True, verbose = True)
+		return 0
+
+	test2()
 
 
 
