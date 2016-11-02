@@ -11,7 +11,7 @@
 import sys
 import time
 import os
-import ConfigParser
+import hashlib
 
 
 #----------------------------------------------------------------------
@@ -280,8 +280,31 @@ class configure (object):
 		else:
 			PATH = os.path.abspath(self.dirhome) + ';' + PATH
 		os.environ['PATH'] = PATH
-
+		database = self.option('default', 'database', None)
+		if not database:
+			database = self.abspath('~/.local/var/escope')
+		self.mkdir(database)
+		if not os.path.exists(database):
+			raise Exception('Cannot create database folder: %s'%database)
+		self.database = database
 		return 0
+
+	def pathdb (self, root):
+		root = root.strip()
+		root = self.abspath(root)
+		hash = hashlib.md5(root).hexdigest()
+		path = os.path.abspath(os.path.join(self.database, hash))
+		return (self.unix) and path or path.replace('\\', '/')
+
+	def select (self, root):
+		root = root.strip()
+		root = self.abspath(root)
+		db = self.pathdb(root)
+		self.mkdir(db)
+		os.environ['GTAGSROOT'] = os.path.abspath(root)
+		os.environ['GTAGSDBPATH'] = os.path.abspath(db)
+		return db
+
 
 
 #----------------------------------------------------------------------
@@ -291,10 +314,9 @@ if __name__ == '__main__':
 	def test1():
 		config = configure()
 		config.init()
-		print config.dirhome
-		print config.rc
-		print config.exename
-		config.execute('global', ['--version'])
+		print config.select('e:/lab/casuald\\src/')
+		print os.environ['GTAGSROOT']
+		print os.environ['GTAGSDBPATH']
 		return 0
 
 	test1()
