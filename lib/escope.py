@@ -104,14 +104,15 @@ class configure (object):
 			self.rc = self.abspath(rc)
 		self.config['default']['rc'] = rc
 		self.exename = {}
-		if self.unix:
-			f = lambda n: os.path.join(self.dirhome, n)
-		else:
-			g = lambda n: os.path.join(self.dirhome, n + '.exe')
-			f = lambda n: os.path.abspath(g(n))
-		self.exename['gtags'] = f('gtags')
-		self.exename['global'] = f('global')
-		self.exename['gtags-cscope'] = f('gtags-cscope')
+		if self.dirhome != None:
+			if self.unix:
+				f = lambda n: os.path.join(self.dirhome, n)
+			else:
+				g = lambda n: os.path.join(self.dirhome, n + '.exe')
+				f = lambda n: os.path.abspath(g(n))
+			self.exename['gtags'] = f('gtags')
+			self.exename['global'] = f('global')
+			self.exename['gtags-cscope'] = f('gtags-cscope')
 		self.GetShortPathName = None
 		self.database = None
 
@@ -164,7 +165,7 @@ class configure (object):
 			if not os.path.exists(os.path.join(path, 'gtags-cscope')):
 				return False
 		else:
-			if not os.path.exists(os.path.join(path, 'gtags.exe')):
+			if not os.path.exists(os.path.join(path, 'gtags.exz')):
 				return False
 			if not os.path.exists(os.path.join(path, 'global.exe')):
 				return False
@@ -492,6 +493,9 @@ class escope (object):
 		os.chdir(self.root)
 		self.config.execute('gtags', args)
 		os.chdir(cwd)
+		self.desc['mtime'] = self.config.timestamp()
+		self.desc['version'] = self.desc['version'] + 1
+		self.config.save(self.desc['root'], self.desc)
 		return 0
 
 	def find (self, mode, name):
@@ -511,6 +515,8 @@ class escope (object):
 			self.config.execute('global', args + ['-gEo', '-e', name])
 		elif mode in (7, '7', 'f', 'file'):
 			self.config.execute('global', args + ['-P', '-e', name])
+		else:
+			print 'unsupported'
 		return 0
 
 

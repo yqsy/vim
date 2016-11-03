@@ -1246,50 +1246,54 @@ command! -bang -nargs=* VimBuild call s:Cmd_VimBuild('<bang>', <f-args>)
 
 
 "----------------------------------------------------------------------
-" get full filename
+" get full filename, '' as current cwd, '%' as current buffer
 "----------------------------------------------------------------------
 function! vimmake#fullname(f)
-  let f = a:f
-  if f =~ "'."
-	  try
-		  redir => m
-		  silent exe ':marks' f[1]
-		  redir END
-		  let f = split(split(m, '\n')[-1])[-1]
-		  let f = filereadable(f)? f : ''
-	  catch
-		  let f = ''
-	  endtry
-  endif
-  let f = len(f) ? f : expand('%')
-  return fnamemodify(f, ':p')
+	let f = a:f
+	if f =~ "'."
+		try
+			redir => m
+			silent exe ':marks' f[1]
+			redir END
+			let f = split(split(m, '\n')[-1])[-1]
+			let f = filereadable(f)? f : ''
+		catch
+			let f = '%'
+		endtry
+	endif
+	let f = (f != '%')? f : expand('%')
+	let f = fnamemodify(f, ':p')
+	if s:vimmake_windows
+		let f = substitute(f, "\\", '/', 'g')
+	endif
+	return f
 endfunc
 
 
 "----------------------------------------------------------------------
-" guess root
+" guess root, '' as current direct, '%' as current buffer
 "----------------------------------------------------------------------
 if !exists('g:vimmake_rootmarks')
     let g:vimmake_rootmarks = ['.projectroot', '.git', '.hg', '.svn', '.bzr']
     let g:vimmake_rootmarks += ['_darcs', 'build.xml']
 endif
 
-function! vimmake#get_root(...)
+function! vimmake#get_root(path)
     function! s:guess_root(filename)
-        let fullfile = vimmake#fullname(a:filename)
+        let fullname = vimmake#fullname(a:filename)
         if exists('b:vimmake_root')
             let l:vimmake_root = fnamemodify(b:vimmake_root, ':p')
             if stridx(fullfile, l:vimmake_root) == 0
                 return b:vimmake_root
             endif
         endif
-        if fullfile =~ '^fugitive:/'
+        if fullname =~ '^fugitive:/'
             if exists('b:git_dir')
                 return fnamemodify(b:git_dir, ':h')
             endif
             return '' " skip any fugitive buffers early
         endif
-		let pivot=fullfile
+		let pivot = fullname
 		while 1
 			let prev = pivot
 			let pivot = fnamemodify(pivot, ':h')
@@ -1307,13 +1311,16 @@ function! vimmake#get_root(...)
 		endwhile
         return ''
     endfunc
-	let root = s:guess_root(a:0 ? a:1 : '')
+	let root = s:guess_root(a:path)
 	if len(root)
-		return root
+		return vimmake#fullname(root)
 	endif
 	" Not found: return parent directory of current file / file itself.
-	let fullfile = vimmake#fullname(a:0 ? a:1 : '')
-	return !isdirectory(fullfile) ? fnamemodify(fullfile, ':h') : fullfile
+	let fullname = vimmake#fullname(a:path)
+	if isdirectory(fullname)
+		return fullname
+	endif
+	return vimmake#fullname(fnamemodify(fullname, ':h'))
 endfunc
 
 
@@ -1335,10 +1342,11 @@ function! vimmake#grep(text, cwd)
                 let l:inc .= '*.'.l:item.' '
             else
                 let l:full = vimmake#fullname(a:cwd)
-                let l:inc .= '"'.l:full . '*.'.l:item.'" '
+				let l:inc .= '"%CD%/*.'.l:item.'" '
             endif
 		endfor
-		exec 'VimMake -program=grep @ /s /C:"'. a:text . '" '. l:inc
+		let options = { 'program': 'grep', 'cwd':a:cwd }
+		call vimmake#run('', options, '@ /s /C:"'.a:text.'" '. l:inc)
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grep
@@ -1355,7 +1363,7 @@ function! vimmake#grep(text, cwd)
 endfunc
 
 function! s:Cmd_GrepCode(bang, what, ...)
-    let l:cwd = (a:0 == 0)? '' : a:1
+    let l:cwd = (a:0 == 0)? fnamemodify(expand('%'), ':h') : a:1
     if a:bang != ''
         let l:cwd = vimmake#get_root(l:cwd)
     endif
@@ -1557,9 +1565,9 @@ endfunc
 
 function! vimmake#update_tags(cwd, mode, outname)
     if a:cwd == '!'
-        let l:cwd = vimmake#get_root('')
+        let l:cwd = vimmake#get_root('%')
     else
-        let l:cwd = vimmake#fullname((a:cwd != '')? a:cwd : '.')
+        let l:cwd = vimmake#fullname(a:cwd)
         let l:cwd = fnamemodify(l:cwd, ':p:h')
     endif
     let l:cwd = substitute(l:cwd, '\\', '/', 'g')

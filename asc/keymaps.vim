@@ -48,7 +48,7 @@ endif
 noremap <silent><space>= :resize +3<cr>
 noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
-noremap <silent><space>. :vertical rexize +3<cr>
+noremap <silent><space>. :vertical resize +3<cr>
 noremap <silent><space>hh :nohl<cr>
 noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
