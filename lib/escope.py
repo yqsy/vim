@@ -342,7 +342,7 @@ class configure (object):
 		gtags = self.option('default', 'gtags')
 		if gtags == None:
 			return -1
-		rc = os.path.join(self.gtags, '../share/gtags/gtags.conf')
+		rc = os.path.join(gtags, '../share/gtags/gtags.conf')
 		rc = self.abspath(rc)
 		if os.path.exists(rc):
 			self.config['default']['rc'] = rc
@@ -1023,7 +1023,7 @@ def main(argv = None):
 		elif system:
 			parameter = 'system'
 		if verbose:
-			sys.stdout.write('Buiding %s cross reference database: %s\n'%(backend, root))
+			sys.stdout.write('Buiding %s database for: %s\n'%(backend, root))
 			sys.stdout.flush()
 		es.generate(backend, parameter, update, verbose)
 		return 0
