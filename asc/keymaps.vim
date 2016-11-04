@@ -213,18 +213,6 @@ else
 endif
 
 
-"----------------------------------------------------------------------
-" space + c : cscope
-"----------------------------------------------------------------------
-noremap <space>cs :scs find s <C-R>=expand("<cword>")<CR><CR>
-noremap <space>cg :scs find g <C-R>=expand("<cword>")<CR><CR>
-noremap <space>cc :scs find c <C-R>=expand("<cword>")<CR><CR>
-noremap <space>ct :scs find t <C-R>=expand("<cword>")<CR><CR>
-noremap <space>ce :scs find e <C-R>=expand("<cword>")<CR><CR>
-noremap <space>cf :scs find f <C-R>=expand("<cword>")<CR><CR>
-noremap <space>ci :scs find i <C-R>=expand("<cword>")<CR><CR>
-noremap <space>cd :scs find d <C-R>=expand("<cword>")<CR><CR>
-
 
 "----------------------------------------------------------------------
 " more personal in gvim

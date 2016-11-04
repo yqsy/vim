@@ -92,7 +92,7 @@ def redirect(args, reader, combine = True):
 	import subprocess
 	if 'Popen' in subprocess.__dict__:
 		p = subprocess.Popen(args, shell = False,
-			stdin = None, stdout = subprocess.PIPE,
+			stdin = subprocess.PIPE, stdout = subprocess.PIPE,
 			stderr = combine and subprocess.STDOUT or subprocess.PIPE)
 		stdin, stdout, stderr = p.stdin, p.stdout, p.stderr
 		if combine: stderr = None
@@ -103,6 +103,7 @@ def redirect(args, reader, combine = True):
 		else:
 			stdin, stdout = os.popen4(cmd)
 			stderr = None
+	stdin.close()
 	while 1:
 		text = stdout.readline()
 		if text == '':
