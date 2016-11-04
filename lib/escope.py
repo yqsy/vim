@@ -83,6 +83,42 @@ def execute(args, shell = False, capture = False):
 
 
 #----------------------------------------------------------------------
+# redirect process output to reader(what, text)
+#----------------------------------------------------------------------
+def redirect(args, reader, combine = True):
+	import subprocess
+	if 'Popen' in subprocess.__dict__:
+		p = subprocess.Popen(args, shell = False,
+			stdin = None, stdout = subprocess.PIPE,
+			stderr = combine and subprocess.STDOUT or subprocess.PIPE)
+		stdin, stdout, stderr = p.stdin, p.stdout, p.stderr
+		if combine: stderr = None
+	else:
+		p = None
+		if combine == False:
+			stdin, stdout, stderr = os.popen3(cmd)
+		else:
+			stdin, stdout = os.popen4(cmd)
+			stderr = None
+	while 1:
+		text = stdout.readline()
+		if text == '':
+			break
+		reader('stdout', text)
+	while stderr != None:
+		text = stderr.readline()
+		if text == '':
+			break
+		reader('stderr', text)
+	stdout.close()
+	if stderr: stderr.close()
+	retcode = None
+	if p:
+		retcode = p.wait()
+	return retcode
+
+
+#----------------------------------------------------------------------
 # configure
 #----------------------------------------------------------------------
 class configure (object):
@@ -91,24 +127,30 @@ class configure (object):
 		self.ininame = ininame
 		self.unix = (sys.platform[:3] != 'win') and 1 or 0
 		self.config = {}
-		self.dirhome = None
 		self.rc = None
 		self._search_config()
-		self._search_binary()
-		self.dirhome = self.abspath(self.dirhome)
-		if self.dirhome != None:
-			self.config['default']['home'] = self.dirhome
+		self._search_cscope()
+		self._search_gtags()
 		self._search_rc()
 		rc = self.option('default', 'rc', None)
 		if rc and os.path.exists(rc):
 			self.rc = self.abspath(rc)
 		self.config['default']['rc'] = rc
+		self.has_cscope = (self.option('default', 'cscope') != None)
+		self.has_gtags = (self.option('default', 'gtags') != None)
 		self.exename = {}
-		if self.dirhome != None:
+		if self.has_cscope:
+			cscope = self.option('default', 'cscope')
 			if self.unix:
-				f = lambda n: os.path.join(self.dirhome, n)
+				self.exename['cscope'] = os.path.join(cscope, 'cscope')
 			else:
-				g = lambda n: os.path.join(self.dirhome, n + '.exe')
+				self.exename['cscope'] = os.path.join(cscope, 'cscope.exe')
+		if self.has_gtags:
+			gtags = self.option('default', 'gtags')
+			if self.unix:
+				f = lambda n: os.path.join(gtags, n)
+			else:
+				g = lambda n: os.path.join(gtags, n + '.exe')
 				f = lambda n: os.path.abspath(g(n))
 			self.exename['gtags'] = f('gtags')
 			self.exename['global'] = f('global')
@@ -154,40 +196,69 @@ class configure (object):
 			return default
 		return self.config[sect].get(item, default)
 
-	def _test_home (self, path):
-		if not os.path.exists(path):
-			return False
-		if self.unix:
-			if not os.path.exists(os.path.join(path, 'gtags')):
+	# search cscope
+	def _search_cscope (self):
+		def _test_cscope(path):
+			if not os.path.exists(path):
 				return False
-			if not os.path.exists(os.path.join(path, 'global')):
-				return False
-			if not os.path.exists(os.path.join(path, 'gtags-cscope')):
-				return False
-		else:
-			if not os.path.exists(os.path.join(path, 'gtags.exz')):
-				return False
-			if not os.path.exists(os.path.join(path, 'global.exe')):
-				return False
-			if not os.path.exists(os.path.join(path, 'gtags-cscope.exe')):
-				return False
-		return True
-
-	# search gtags executables
-	def _search_binary (self):
-		dirhome = self.option('default', 'home')
-		if dirhome:
-			if self._test_home(dirhome):
-				self.dirhome = os.path.abspath(dirhome)
+			if sys.platform[:3] != 'win':
+				if not os.path.exists(os.path.join(path, 'cscope')):
+					return False
+			else:
+				if not os.path.exists(os.path.join(path, 'cscope.exe')):
+					return False
+			return True
+		cscope = self.option('default', 'cscope')
+		if cscope:
+			if _test_cscope(cscope):
+				self.config['default']['cscope'] = os.path.abspath(cscope)
 				return 0
-		dirhome = os.path.abspath(os.path.dirname(__file__))
-		if self._test_home(dirhome):
-			self.dirhome = dirhome
+		self.config['default']['cscope'] = None
+		cscope = os.path.abspath(os.path.dirname(__file__))
+		if _test_cscope(cscope):
+			self.config['default']['cscope'] = cscope
 			return 0
 		PATH = os.environ.get('PATH', '').split(self.unix and ':' or ';')
 		for path in PATH:
-			if self._test_home(path):
-				self.dirhome = os.path.abspath(path)
+			if _test_cscope(path):
+				self.config['default']['cscope'] = os.path.abspath(path)
+				return 0
+		return -1
+
+	# search gtags executables
+	def _search_gtags (self):
+		def _test_gtags(path):
+			if not os.path.exists(path):
+				return False
+			if sys.platform[:3] != 'win':
+				if not os.path.exists(os.path.join(path, 'gtags')):
+					return False
+				if not os.path.exists(os.path.join(path, 'global')):
+					return False
+				if not os.path.exists(os.path.join(path, 'gtags-cscope')):
+					return False
+			else:
+				if not os.path.exists(os.path.join(path, 'gtags.exz')):
+					return False
+				if not os.path.exists(os.path.join(path, 'global.exe')):
+					return False
+				if not os.path.exists(os.path.join(path, 'gtags-cscope.exe')):
+					return False
+			return True
+		gtags = self.option('default', 'gtags')
+		if gtags:
+			if _test_gtags(gtags):
+				self.config['default']['gtags'] = os.path.abspath(gtags)
+				return 0
+		self.config['default']['gtags'] = None
+		gtags = os.path.abspath(os.path.dirname(__file__))
+		if _test_gtags(gtags):
+			self.config['default']['gtags'] = gtags
+			return 0
+		PATH = os.environ.get('PATH', '').split(self.unix and ':' or ';')
+		for path in PATH:
+			if _test_gtags(path):
+				self.config['default']['gtags'] = os.path.abspath(path)
 				return 0
 		return -1
 
@@ -212,6 +283,7 @@ class configure (object):
 			if os.path.exists(rc):
 				self.config['default']['rc'] = rc
 				return 0
+		self.config['default']['rc'] = None
 		rc = self.abspath('~/.globalrc')
 		if os.path.exists(rc):
 			self.config['default']['rc'] = rc
@@ -225,9 +297,10 @@ class configure (object):
 			if os.path.exists(rc):
 				self.config['default']['rc'] = rc
 				return 0
-		if self.dirhome == None:
+		gtags = self.option('default', 'gtags')
+		if gtags == None:
 			return -1
-		rc = os.path.join(self.dirhome, '../share/gtags/gtags.conf')
+		rc = os.path.join(self.gtags, '../share/gtags/gtags.conf')
 		rc = self.abspath(rc)
 		if os.path.exists(rc):
 			self.config['default']['rc'] = rc
@@ -280,20 +353,24 @@ class configure (object):
 		if name in self.exename:
 			name = self.exename[name]
 		name = self.pathshort(name)
+		if not capture in (0, 1, True, False, None):
+			return redirect([name] + args, capture)
 		return execute([name] + args, False, capture)
 
 	# initialize environment
 	def init (self):
-		if self.dirhome == None:
-			raise Exception('Cannot find GNU Global in $PATH or config')
 		if os.path.exists(self.rc):
 			os.environ['GTAGSCONF'] = os.path.abspath(self.rc)
 		os.environ['GTAGSFORCECPP'] = '1'
 		PATH = os.environ.get('PATH', '')
+		cscope = self.option('default', 'cscope')
+		gtags = self.option('default', 'gtags')
 		if self.unix:
-			PATH = self.dirhome + ':' + PATH
+			if cscope: PATH = cscope + ':' + PATH
+			if gtags: PATH = gtags + ':' + PATH
 		else:
-			PATH = os.path.abspath(self.dirhome) + ';' + PATH
+			if cscope: PATH = cscope + ';' + PATH
+			if gtags: PATH = gtags + ';' + PATH
 		os.environ['PATH'] = PATH
 		database = self.option('default', 'database', None)
 		if database:
@@ -474,25 +551,28 @@ class escope (object):
 		self.root = self.config.abspath(root)
 		return 0
 
-	def generate (self, label = None, update = False, verbose = False):
-		if (self.desc == None) or (self.root == None):
-			return -1
-		args = ['--skip-unreadable']
-		if label:
-			args += ['--gtagslabel', label]
-		if verbose:
-			args += ['-v']
-		if update:
-			if not type(update) in (type(''), type(u'')):
-				args += ['-i']
-			else:
-				args += ['--single-update', update]
-		db = self.desc['db']
-		args += [db]
-		cwd = os.getcwd()
-		os.chdir(self.root)
-		self.config.execute('gtags', args)
-		os.chdir(cwd)
+	def generate (self, mode, label = None, update = False, verbose = False):
+		if mode in ('0', '', 'cscope'):
+			pass
+		else:
+			if (self.desc == None) or (self.root == None):
+				return -1
+			args = ['--skip-unreadable']
+			if label:
+				args += ['--gtagslabel', label]
+			if verbose:
+				args += ['-v']
+			if update:
+				if not type(update) in (type(''), type(u'')):
+					args += ['-i']
+				else:
+					args += ['--single-update', update]
+			db = self.desc['db']
+			args += [db]
+			cwd = os.getcwd()
+			os.chdir(self.root)
+			self.config.execute('gtags', args)
+			os.chdir(cwd)
 		self.desc['mtime'] = self.config.timestamp()
 		self.desc['version'] = self.desc['version'] + 1
 		self.config.save(self.desc['root'], self.desc)
@@ -548,7 +628,14 @@ if __name__ == '__main__':
 		sc.find(0, 'itm_send')
 		return 0
 
-	test2()
+	def test3():
+		sc = escope()
+		sc.init()
+		print sc.config.has_cscope
+		print sc.config.has_gtags
+		sc.config.execute('cscope', ['--help'])
+
+	test3()
 
 
 
