@@ -215,7 +215,7 @@ endfunc
 " list database
 "----------------------------------------------------------------------
 function! escope#list()
-	call 'AsyncRun python '.shellescape(s:escope_script).' -L'
+	exec 'AsyncRun python '.shellescape(s:escope_script).' -L'
 endfunc
 
 
@@ -223,7 +223,7 @@ endfunc
 " clean database
 "----------------------------------------------------------------------
 function! escope#clean()
-	call 'AsyncRun python '.shellescape(s:escope_script). ' -C -d '.
+	exec 'AsyncRun python '.shellescape(s:escope_script). ' -C -d '.
 				\ g:escope_days_keep
 endfunc
 
