@@ -15,6 +15,9 @@ import json
 import hashlib
 import datetime
 
+if sys.version_info[0] >= 3:
+	raise "Must be using Python 2"
+
 
 #----------------------------------------------------------------------
 # execute and capture
@@ -247,7 +250,7 @@ class configure (object):
 				if not os.path.exists(os.path.join(path, 'gtags-cscope')):
 					return False
 			else:
-				if not os.path.exists(os.path.join(path, 'gtags.exz')):
+				if not os.path.exists(os.path.join(path, 'gtags.exe')):
 					return False
 				if not os.path.exists(os.path.join(path, 'global.exe')):
 					return False
@@ -392,7 +395,7 @@ class configure (object):
 		if name in self.exename:
 			name = self.exename[name]
 		name = self.pathshort(name)
-		printcmd = True
+		#printcmd = True
 		if printcmd:
 			print [name] + args
 		if not capture in (0, 1, True, False, None):
@@ -434,6 +437,7 @@ class configure (object):
 		root = root.strip()
 		root = self.abspath(root)
 		hash = hashlib.md5(root).hexdigest().lower()
+		hash = hash[:16]
 		path = os.path.abspath(os.path.join(self.database, hash))
 		return (self.unix) and path or path.replace('\\', '/')
 
@@ -471,7 +475,10 @@ class configure (object):
 	def timestamp (self):
 		return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-	def get_size (path = '.'):
+	def strptime (self, text):
+		return datetime.datetime.strptime(text, "%Y-%m-%d %H:%M:%S")
+
+	def get_size (self, path = '.'):
 		total_size = 0
 		for dirpath, dirnames, filenames in os.walk(path):
 			for f in filenames:
@@ -490,7 +497,7 @@ class configure (object):
 			return None
 		for name in os.listdir(self.database):
 			name = name.strip()
-			if len(name) != 32:
+			if len(name) != 16:
 				garbage.append(name)
 				continue
 			path = os.path.join(self.database, name)
@@ -629,13 +636,16 @@ class escope (object):
 			return False
 		return True
 
-	def find (self, path, extnames = None):
+	def find_files (self, path, extnames = None):
 		result = []
 		if extnames:
 			if not self.config.unix:
 				extnames = [ n.lower() for n in extnames ]
 			extnames = tuple(extnames)
 		for root, dirs, files in os.walk(path):
+			for ignore in self.ignores:
+				if ignore in dirs:
+					dirs.remove(ignore)
 			for name in files:
 				if extnames:
 					ext = os.path.splitext(name)[-1]
@@ -646,15 +656,19 @@ class escope (object):
 				result.append(os.path.abspath(os.path.join(root, name)))
 		return result
 
-	def cscope_generate (self, include = None, kernel = False, verbose = False):
+	def cscope_generate (self, include = None, kernel = False, verbose = 0):
 		if not self.check_cscope():
 			return -1
 		if (self.desc == None) or (self.root == None):
 			self.abort('Project has not been selected')
 			return -2
-		names = self.find(self.root, self.cscope_names)
+		names = self.find_files(self.root, self.cscope_names)
 		listname = os.path.join(self.db, 'cscope.txt')
 		outname = os.path.join(self.db, 'cscope.out')
+		if verbose:
+			for fn in names:
+				print fn
+			sys.stdout.flush()
 		fp = open(listname, 'w')
 		fp.write('\n'.join(names))
 		fp.close()
@@ -709,9 +723,13 @@ class escope (object):
 		if (self.desc == None) or (self.root == None):
 			self.abort('Project has not been selected')
 			return -2
-		names = self.find(self.root, ['.py', '.pyw'])
+		names = self.find_files(self.root, ['.py', '.pyw'])
 		listname = os.path.join(self.db, 'pycscope.txt')
 		outname = os.path.join(self.db, 'pycscope.out')
+		if verbose:
+			for fn in names:
+				print fn
+			sys.stdout.flush()
 		fp = open(listname, 'w')
 		fp.write('\n'.join(names))
 		fp.close()
@@ -796,21 +814,18 @@ class escope (object):
 			sys.stderr.flush()
 		return 0
 
-	def generate (self, backend, update = False, verbose = False):
+	def generate (self, backend, parameter, update = False, verbose = False):
 		if (self.desc == None) or (self.root == None):
 			self.abort('Project has not been selected')
 			return -1
-		backend = backend.split('/')
-		engine = backend[0]
-		parameter = len(backend) >= 2 and backend[1] : ''
-		if engine in ('cscope', 'cs'):
+		if backend in ('cscope', 'cs'):
 			kernel = True
 			if parameter.lower() in ('1', 'true', 'sys', 'system'):
 				kernel = False
 			return self.cscope_generate(None, kernel, verbose)
-		elif engine in ('pycscope', 'py'):
+		elif backend in ('pycscope', 'py'):
 			return self.pycscope_generate(verbose)
-		elif engine in ('gtags', 'global', 'gnu'):
+		elif backend in ('gtags', 'global', 'gnu'):
 			return self.gtags_generate(parameter, update, verbose)
 		else:
 			self.abort('unknow backend: %s'%backend)
@@ -822,7 +837,7 @@ class escope (object):
 			return -1
 		backend = backend.split('/')
 		engine = backend[0]
-		parameter = len(backend) >= 2 and backend[1] : ''
+		parameter = len(backend) >= 2 and backend[1] or ''
 		if engine in ('cscope', 'cs'):
 			return self.cscope_find(mode, name)
 		elif engine in ('pycscope', 'py'):
@@ -832,6 +847,202 @@ class escope (object):
 		else:
 			self.abort('unknow backend: %s'%backend)
 		return 0
+
+	def list (self):
+		if self.config.database == None:
+			self.abort('Initialzing is required')
+			return -1
+		print 'Database:', self.config.database
+		print ''
+		print 'Hash'.ljust(16),  'Size(KB)'.rjust(11), ' Modified'.ljust(12), ' Root'
+		def add_commas(instr):
+			rng = reversed(range(1, len(instr) + (len(instr) - 1)//3 + 1))
+			out = [',' if j%4 == 0 else instr[-(j - j//4)] for j in rng]
+			return ''.join(out)
+		for name, root, desc in self.config.list():
+			db = os.path.join(self.config.database, name)
+			size = (self.config.get_size(db) + 1023) / 1024
+			size = add_commas(str(size))
+			print name, size.rjust(11), '', desc['mtime'][:10], ' ', desc['root']
+		print ''
+		return 0
+
+	def clean (self, days):
+		if self.config.database == None:
+			self.abort('Initialzing is required')
+			return -1
+		self.config.clear()
+		import datetime, time, shutil
+		d0 = datetime.datetime.fromtimestamp(time.time())
+		for name, root, desc in self.config.list():
+			mtime = desc['mtime']
+			path = os.path.join(self.config.database, name)
+			d1 = self.config.strptime(mtime)
+			dd = d0 - d1
+			if dd.days >= days and os.path.exists(path):
+				sys.stdout.write('%s ... '%name)
+				sys.stdout.flush()
+				shutil.rmtree(path)
+				sys.stdout.write('(removed)\n')
+				sys.stdout.flush()
+		return 0
+
+
+#----------------------------------------------------------------------
+# errmsg
+#----------------------------------------------------------------------
+def errmsg(message, abort = False):
+	sys.stderr.write('error: ' + message + '\n')
+	sys.stderr.flush()
+	if abort:
+		sys.exit(2)
+	return 0
+
+
+#----------------------------------------------------------------------
+# main
+#----------------------------------------------------------------------
+def main(argv = None):
+	argv = (argv == None) and sys.argv or argv
+	argv = [ n for n in argv ]
+	if len(argv) <= 1:
+		errmsg('no operation specified (use -h for help)', True)
+		return -1
+	operator = argv[1]
+	program = os.path.split(argv[0])[-1]
+	if operator in ('-h' , '--help'):
+		print 'usage %s <operation> [...]'%program
+		print 'operations:'
+		head = '    %s '%program
+		print head + '{-h --help}'
+		print head + '{-V --version}'
+		print head + '{-B --build} [-k backend] [-r root] [-l label] [-u] [-v] [-s]'
+		print head + '{-F --find} [-k backend] [-r root] -num pattern'
+		print head + '{-C --clean} [-d days]'
+		print head + '{-L --list}'
+		print ''
+		head = '    '
+		print '-k backend    Choose backend, which can be one of: cscope, gtags or pycscope.'
+		print '-r root       Root path of source files, use current directory by default.'
+		print '-s            System mode - use /usr/include for #include files (cscope).'
+		print '-l label      Label of gtags which can be one of: native, ctags or pygments.'
+		print '-u            Update database only (gtags backend is required).'
+		print '-num pattern  Go to cscope input field num (counting from 0) and find pattern.'
+		print '-d days       Clean databases modified before given days (default is 30).'
+		print '-v            Build the cross reference database in verbose mode.'
+		if 0:
+			print '-0 pattern    Find this C symbol'
+			print '-1 pattern    Find this definition'
+			print '-2 pattern    Find functions called by this function (cscope/pycscope)'
+			print '-3 pattern    Find functions calling this function'
+			print '-4 pattern    Find this text string'
+			print '-6 pattern    Find this egrep pattern'
+			print '-7 pattern    Find this file'
+			print '-8 pattern    Find files #including this file'
+			print '-9 pattern    Find places where this symbol is assigned a value'
+		print ''
+		return 0
+
+	if operator in ('-V', '--version'):
+		print 'escope: version 1.0.0'
+		return 0
+
+	if not operator in ('-B', '--build', '-F', '--find', '-L', '--list', '-C', '--clean'):
+		errmsg('unknow operation: ' + operator, True)
+		return -1
+
+	es = escope()
+	es.init()
+
+	if operator in ('-L', '--list'):
+		es.list()
+		return 0
+
+	options = {}
+	index = 2
+
+	while index < len(argv):
+		opt = argv[index]
+		if opt in ('-k', '-r', '-l', '-d'):
+			if index + 1 >= len(argv):
+				errmsg('not enough parameter for option: ' + opt, True)
+				return -2
+			options[opt] = argv[index + 1]
+			index += 2
+		elif opt >= '-0' and opt <= '-9' and len(opt) == 2:
+			if index + 1 >= len(argv):
+				errmsg('require pattern for field: ' + opt, True)
+				return -2
+			options['num'] = int(opt[1:])
+			options['name'] = argv[index + 1]
+			index += 2
+		elif opt in ('-s', '-u', '-v'):
+			options[opt] = True
+			index += 1
+		else:
+			errmsg('unknow option: ' + opt, True)
+			return -2
+
+	if not '-k' in options:
+		errmsg('require backend name, use one of cscope, gtags, pycscope after -k', True)
+		return -3
+
+	backend = options['-k']
+	if not backend in ('cscope', 'gtags', 'pycscope'):
+		errmsg('bad backend name, use one of cscope, gtags, pycscope after -k', True)
+		return -3
+
+	root = options.get('-r', os.getcwd())
+	if not os.path.exists(root):
+		errmsg('path does not exist: ' + root, True)
+		return -3
+
+	es.select(root)
+
+	if operator in ('-B', '--build'):
+		label = options.get('-l', '')
+		if backend != 'gtags' and label != '':
+			errmsg('label can only be used with gtags backend', True)
+			return -5
+		label = (label == '') and 'native' or label
+		if not label in ('native', 'ctags', 'pygments'):
+			errmsg('bad label, use one of native, ctags, pygments after -l', True)
+			return -5
+		system = options.get('-s') and True or False
+		update = options.get('-u') and True or False
+		verbose = options.get('-v') and True or False
+		if backend != 'cscope' and system != False:
+			errmsg('system mode can only be used with cscope backend', True)
+			return -5
+		if backend != 'gtags' and update != False:
+			errmsg('update mode can only be used with gtags backend', True)
+			return -5
+		parameter = ''
+		if label in ('ctags', 'pygments'):
+			parameter = label
+		elif system:
+			parameter = '/system'
+		es.generate(backend, parameter, update, verbose)
+		return 0
+
+	if operator in ('-F', '--find'):
+		if not 'num' in options:
+			errmsg('-num pattern required', True)
+			return -6
+		num = options['num']
+		if num in (2, 5, 8, 9) and backend == 'gtags':
+			errmsg('gtags does not support -%d pattern'%num, True)
+			return -6
+		name = options['name']
+		es.find(backend, num, name)
+		return 0
+
+	if operator in ('-C', '--clean'):
+		count = 30
+		es.clean(count)
+		return 0
+
+	return 0
 
 
 #----------------------------------------------------------------------
@@ -856,9 +1067,8 @@ if __name__ == '__main__':
 		sc.init()
 		sc.select('e:/lab/casuald/src/')
 		sc.gtags_generate(label = 'pygments', update = True, verbose = False)
-		print ''
 		sys.stdout.flush()
-		sc.find(0, 'itm_send')
+		sc.find('gtags', 0, 'itm_send')
 		return 0
 
 	def test3():
@@ -872,7 +1082,26 @@ if __name__ == '__main__':
 		sc.cscope_find(3, 'itm_send')
 		sc.pycscope_find(0, 'vimtool')
 
-	test3()
+	def test4():
+		main([__file__, '-h'])
+		#main([__file__, '--version'])
+		#main([__file__, '--clean'])
+		return 0
+
+	def test5():
+		main([__file__, '-B', '-k', 'cscope', '-r', 'e:/lab/casuald'])
+		main([__file__, '-F', '-k', 'cscope', '-r', 'e:/lab/casuald', '-2', 'itm_sendudp'])
+
+	def test6():
+		main([__file__, '-B', '-k', 'pycscope', '-r', 'e:/lab/casuald'])
+		main([__file__, '-F', '-k', 'pycscope', '-r', 'e:/lab/casuald', '-2', 'plog'])
+
+	def test7():
+		main([__file__, '-B', '-k', 'gtags', '-r', 'e:/lab/casuald', '-l', 'pygments', '-v', '-u'])
+		main([__file__, '-F', '-k', 'gtags', '-r', 'e:/lab/casuald', '-1', 'plog'])
+
+	#test4()
+	main()
 
 
 
