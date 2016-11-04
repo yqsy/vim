@@ -131,6 +131,7 @@ class configure (object):
 		self._search_config()
 		self._search_cscope()
 		self._search_gtags()
+		self._search_pycscope()
 		self._search_rc()
 		rc = self.option('default', 'rc', None)
 		if rc and os.path.exists(rc):
@@ -138,6 +139,7 @@ class configure (object):
 		self.config['default']['rc'] = rc
 		self.has_cscope = (self.option('default', 'cscope') != None)
 		self.has_gtags = (self.option('default', 'gtags') != None)
+		self.has_pycscope = (self.option('default', 'pycscope') != None)
 		self.exename = {}
 		if self.has_cscope:
 			cscope = self.option('default', 'cscope')
@@ -155,6 +157,13 @@ class configure (object):
 			self.exename['gtags'] = f('gtags')
 			self.exename['global'] = f('global')
 			self.exename['gtags-cscope'] = f('gtags-cscope')
+		if self.has_pycscope:
+			pycscope = self.option('default', 'pycscope')
+			if self.unix:
+				pycscope = os.path.join(pycscope, 'pycscope')
+			else:
+				pycscope = os.path.join(pycscope, 'pycscope.exe')
+			self.exename['pycscope'] = pycscope
 		self.GetShortPathName = None
 		self.database = None
 
@@ -262,6 +271,36 @@ class configure (object):
 				return 0
 		return -1
 
+	# search pycscope
+	def _search_pycscope (self):
+		def _test_pycscope(path):
+			if not os.path.exists(path):
+				return False
+			if sys.platform[:3] != 'win':
+				if not os.path.exists(os.path.join(path, 'pycscope')):
+					return False
+			else:
+				if not os.path.exists(os.path.join(path, 'pycscope.exe')):
+					return False
+			return True
+		pycscope = self.option('default', 'pycscope')
+		if pycscope:
+			if _test_pycscope(pycscope):
+				pycscope = os.path.abspath(pycscope)
+				self.config['default']['pycscope'] = pycscope
+				return 0
+		self.config['default']['pycscope'] = None
+		pycscope = os.path.abspath(os.path.dirname(__file__))
+		if _test_pycscope(pycscope):
+			self.config['default']['pycscope'] = pycscope
+			return 0
+		PATH = os.environ.get('PATH', '').split(self.unix and ':' or ';')
+		for path in PATH:
+			if _test_pycscope(path):
+				self.config['default']['pycscope'] = os.path.abspath(path)
+				return 0
+		return -1
+
 	# abspath 
 	def abspath (self, path, resolve = False):
 		if path == None:
@@ -349,10 +388,13 @@ class configure (object):
 		return 0
 
 	# execute a gnu global executable
-	def execute (self, name, args, capture = False):
+	def execute (self, name, args, capture = False, printcmd = False):
 		if name in self.exename:
 			name = self.exename[name]
 		name = self.pathshort(name)
+		printcmd = True
+		if printcmd:
+			print [name] + args
 		if not capture in (0, 1, True, False, None):
 			return redirect([name] + args, capture)
 		return execute([name] + args, False, capture)
@@ -363,19 +405,20 @@ class configure (object):
 			os.environ['GTAGSCONF'] = os.path.abspath(self.rc)
 		os.environ['GTAGSFORCECPP'] = '1'
 		PATH = os.environ.get('PATH', '')
-		cscope = self.option('default', 'cscope')
 		gtags = self.option('default', 'gtags')
 		if self.unix:
-			if cscope: PATH = cscope + ':' + PATH
 			if gtags: PATH = gtags + ':' + PATH
 		else:
-			if cscope: PATH = cscope + ';' + PATH
 			if gtags: PATH = gtags + ';' + PATH
 		os.environ['PATH'] = PATH
 		database = self.option('default', 'database', None)
 		if database:
 			database = self.abspath(database, True)
-		else:
+		elif 'ESCOPE' in os.environ:
+			escope = os.environ['ESCOPE']
+			if not escope.lower() in (None, '', '/', '\\', 'c:/', 'c:\\'):
+				database = self.abspath(escope)
+		if database == None:
 			database = self.abspath('~/.local/var/escope', True)
 		if not os.path.exists(database):
 			self.mkdir(database)
@@ -487,6 +530,11 @@ class configure (object):
 		os.environ['GTAGSROOT'] = os.path.abspath(root)
 		os.environ['GTAGSDBPATH'] = os.path.abspath(db)
 		desc = self.load(root)
+		if desc:
+			if not 'root' in desc:
+				desc = None
+			elif not 'db' in desc:
+				desc = None
 		if desc == None:
 			desc = {}
 			desc['root'] = root
@@ -534,6 +582,10 @@ class escope (object):
 		self.config = configure(ininame)
 		self.desc = None
 		self.root = None
+		self.db = None
+		self.cscope_names = ['.c', '.h', '.cpp', '.cc', '.hpp', '.hh']
+		self.cscope_names += ['.go', '.java', '.js', '.m', '.mm']
+		self.ignores = ('CVS', '.git', '.svn', '.hg', '.bzr')
 
 	def init (self):
 		if self.config.database != None:
@@ -549,37 +601,181 @@ class escope (object):
 			return -1
 		self.desc = desc
 		self.root = self.config.abspath(root)
+		self.db = self.desc['db']
 		return 0
 
-	def generate (self, mode, label = None, update = False, verbose = False):
-		if mode in ('0', '', 'cscope'):
-			pass
-		else:
-			if (self.desc == None) or (self.root == None):
-				return -1
-			args = ['--skip-unreadable']
-			if label:
-				args += ['--gtagslabel', label]
-			if verbose:
-				args += ['-v']
-			if update:
-				if not type(update) in (type(''), type(u'')):
-					args += ['-i']
-				else:
-					args += ['--single-update', update]
-			db = self.desc['db']
-			args += [db]
-			cwd = os.getcwd()
-			os.chdir(self.root)
-			self.config.execute('gtags', args)
-			os.chdir(cwd)
+	def abort (self, message, code = 1):
+		sys.stderr.write(message + '\n')
+		sys.stderr.flush()
+		sys.exit(1)
+		return -1
+
+	def check_cscope (self):
+		if not self.config.has_cscope:
+			self.abort('cscope executable cannot be found in $PATH')
+			return False
+		return True
+
+	def check_gtags (self):
+		if not self.config.has_gtags:
+			msg = 'GNU Global (gtags) executables cannot be found in $PATH'
+			self.abort(msg)
+			return False
+		return True
+
+	def check_pycscope (self):
+		if not self.config.has_pycscope:
+			self.abort('pycscope executable cannot be found in $PATH')
+			return False
+		return True
+
+	def find (self, path, extnames = None):
+		result = []
+		if extnames:
+			if not self.config.unix:
+				extnames = [ n.lower() for n in extnames ]
+			extnames = tuple(extnames)
+		for root, dirs, files in os.walk(path):
+			for name in files:
+				if extnames:
+					ext = os.path.splitext(name)[-1]
+					if not self.config.unix:
+						ext = ext.lower()
+					if not ext in extnames:
+						continue
+				result.append(os.path.abspath(os.path.join(root, name)))
+		return result
+
+	def cscope_generate (self, include = None, kernel = False, verbose = False):
+		if not self.check_cscope():
+			return -1
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -2
+		names = self.find(self.root, self.cscope_names)
+		listname = os.path.join(self.db, 'cscope.txt')
+		outname = os.path.join(self.db, 'cscope.out')
+		fp = open(listname, 'w')
+		fp.write('\n'.join(names))
+		fp.close()
+		args = ['-b']
+		if kernel:
+			args += ['-k']
+		if include:
+			for inc in include:
+				args += ['-I', os.path.join(self.root, inc)]
+		if self.config.unix:
+			args += ['-q']
+		args += ['-i', 'cscope.txt']
+		savecwd = os.getcwd()
+		os.chdir(self.db)
+		self.config.execute('cscope', args)
+		os.chdir(savecwd)
 		self.desc['mtime'] = self.config.timestamp()
 		self.desc['version'] = self.desc['version'] + 1
 		self.config.save(self.desc['root'], self.desc)
 		return 0
 
-	def find (self, mode, name):
+	def gtags_generate (self, label = None, update = False, verbose = False):
+		if not self.check_gtags():
+			return -1
 		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -2
+		args = ['--skip-unreadable']
+		if label:
+			args += ['--gtagslabel', label]
+		if verbose:
+			args += ['-v']
+		if update:
+			if not type(update) in (type(''), type(u'')):
+				args += ['-i']
+			else:
+				args += ['--single-update', update]
+		db = self.desc['db']
+		args += [db]
+		cwd = os.getcwd()
+		os.chdir(self.root)
+		self.config.execute('gtags', args)
+		os.chdir(cwd)
+		self.desc['mtime'] = self.config.timestamp()
+		self.desc['version'] = self.desc['version'] + 1
+		self.config.save(self.desc['root'], self.desc)
+		return 0
+
+	def pycscope_generate (self, verbose = False):
+		if not self.check_pycscope():
+			return -1
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -2
+		names = self.find(self.root, ['.py', '.pyw'])
+		listname = os.path.join(self.db, 'pycscope.txt')
+		outname = os.path.join(self.db, 'pycscope.out')
+		fp = open(listname, 'w')
+		fp.write('\n'.join(names))
+		fp.close()
+		args = ['-i', 'pycscope.txt', '-f', 'pycscope.out']
+		savecwd = os.getcwd()
+		os.chdir(self.db)
+		self.config.execute('pycscope', args)
+		os.chdir(savecwd)
+		self.desc['mtime'] = self.config.timestamp()
+		self.desc['version'] = self.desc['version'] + 1
+		self.config.save(self.desc['root'], self.desc)
+		return 0
+
+	def cscope_translate (self, where, text):
+		text = text.rstrip('\r\n')
+		if text == '':
+			return -1
+		p1 = text.find(' ')
+		if p1 < 0:
+			return -2
+		p2 = text.find(' ', p1 + 1)
+		if p2 < 0:
+			return -3
+		p3 = text.find(' ', p2 + 1)
+		if p3 < 0:
+			return -4
+		cname = text[:p1]
+		csymbol = text[p1 + 1:p2]
+		cline = text[p2 + 1:p3]
+		ctext = text[p3 + 1:]
+		output = '%s:%s: <<%s>> %s'%(cname, cline, csymbol, ctext)
+		sys.stdout.write(output + '\n')
+		sys.stdout.flush()
+		return 0
+
+	def cscope_find (self, mode, name):
+		if not self.check_cscope():
+			return -1
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -2
+		args = ['-dl', '-L', '-f', 'cscope.out', '-' + str(mode), name]
+		savecwd = os.getcwd()
+		os.chdir(self.db)
+		self.config.execute('cscope', args, self.cscope_translate)
+		os.chdir(savecwd)
+		return 0
+
+	def pycscope_find (self, mode, name):
+		if not self.check_cscope():
+			return -1
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -2
+		args = ['-dl', '-L', '-f', 'pycscope.out', '-' + str(mode), name]
+		savecwd = os.getcwd()
+		os.chdir(self.db)
+		self.config.execute('cscope', args, self.cscope_translate)
+		os.chdir(savecwd)
+		return 0
+
+	def gtags_find (self, mode, name):
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
 			return -1
 		args = ['-a', '--result', 'grep']
 		if mode in (0, '0', 's', 'symbol'):
@@ -596,9 +792,46 @@ class escope (object):
 		elif mode in (7, '7', 'f', 'file'):
 			self.config.execute('global', args + ['-P', '-e', name])
 		else:
-			print 'unsupported'
+			sys.stderr.write('unsupported')
+			sys.stderr.flush()
 		return 0
 
+	def generate (self, backend, update = False, verbose = False):
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -1
+		backend = backend.split('/')
+		engine = backend[0]
+		parameter = len(backend) >= 2 and backend[1] : ''
+		if engine in ('cscope', 'cs'):
+			kernel = True
+			if parameter.lower() in ('1', 'true', 'sys', 'system'):
+				kernel = False
+			return self.cscope_generate(None, kernel, verbose)
+		elif engine in ('pycscope', 'py'):
+			return self.pycscope_generate(verbose)
+		elif engine in ('gtags', 'global', 'gnu'):
+			return self.gtags_generate(parameter, update, verbose)
+		else:
+			self.abort('unknow backend: %s'%backend)
+		return 0
+
+	def find (self, backend, mode, name):
+		if (self.desc == None) or (self.root == None):
+			self.abort('Project has not been selected')
+			return -1
+		backend = backend.split('/')
+		engine = backend[0]
+		parameter = len(backend) >= 2 and backend[1] : ''
+		if engine in ('cscope', 'cs'):
+			return self.cscope_find(mode, name)
+		elif engine in ('pycscope', 'py'):
+			return self.pycscope_find(mode, name)
+		elif engine in ('gtags', 'global', 'gnu'):
+			return self.gtags_find(mode, name)
+		else:
+			self.abort('unknow backend: %s'%backend)
+		return 0
 
 
 #----------------------------------------------------------------------
@@ -622,18 +855,22 @@ if __name__ == '__main__':
 		sc = escope()
 		sc.init()
 		sc.select('e:/lab/casuald/src/')
-		sc.generate(label = 'pygments', update = True, verbose = False)
+		sc.gtags_generate(label = 'pygments', update = True, verbose = False)
 		print ''
 		sys.stdout.flush()
 		sc.find(0, 'itm_send')
 		return 0
 
 	def test3():
+		os.environ['ESCOPE'] = 'd:/temp/escope'
 		sc = escope()
+		os.chdir('e:/lab/casuald/src')
 		sc.init()
-		print sc.config.has_cscope
-		print sc.config.has_gtags
-		sc.config.execute('cscope', ['--help'])
+		sc.select('e:/lab/casuald/src')
+		sc.cscope_generate()
+		sc.pycscope_generate()
+		sc.cscope_find(3, 'itm_send')
+		sc.pycscope_find(0, 'vimtool')
 
 	test3()
 
