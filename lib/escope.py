@@ -404,7 +404,7 @@ class configure (object):
 
 	# initialize environment
 	def init (self):
-		if os.path.exists(self.rc):
+		if self.rc and os.path.exists(self.rc):
 			os.environ['GTAGSCONF'] = os.path.abspath(self.rc)
 		os.environ['GTAGSFORCECPP'] = '1'
 		PATH = os.environ.get('PATH', '')
@@ -1021,7 +1021,9 @@ def main(argv = None):
 		if label in ('ctags', 'pygments'):
 			parameter = label
 		elif system:
-			parameter = '/system'
+			parameter = 'system'
+		if verbose:
+			sys.stdout.write('Buiding %s cross reference database: %s'%(backend, root)
 		es.generate(backend, parameter, update, verbose)
 		return 0
 
