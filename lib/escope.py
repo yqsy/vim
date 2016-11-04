@@ -1023,7 +1023,8 @@ def main(argv = None):
 		elif system:
 			parameter = 'system'
 		if verbose:
-			sys.stdout.write('Buiding %s cross reference database: %s'%(backend, root)
+			sys.stdout.write('Buiding %s cross reference database: %s'%(backend, root))
+			sys.stdout.flush()
 		es.generate(backend, parameter, update, verbose)
 		return 0
 
