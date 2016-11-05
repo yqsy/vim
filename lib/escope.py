@@ -926,7 +926,7 @@ def main(argv = None):
 		print '-k backend    Choose backend, which can be one of: cscope, gtags or pycscope.'
 		print '-r root       Root path of source files, use current directory by default.'
 		print '-s            System mode - use /usr/include for #include files (cscope).'
-		print '-l label      Label of gtags which can be one of: native, ctags or pygments.'
+		print '-l label      Label of gtags which can be : native, ctags, pygments ... etc.'
 		print '-u            Update database only (gtags backend is required).'
 		print '-num pattern  Go to cscope input field num (counting from 0) and find pattern.'
 		print '-d days       Clean databases modified before given days (default is 30).'
@@ -1006,9 +1006,6 @@ def main(argv = None):
 			errmsg('label can only be used with gtags backend', True)
 			return -5
 		label = (label == '') and 'native' or label
-		if not label in ('native', 'ctags', 'pygments'):
-			errmsg('bad label, use one of native, ctags, pygments after -l', True)
-			return -5
 		system = options.get('-s') and True or False
 		update = options.get('-u') and True or False
 		verbose = options.get('-v') and True or False
@@ -1018,11 +1015,10 @@ def main(argv = None):
 		if backend != 'gtags' and update != False:
 			errmsg('update mode can only be used with gtags backend', True)
 			return -5
-		parameter = ''
-		if label in ('ctags', 'pygments'):
-			parameter = label
-		elif system:
+		if backend == 'cscope' and system:
 			parameter = 'system'
+		elif backend == 'gtags':
+			parameter = label
 		if verbose:
 			sys.stdout.write('Buiding %s database for: %s\n'%(backend, root))
 			sys.stdout.flush()
