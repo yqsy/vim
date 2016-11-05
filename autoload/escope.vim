@@ -23,8 +23,8 @@ if !exists('g:escope_database')
 endif
 
 if !exists('g:escope_rootmarks')
-    let g:escope_rootmarks = ['.project', '.git', '.hg', '.svn', '.bzr']
-    let g:escope_rootmarks += ['_darcs', 'build.xml']
+    let g:escope_rootmarks = ['.project', '.git', '.hg', '.svn', '.root']
+    let g:escope_rootmarks += ['_darcs', 'build.xml', '.bzr']
 endif
 
 
@@ -129,9 +129,11 @@ function! escope#get_root(path)
             return '' " skip any fugitive buffers early
         endif
 		let pivot = fullname
+		if !isdirectory(pivot)
+			let pivot = fnamemodify(pivot, ':h')
+		endif
 		while 1
 			let prev = pivot
-			let pivot = fnamemodify(pivot, ':h')
 			for marker in g:escope_rootmarks
 				let newname = s:PathJoin(pivot, marker)
 				if filereadable(newname)
@@ -140,6 +142,7 @@ function! escope#get_root(path)
 					return pivot
 				endif
 			endfor
+			let pivot = fnamemodify(pivot, ':h')
 			if pivot == prev
 				break
 			endif

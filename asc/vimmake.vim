@@ -1280,8 +1280,8 @@ endfunc
 " guess root, '' as current direct, '%' as current buffer
 "----------------------------------------------------------------------
 if !exists('g:vimmake_rootmarks')
-    let g:vimmake_rootmarks = ['.project', '.git', '.hg', '.svn', '.bzr']
-    let g:vimmake_rootmarks += ['_darcs', 'build.xml']
+    let g:vimmake_rootmarks = ['.project', '.git', '.hg', '.svn', '.root']
+    let g:vimmake_rootmarks += ['_darcs', 'build.xml', '.bzr']
 endif
 
 function! vimmake#get_root(path)
@@ -1300,9 +1300,11 @@ function! vimmake#get_root(path)
             return '' " skip any fugitive buffers early
         endif
 		let pivot = fullname
+		if !isdirectory(pivot)
+			let pivot = fnamemodify(pivot, ':h')
+		endif
 		while 1
 			let prev = pivot
-			let pivot = fnamemodify(pivot, ':h')
 			for marker in g:vimmake_rootmarks
 				let newname = s:PathJoin(pivot, marker)
 				if filereadable(newname)
@@ -1311,6 +1313,7 @@ function! vimmake#get_root(path)
 					return pivot
 				endif
 			endfor
+			let pivot = fnamemodify(pivot, ':h')
 			if pivot == prev
 				break
 			endif
