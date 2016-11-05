@@ -467,7 +467,7 @@ function! s:Vimmake_Build_OnFinish(what)
 		call s:Vimmake_Build_QuickReset()
 	endif
 	if g:vimmake_build_bell != 0
-		exec 'norm! \<esc>'
+		exec "norm! \<esc>"
 	endif
 	redrawstatus!
 	redraw

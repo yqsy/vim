@@ -111,12 +111,6 @@ if has('gui_running')
 		noremap <m-\|> :call Toggle_Transparency(15)<cr>
 	endif
 
-	noremap <silent><M-Up> :call Tools_QuickfixCursor(0)<cr>
-	noremap <silent><M-Down> :call Tools_QuickfixCursor(1)<cr>
-	noremap <silent><M-PageUp> :call Tools_QuickfixCursor(2)<cr>
-	noremap <silent><M-PageDown> :call Tools_QuickfixCursor(3)<cr>
-	noremap <silent><M-Home> :call Tools_QuickfixCursor(4)<cr>
-	noremap <silent><M-End> :call Tools_QuickfixCursor(5)<cr>
 endif
 
 
@@ -146,6 +140,23 @@ inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
 	exec "set <S-F4>=\e[25~"
+endif
+
+
+
+"----------------------------------------------------------------------
+" GUI/Terminal 
+"----------------------------------------------------------------------
+noremap <silent><M-[> :call Tools_QuickfixCursor(2)<cr>
+noremap <silent><M-]> :call Tools_QuickfixCursor(3)<cr>
+noremap <silent><M-{> :call Tools_QuickfixCursor(4)<cr>
+noremap <silent><M-}> :call Tools_QuickfixCursor(5)<cr>
+
+if (!has('gui_running')) && (!has('nvim'))
+	exec "set <m-[>=\e]{0}[~"
+	exec "set <m-]>=\e]{0}]~"
+	exec "set <m-{>=\e]{0}{~"
+	exec "set <m-}>=\e]{0}}~"
 endif
 
 
@@ -211,6 +222,8 @@ nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <space>gq :AsyncStop<cr>
 nnoremap <space>gQ :AsyncStop!<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
+nnoremap <silent><space>gf :call Tools_QuickfixCursor(3)<cr>
+nnoremap <silent><space>gb :call Tools_QuickfixCursor(2)<cr>
 
 if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
