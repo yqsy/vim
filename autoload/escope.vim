@@ -100,6 +100,12 @@ function! escope#fullname(f)
 	if s:escope_windows
 		let f = substitute(f, "\\", '/', 'g')
 	endif
+	if len(f) > 1
+		let size = len(f)
+		if f[size - 1] == '/'
+			let f = strpart(f, 0, size - 1)
+		endif
+	endif
 	return f
 endfunc
 
