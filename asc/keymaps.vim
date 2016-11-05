@@ -110,6 +110,13 @@ if has('gui_running')
 	else
 		noremap <m-\|> :call Toggle_Transparency(15)<cr>
 	endif
+
+	noremap <silent><M-Up> :call Tools_QuickfixCursor(0)<cr>
+	noremap <silent><M-Down> :call Tools_QuickfixCursor(1)<cr>
+	noremap <silent><M-PageUp> :call Tools_QuickfixCursor(2)<cr>
+	noremap <silent><M-PageDown> :call Tools_QuickfixCursor(3)<cr>
+	noremap <silent><M-Home> :call Tools_QuickfixCursor(4)<cr>
+	noremap <silent><M-End> :call Tools_QuickfixCursor(5)<cr>
 endif
 
 
@@ -139,6 +146,14 @@ inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
 	exec "set <S-F4>=\e[25~"
+	exec "set <M-PageUp>=\e]{0}pu~"
+	exec "set <M-PageDown>=\e]{0}pd~"
+	exec "set <M-Home>=\e]{0}hm~"
+	exec "set <M-End>=\e]{0}ed~"
+	noremap <silent><M-PageUp> :call Tools_QuickfixCursor(2)<cr>
+	noremap <silent><M-PageDown> :call Tools_QuickfixCursor(3)<cr>
+	noremap <silent><M-Home> :call Tools_QuickfixCursor(4)<cr>
+	noremap <silent><M-End> :call Tools_QuickfixCursor(5)<cr>
 endif
 
 

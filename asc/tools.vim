@@ -484,5 +484,33 @@ function! Tools_SwitchNumber()
 endfunc
 
 
+" 0:up, 1:down, 2:pgup, 3:pgdown 4:top, 5:bottom, 
+function! Tools_QuickfixCursor(mode)
+	function! s:quickfix_cursor(mode)
+		if &buftype == 'quickfix'
+			if a:mode == 0
+				exec "normal! \<c-y>"
+			elseif a:mode == 1
+				exec "normal! \<c-e>"
+			elseif a:mode == 2
+				exec "normal! ".winheight('.')."\<c-y>"
+			elseif a:mode == 3
+				exec "normal! ".winheight('.')."\<c-e>"
+			elseif a:mode == 4
+				normal! gg
+			elseif a:mode == 5
+				normal! G
+			endif
+		endif
+	endfunc
+	let l:winnr = winnr()			
+	silent! windo call s:quickfix_cursor(a:mode)
+	silent! exec ''.l:winnr.'wincmd w'
+endfunc
+
+
+
+
+
 
 
