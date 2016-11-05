@@ -162,6 +162,7 @@ set matchtime=3
 noremap <silent>\w :w<cr>
 noremap <silent>\q :q<cr>
 noremap <silent>\l :close<cr>
+noremap <silent>\L :close!<cr>
 
 " window management
 noremap <tab>h <c-w>h

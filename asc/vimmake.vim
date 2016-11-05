@@ -1359,7 +1359,7 @@ function! vimmake#grep(text, cwd)
 	else
 		let l:inc = ''
 		for l:item in g:vimmake_grep
-			let l:inc .= " --include \\*." . l:item
+			let l:inc .= " --include=*." . l:item
 		endfor
         if a:cwd == '.' || a:cwd == ''
             let l:inc .= ' *'
