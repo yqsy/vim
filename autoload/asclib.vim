@@ -41,7 +41,6 @@ function! asckit#smooth_scroll_down(dist, duration, speed)
 	call s:smooth_scroll('d', a:dist, a:duration, a:speed)
 endfunc
 
-
 noremap <silent> <m-u> :call asckit#smooth_scroll_up(&scroll, 0, 2)<CR>
 noremap <silent> <m-d> :call asckit#smooth_scroll_down(&scroll, 0, 2)<CR>
 noremap <silent> <m-U> :call asckit#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
