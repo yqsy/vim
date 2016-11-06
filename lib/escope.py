@@ -1015,6 +1015,7 @@ def main(argv = None):
 		if backend != 'gtags' and update != False:
 			errmsg('update mode can only be used with gtags backend', True)
 			return -5
+		parameter = ''
 		if backend == 'cscope' and system:
 			parameter = 'system'
 		elif backend == 'gtags':
