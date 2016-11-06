@@ -1589,6 +1589,7 @@ function! vimmake#update_tags(cwd, mode, outname)
         let l:options = {}
         let l:options['cwd'] = l:cwd
         let l:command = 'ctags -R -f '. shellescape(l:ctags)
+		let l:parameters .= '--sort=yes '
         call vimmake#run('', l:options, l:command . l:parameters . ' .')
 	endif
 	if a:mode == 'cscope' || a:mode == 'pycscope'
