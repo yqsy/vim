@@ -110,7 +110,7 @@ if has('gui_running')
 	else
 		noremap <m-\|> :call Toggle_Transparency(15)<cr>
 	endif
-
+	noremap <silent><m-\> :call asclib#preview_tag(expand("<cword>"))<cr>
 endif
 
 

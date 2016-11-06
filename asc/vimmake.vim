@@ -1498,11 +1498,11 @@ function! vimmake#keymap()
 	
 	" cscope update
 	noremap <leader>cz1 :call vimmake#update_tags('', 'ctags', '.tags')<cr>
-	noremap <leader>cz2 :call vimmake#update_tags('', 'cscope', '.cscope')<cr>
+	noremap <leader>cz2 :call vimmake#update_tags('', 'cs', '.cscope')<cr>
 	noremap <leader>cz3 :call vimmake#update_tags('!', 'ctags', '.tags')<cr>
-	noremap <leader>cz4 :call vimmake#update_tags('!', 'cscope', '.cscope')<cr>
-	noremap <leader>cz5 :call vimmake#update_tags('', 'pycscope', '.cscopy')<cr>
-	noremap <leader>cz6 :call vimmake#update_tags('!', 'pycscope', '.cscopy')<cr>
+	noremap <leader>cz4 :call vimmake#update_tags('!', 'cs', '.cscope')<cr>
+	noremap <leader>cz5 :call vimmake#update_tags('', 'py', '.cscopy')<cr>
+	noremap <leader>cz6 :call vimmake#update_tags('!', 'py', '.cscopy')<cr>
 endfunc
 
 command! -nargs=0 VimmakeKeymap call vimmake#keymap()
@@ -1510,6 +1510,7 @@ command! -nargs=0 VimmakeKeymap call vimmake#keymap()
 function! vimmake#load()
 endfunc
 
+" toggle quickfix window
 function! vimmake#toggle_quickfix(size, ...)
 	let l:mode = (a:0 == 0)? 2 : (a:1)
 	function! s:WindowCheck(mode)
@@ -1551,6 +1552,7 @@ function! vimmake#toggle_quickfix(size, ...)
 endfunc
 
 
+" update filelist
 function! vimmake#update_filelist(outname)
 	let l:names = ['*.c', '*.cpp', '*.cc', '*.cxx']
 	let l:names += ['*.h', '*.hpp', '*.hh', '*.py', '*.pyw', '*.java', '*.js']
@@ -1572,6 +1574,10 @@ function! vimmake#update_filelist(outname)
 	redraw!
 endfunc
 
+if !exists('g:vimmake_ctags_flags')
+	let g:vimmake_ctags_flags = '--fields=+iaS --extra=+q --c++-kinds=+px -n'
+endif
+
 function! vimmake#update_tags(cwd, mode, outname)
     if a:cwd == '!'
         let l:cwd = vimmake#get_root('%')
@@ -1580,19 +1586,19 @@ function! vimmake#update_tags(cwd, mode, outname)
         let l:cwd = fnamemodify(l:cwd, ':p:h')
     endif
     let l:cwd = substitute(l:cwd, '\\', '/', 'g')
-	if a:mode == 'ctags'
+	if a:mode == 'ctags' || a:mode == 'ct'
         let l:ctags = s:PathJoin(l:cwd, a:outname)
 		if filereadable(l:ctags) 
 			try | call delete(l:ctags) | catch | endtry
 		endif
-		let l:parameters = ' --fields=+iaS --extra=+q --c++-kinds=+px '
         let l:options = {}
         let l:options['cwd'] = l:cwd
         let l:command = 'ctags -R -f '. shellescape(l:ctags)
+		let l:parameters = ' '. g:vimmake_ctags_flags. ' '
 		let l:parameters .= '--sort=yes '
         call vimmake#run('', l:options, l:command . l:parameters . ' .')
 	endif
-	if a:mode == 'cscope' || a:mode == 'pycscope'
+	if index(['cscope', 'cs', 'pycscope', 'py'], a:mode) >= 0
 		let l:fullname = s:PathJoin(l:cwd, a:outname)
 		let l:fullname = vimmake#fullname(l:fullname)
 		let l:fullname = substitute(l:fullname, '\\', '/', 'g')
@@ -1605,10 +1611,10 @@ function! vimmake#update_tags(cwd, mode, outname)
 		if filereadable(l:fullname) 
 			try | call delete(l:fullname) | catch | endtry
 		endif
-		if a:mode == 'cscope'
+		if a:mode == 'cscope' || a:mode == 'cs'
 			let l:fullname = shellescape(l:fullname)
 			call vimmake#run('', l:options, 'cscope -b -R -f '.l:fullname)
-		elseif a:mode == 'pycscope'
+		elseif a:mode == 'pycscope' || a:mode == 'py'
 			let l:fullname = shellescape(l:fullname)
 			call vimmake#run('', l:options, 'pycscope -R -f '.l:fullname)
 		endif

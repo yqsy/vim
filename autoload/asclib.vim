@@ -9,46 +9,6 @@
 
 
 "----------------------------------------------------------------------
-" basic interface
-"----------------------------------------------------------------------
-function! s:smooth_scroll(dir, dist, duration, speed)
-	for i in range(a:dist/a:speed)
-		let start = reltime()
-		if a:dir ==# 'd'
-			exec 'normal! '. a:speed."\<C-e>".a:speed."j"
-		else
-			exec 'normal! '. a:speed."\<C-y>".a:speed."k"
-		endif
-		redraw
-		let elapsed = s:get_ms_since(start)
-		let snooze = float2nr(a:duration - elapsed)
-		if snooze > 0
-			exec "sleep ".snooze."m"
-		endif
-	endfor
-endfunc
-
-function! s:get_ms_since(time)
-	let cost = split(reltimestr(reltime(a:time)), '\.')
-	return str2nr(cost[0]) * 1000 + str2nr(cost[1]) / 1000.0
-endfunc
-
-function! asclib#smooth_scroll_up(dist, duration, speed)
-	call s:smooth_scroll('u', a:dist, a:duration, a:speed)
-endfunc
-
-function! asclib#smooth_scroll_down(dist, duration, speed)
-	call s:smooth_scroll('d', a:dist, a:duration, a:speed)
-endfunc
-
-noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
-noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
-noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
-noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
-
-
-
-"----------------------------------------------------------------------
 " window basic
 "----------------------------------------------------------------------
 
@@ -224,11 +184,9 @@ function! asclib#window_new(position, size)
 			exec 'rightbelow '.a:size.'vnew'
 		endif
 	else
-		retval = -1
+		rightbelow vnew
 	endif
-	if retval == 0
-		let retval = asclib#window_uid('%', '%')
-	endif
+	let retval = asclib#window_uid('%', '%')
 	windo call s:window_new_action(1)
 	call asclib#window_goto_uid(uid)
 	return retval
@@ -255,7 +213,7 @@ endif
 function! asclib#preview_check()
 	function! s:preview_check()
 		if &previewwindow
-			let s:preview_check_result = 1
+			let s:preview_check_result = asclib#window_uid('%', '%')
 		endif
 	endfunc
 	let l:winnr = winnr()
@@ -278,9 +236,9 @@ function! asclib#preview_open()
 			endif
 		endif
 	endfunc
-	if asclib#preview_check() == 0
+	let pid = asclib#preview_check()
+	if pid == 0
 		let uid = asclib#window_uid('%', '%')
-		let pid = 0
 		let pos = g:asclib_preview_position
 		if pos == 'top' || pos == 'bottom' || pos == '0' || pos == '1'
 			let pid = asclib#window_new(pos, g:asclib_preview_size)
@@ -293,6 +251,7 @@ function! asclib#preview_open()
 		endif
 		call asclib#window_goto_uid(uid)
 	endif
+	return pid
 endfunc
 
 " close preview window
@@ -300,14 +259,201 @@ function! asclib#preview_close()
 	pclose
 endfunc
 
+" echo error message
+function! asclib#errmsg(msg)
+	echohl ErrorMsg
+	echom a:msg
+	echohl NONE
+endfunc
+
+" echo cmdline message
+function! asclib#cmdmsg(content, highlight)
+	let saveshow = &showmode
+	set noshowmode
+    let wincols = &columns
+    let allowedheight = &lines/5
+    let statusline = (&laststatus==1 && winnr('$')>1) || (&laststatus==2)
+    let reqspaces_lastline = (statusline || !&ruler) ? 12 : 29
+    let width = len(a:content)
+    let limit = wincols - reqspaces_lastline
+	let allowedheight = &cmdheight
+	let l:content = a:content
+	if width + 1 > limit
+		let l:content = strpart(l:content, 0, limit - 1)
+		let width = len(l:content)
+	endif
+	if a:highlight != 0
+		echohl Type
+		echo l:content
+		echohl NONE
+	else
+		echo l:content
+	endif
+	if saveshow != 0
+		set showmode
+	endif
+endfunc
+
 
 "----------------------------------------------------------------------
-" 
+" taglist
+"----------------------------------------------------------------------
+function! asclib#taglist(pattern)
+    let ftags = []
+    try
+        let ftags = taglist(a:pattern)
+    catch /^Vim\%((\a\+)\)\=:E/
+        " if error occured, reset tagbsearch option and try again.
+        let bak = &tagbsearch
+        set notagbsearch
+        let ftags = taglist(a:pattern)
+        let &tagbsearch = bak
+    endtry
+    return ftags
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" easy tagname
+"----------------------------------------------------------------------
+function! asclib#tagfind(tagname)
+	let pattern = escape(a:tagname, '[\*~^')
+	let result = asclib#taglist("^". pattern . "$")
+	if result == []
+		if pattern !~ '^\(catch\|if\|for\|while\|switch\)$'
+			let result = asclib#taglist('::'. pattern .'$')
+		endif
+	endif
+	return result
+endfunc
+
+
+"----------------------------------------------------------------------
+" display matched tag in the preview window
 "----------------------------------------------------------------------
 function! asclib#preview_tag(tagname)
-	let l:winnr = winnr()
-
-	silent! exec ''.l:winnr.'wincmd w'
+	if &previewwindow
+		return 0
+	endif
+	let uid = asclib#window_uid('%', '%')
+	let pid = asclib#preview_check()
+	let opt = {"tagname":""}
+	let varname = 'asclib_preview_tag_cache'
+	let reuse = 0
+	let index = 0
+	if pid > 0
+		let [l:tabnr, l:winnr] = asclib#window_find(pid)
+		let saveopt = gettabwinvar(l:tabnr, l:winnr, varname)
+		if type(saveopt) == type({})
+			let l:tagname = get(saveopt, 'tagname', '')
+			if l:tagname == a:tagname
+				let opt = saveopt
+				let reuse = 1
+			endif
+		endif
+	endif
+	if reuse == 0
+		let opt.tagname = a:tagname
+		let opt.taglist = asclib#tagfind(a:tagname)
+		let opt.index = 0
+		if len(opt.taglist) > 0 && pid > 0
+			call settabwinvar(l:tabnr, l:winnr, varname, opt)
+		endif
+	else
+		let opt.index += 1
+		if opt.index >= len(opt.taglist)
+			let opt.index = 0
+		endif
+	endif
+	if len(opt.taglist) == 0 
+		call asclib#errmsg('E257: asclib: tag not find "'. a:tagname.'"')
+		return 1
+	endif
+	if opt.index >= len(opt.taglist)
+		call asclib#errmsg('E257: asclib: index error')
+		return 2
+	endif
+	let taginfo = opt.taglist[opt.index]
+	let filename = taginfo.filename
+	if !filereadable(filename)
+		call asclib#errmsg('E484: Can not open file '.filename)
+		return 3
+	endif
+	if pid == 0
+		let pid = asclib#preview_open()
+		let [l:tabnr, l:winnr] = asclib#window_find(pid)
+	endif
+	call settabwinvar(l:tabnr, l:winnr, varname, opt)
+	call asclib#window_goto_uid(uid)
+	if 1
+		let saveview = winsaveview()
+		silent exec 'pedit '.fnameescape(filename)
+		call winrestview(saveview)
+		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
+	else
+		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
+		silent exec 'e! '.fnameescape(filename)
+	endif
+	if &previewwindow
+		match none
+	endif
+	if has("folding")
+		silent! .foldopen
+	endif
+	normal! gg
+	silent! exec taginfo.cmd
+	normal! zz
+	if 1
+		call search("$", "b")
+		call search(escape(a:tagname, '[\*~^'))
+		hi previewWord term=bold ctermbg=green ctermfg=black guibg=green guifg=black
+		exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+	endif
+	call asclib#window_goto_uid(uid)
+	let text = taginfo.name
+	let text.= ' ('.(opt.index + 1).'/'.len(opt.taglist).') '
+	let text.= filename
+	call asclib#cmdmsg(text, 1)
 endfunc
+
+
+"----------------------------------------------------------------------
+" smooth interface
+"----------------------------------------------------------------------
+function! s:smooth_scroll(dir, dist, duration, speed)
+	for i in range(a:dist/a:speed)
+		let start = reltime()
+		if a:dir ==# 'd'
+			exec 'normal! '. a:speed."\<C-e>".a:speed."j"
+		else
+			exec 'normal! '. a:speed."\<C-y>".a:speed."k"
+		endif
+		redraw
+		let elapsed = s:get_ms_since(start)
+		let snooze = float2nr(a:duration - elapsed)
+		if snooze > 0
+			exec "sleep ".snooze."m"
+		endif
+	endfor
+endfunc
+
+function! s:get_ms_since(time)
+	let cost = split(reltimestr(reltime(a:time)), '\.')
+	return str2nr(cost[0]) * 1000 + str2nr(cost[1]) / 1000.0
+endfunc
+
+function! asclib#smooth_scroll_up(dist, duration, speed)
+	call s:smooth_scroll('u', a:dist, a:duration, a:speed)
+endfunc
+
+function! asclib#smooth_scroll_down(dist, duration, speed)
+	call s:smooth_scroll('d', a:dist, a:duration, a:speed)
+endfunc
+
+noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
+noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
+noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
+noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
 
 
