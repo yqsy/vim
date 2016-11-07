@@ -256,7 +256,7 @@ endfunc
 
 " close preview window
 function! asclib#preview_close()
-	pclose
+	silent pclose
 endfunc
 
 " echo error message
@@ -415,6 +415,38 @@ function! asclib#preview_tag(tagname)
 	let text.= ' ('.(opt.index + 1).'/'.len(opt.taglist).') '
 	let text.= filename
 	call asclib#cmdmsg(text, 1)
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" goto preview file
+"----------------------------------------------------------------------
+function! asclib#preview_goto(bang)
+	let uid = asclib#window_uid('%', '%')
+	let pid = asclib#preview_check()
+	if pid == 0 || &previewwindow != 0 || uid == pid
+		return
+	endif
+	let [l:tabnr, l:winnr] = asclib#window_find(pid)
+	silent! wincmd P
+	let l:bufnr = winbufnr(l:winnr)
+	let l:line = line('.')
+	call asclib#window_goto_uid(uid)
+	if l:bufnr != winbufnr('%')
+		if a:bang == '' || a:bang == '0'
+			silent exec 'b '.l:bufnr 
+		else
+			silent exec 'b! '.l:bufnr
+		endif
+	endif
+	if winbufnr('%') == l:bufnr
+		echo "fuck"
+		silent exec ''.l:line
+		silent normal zz
+	else
+		echo "suck"
+	endif
 endfunc
 
 

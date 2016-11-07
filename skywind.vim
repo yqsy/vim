@@ -2,7 +2,7 @@
 "- Global Settings
 "----------------------------------------------------------------------
 let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-let &tags .= ',./.tags;,.tags,' . expand('~/.vim/tags/standard.tags')
+let &tags = './.tags;,.tags,' . expand('~/.vim/tags/standard.tags')
 
 filetype plugin indent on
 set hlsearch

@@ -110,7 +110,6 @@ if has('gui_running')
 	else
 		noremap <m-\|> :call Toggle_Transparency(15)<cr>
 	endif
-	noremap <silent><m-\> :call asclib#preview_tag(expand("<cword>"))<cr>
 endif
 
 
@@ -132,14 +131,22 @@ noremap <silent><space>tt :TagbarToggle<cr>
 noremap <silent><space>tq :call Toggle_QuickFix(6)<cr>
 noremap <silent><space>tb :TagbarToggle<cr>
 
-noremap <silent><S-F10> :call Toggle_Taglist()<cr>
-inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
-noremap <silent><C-F10> :call Toggle_Tagbar()<cr>
-inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
+"noremap <silent><C-F10> :call Toggle_Taglist()<cr>
+"inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
+noremap <silent><S-F10> :call Toggle_Tagbar()<cr>
+inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
+noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
+noremap <silent><M-'> :call asclib#preview_goto('')<cr>
+noremap <silent><M-:> :call asclib#preview_close()<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
 	exec "set <S-F4>=\e[25~"
+	if !has('nvim')
+		exec "set <M-;>=\e]{0};~"
+		exec "set <M-'>=\e]{0}'~"
+		exec "set <M-:>=\e]{0}:~"
+	endif
 endif
 
 
