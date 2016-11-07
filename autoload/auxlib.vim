@@ -29,3 +29,48 @@ __EOF__
 
 
 
+
+"----------------------------------------------------------------------
+" tweak
+"----------------------------------------------------------------------
+let g:auxlib_tweak_alpha = 255
+
+function! auxlib#tweak_set_alpha(alpha)
+	python import vim
+	python tweak = auxlib.VimTweakGetInstance()
+	python tweak.SetAlpha(vim.eval('a:alpha'))
+	let g:auxlib_tweak_alpha = 0 + a:alpha
+	echo "set alpha"
+endfunc
+
+function! auxlib#tweak_enable_capture(enable)
+	let l:enable = 1
+	if a:enable == '!' || a:enable == 0
+		let l:enable = 0
+	endif
+	python import vim
+	python tweak = auxlib.VimTweakGetInstance()
+	python tweak.EnableCaption(vim.eval('l:enable'))
+endfunc
+
+function! auxlib#tweak_enable_maximize(enable)
+	let l:enable = 0
+	if a:enable == '' || a:enable != 0
+		let l:enable = 1
+	endif
+	python import vim
+	python tweak = auxlib.VimTweakGetInstance()
+	python tweak.EnableMaximize(vim.eval('l:enable'))
+endfunc
+
+function! auxlib#tweak_enable_topmost(enable)
+	let l:enable = 0
+	if a:enable == '' || a:enable != 0
+		let l:enable = 1
+	endif
+	python import vim
+	python tweak = auxlib.VimTweakGetInstance()
+	python tweak.EnableTopMost(vim.eval('l:enable'))
+endfunc
+
+

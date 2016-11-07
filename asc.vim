@@ -18,7 +18,3 @@ IncScript asc/plugins.vim
 IncScript asc/misc.vim
 IncScript asc/gui.vim
 
-if has('python')
-	IncScript asc/tweak.vim
-endif
-

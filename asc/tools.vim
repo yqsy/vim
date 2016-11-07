@@ -70,9 +70,9 @@ function! Tools_FileSwitch(how, filename)
 	let l:filename = fnamemodify(a:filename, ':p')
 	if has('win32') || has('win16') || has('win64') || has('win95')
 		let l:filename = tolower(l:filename)
+		let l:filename = substitute(l:filename, "\\", '/', 'g')
 	endif
 	for i in range(tabpagenr('$'))
-		silent exec 'tabn '.(i + 1)
 		let l:buflist = tabpagebuflist(i + 1)
 		for j in range(len(l:buflist))
 			let l:bufnr = l:buflist[j]
@@ -86,8 +86,10 @@ function! Tools_FileSwitch(how, filename)
 			let l:name = fnamemodify(bufname(l:bufnr), ':p')
 			if has('win32') || has('win16') || has('win64') || has('win95')
 				let l:name = tolower(l:name)
+				let l:name = substitute(l:name, "\\", '/', 'g')
 			endif
 			if l:filename == l:name
+				silent exec 'tabn '.(i + 1)
 				silent exec ''.(j + 1).'wincmd w'
 				return
 			endif
@@ -189,7 +191,7 @@ endfunc
 
 
 function! Transparency_Set(value)
-	if (has('win32') || has('win64')) && exists('g:tweak_alpha')
+	if (has('win32') || has('win64'))
 		let l:alpha = (100 - a:value) * 255 / 100
 		if l:alpha >= 255 
 			let l:alpha = 255 
@@ -197,7 +199,7 @@ function! Transparency_Set(value)
 		if l:alpha < 0 
 			let l:alpha = 0 
 		endif
-		exec 'TweakSetAlpha ' . l:alpha
+		call auxlib#tweak_set_alpha(l:alpha)
 	elseif has('gui_macvim')
 		if a:value >= 100
 			set transparency = 100
@@ -210,12 +212,16 @@ function! Transparency_Set(value)
 endfunc
 
 function! Transparency_Get()
-	if (has('win32') || has('win64')) && exists('g:tweak_alpha')
-		return (255 - g:tweak_alpha) * 100 / 255
+	if (has('win32') || has('win64')) 
+		if exists('g:auxlib_tweak_alpha')
+			return (255 - g:auxlib_tweak_alpha) * 100 / 255
+		else
+			return 0
+		endif
 	elseif has('gui_macvim')
 		return &transparency
 	endif
-	return 100
+	return 0
 endfunc
 
 function! Change_Transparency(increase)
