@@ -220,6 +220,8 @@ let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
 exec 'noremap <space>hs :tabnew '.fnameescape(s:skywind).'<cr>'
 let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
 exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
+let s:auxlib = fnamemodify(s:filename, ':h:h'). '/autoload/auxlib.vim'
+exec 'noremap <space>hu :tabnew '.fnameescape(s:auxlib).'<cr>'
 
 
 "----------------------------------------------------------------------
@@ -231,6 +233,11 @@ nnoremap <space>gQ :AsyncStop!<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
 nnoremap <silent><space>gf :call Tools_QuickfixCursor(3)<cr>
 nnoremap <silent><space>gb :call Tools_QuickfixCursor(2)<cr>
+nnoremap <silent><space>g; :
+
+noremap <silent><space>g; :call asclib#preview_tag(expand("<cword>"))<cr>
+noremap <silent><space>g' :call asclib#preview_goto('')<cr>
+noremap <silent><space>g: :call asclib#preview_close()<cr>
 
 if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
@@ -252,5 +259,11 @@ if has('gui_running') && (has('win32') || has('win64'))
 endif
 
 
+if has('gui_running')
+	noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
+	noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
+	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
+	noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
+endif
 
 

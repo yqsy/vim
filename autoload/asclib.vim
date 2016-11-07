@@ -483,9 +483,4 @@ function! asclib#smooth_scroll_down(dist, duration, speed)
 	call s:smooth_scroll('d', a:dist, a:duration, a:speed)
 endfunc
 
-noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
-noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
-noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
-noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
-
 
