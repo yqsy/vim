@@ -441,11 +441,8 @@ function! asclib#preview_goto(bang)
 		endif
 	endif
 	if winbufnr('%') == l:bufnr
-		echo "fuck"
 		silent exec ''.l:line
 		silent normal zz
-	else
-		echo "suck"
 	endif
 endfunc
 
