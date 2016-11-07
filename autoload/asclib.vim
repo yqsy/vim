@@ -485,6 +485,16 @@ function! asclib#path_runtime(path)
 endfunc
 
 
+"----------------------------------------------------------------------
+" lint - pylint
+"----------------------------------------------------------------------
+function! asclib#lint_pylint(filename)
+	let rc = asclib#path_runtime('tools/conf/pylint.conf') 
+	let cmd = 'pylint --rcfile='.shellescape(rc).' '.shellescape(a:filename)
+	let opt = {'auto': "make"}
+	call vimmake#run('', opt, cmd)
+endfunc
+
 
 "----------------------------------------------------------------------
 " smooth interface
