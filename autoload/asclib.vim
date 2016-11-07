@@ -195,6 +195,7 @@ function! asclib#window_new(position, size)
 endfunc
 
 
+
 "----------------------------------------------------------------------
 " preview window
 "----------------------------------------------------------------------
@@ -447,6 +448,42 @@ function! asclib#preview_goto(bang)
 		silent normal zz
 	endif
 endfunc
+
+
+"----------------------------------------------------------------------
+" path basic
+"----------------------------------------------------------------------
+let s:scriptname = expand('<sfile>:p')
+let s:scripthome = fnamemodify(s:scriptname, ':h')
+
+" join path
+function! asclib#path_join(home, name)
+    let l:size = strlen(a:home)
+    if l:size == 0 | return a:name | endif
+    let l:last = strpart(a:home, l:size - 1, 1)
+    if has("win32") || has("win64") || has("win16") || has('win95')
+        if l:last == "/" || l:last == "\\"
+            return a:home . a:name
+        else
+            return a:home . '/' . a:name
+        endif
+    else
+        if l:last == "/"
+            return a:home . a:name
+        else
+            return a:home . '/' . a:name
+        endif
+    endif
+endfunc
+
+" path asc home
+function! asclib#path_runtime(path)
+	let pathname = fnamemodify(s:scripthome, ':h')
+	let pathname = asclib#path_join(pathname, a:path)
+	let pathname = fnamemodify(pathname, ':p')
+	return substitute(pathname, '\\', '/', 'g')
+endfunc
+
 
 
 "----------------------------------------------------------------------
