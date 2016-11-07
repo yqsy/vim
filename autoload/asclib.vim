@@ -18,8 +18,8 @@ function! asclib#window_saveview()
 		let w:asclib_window_view = winsaveview()
 	endfunc
 	let l:winnr = winnr()
-	windo call s:window_view_save()
-	silent! exec ''.l:winnr.'wincmd w'
+	noautocmd windo call s:window_view_save()
+	noautocmd silent! exec ''.l:winnr.'wincmd w'
 endfunc
 
 " restore all window's view
@@ -31,8 +31,8 @@ function! asclib#window_loadview()
 		endif
 	endfunc
 	let l:winnr = winnr()
-	windo call s:window_view_rest()
-	silent! exec ''.l:winnr.'wincmd w'
+	noautocmd windo call s:window_view_rest()
+	noautocmd silent! exec ''.l:winnr.'wincmd w'
 endfunc
 
 " unique window id
@@ -156,9 +156,8 @@ function! asclib#window_new(position, size)
 	endfunc
 	let uid = asclib#window_uid('%', '%')
 	let retval = 0
-	windo call s:window_new_action(0)
-	call asclib#window_goto_uid(uid)
-	silent! exec ''.l:winnr.'wincmd w'
+	noautocmd windo call s:window_new_action(0)
+	noautocmd call asclib#window_goto_uid(uid)
 	if a:position == 'top' || a:position == '0'
 		if a:size <= 0
 			leftabove new 
@@ -187,7 +186,10 @@ function! asclib#window_new(position, size)
 		rightbelow vnew
 	endif
 	let retval = asclib#window_uid('%', '%')
-	windo call s:window_new_action(1)
+	noautocmd windo call s:window_new_action(1)
+	if retval > 0
+		noautocmd call asclib#window_goto_uid(retval)
+	endif
 	call asclib#window_goto_uid(uid)
 	return retval
 endfunc
@@ -218,8 +220,8 @@ function! asclib#preview_check()
 	endfunc
 	let l:winnr = winnr()
 	let s:preview_check_result = 0
-	windo call s:preview_check()
-	silent! exec ''.l:winnr.'wincmd w'
+	noautocmd windo call s:preview_check()
+	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	return s:preview_check_result
 endfunc
 

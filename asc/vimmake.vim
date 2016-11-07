@@ -1514,22 +1514,25 @@ endfunc
 function! vimmake#toggle_quickfix(size, ...)
 	let l:mode = (a:0 == 0)? 2 : (a:1)
 	function! s:WindowCheck(mode)
-		if getbufvar('%', '&buftype') == 'quickfix'
+		if &buftype == 'quickfix'
 			let s:quickfix_open = 1
 			return
 		endif
 		if a:mode == 0
 			let w:quickfix_save = winsaveview()
 		else
-			call winrestview(w:quickfix_save)
+			if exists('w:quickfix_save')
+				call winrestview(w:quickfix_save)
+				unlet w:quickfix_save
+			endif
 		endif
 	endfunc
 	let s:quickfix_open = 0
 	let l:winnr = winnr()			
-	windo call s:WindowCheck(0)
+	noautocmd windo call s:WindowCheck(0)
 	if l:mode == 0
 		if s:quickfix_open != 0
-			cclose
+			silent! cclose
 		endif
 	elseif l:mode == 1
 		if s:quickfix_open == 0
@@ -1541,12 +1544,12 @@ function! vimmake#toggle_quickfix(size, ...)
 			exec 'botright copen '. ((a:size > 0)? a:size : ' ')
 			wincmd k
 		else
-			cclose
+			silent! cclose
 		endif
 	endif
-	windo call s:WindowCheck(1)
+	noautocmd windo call s:WindowCheck(1)
 	try
-		silent exec ''.l:winnr.'wincmd w'
+		noautocmd silent exec ''.l:winnr.'wincmd w'
 	catch /.*/
 	endtry
 endfunc
