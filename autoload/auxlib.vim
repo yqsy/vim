@@ -40,7 +40,6 @@ function! auxlib#tweak_set_alpha(alpha)
 	python tweak = auxlib.VimTweakGetInstance()
 	python tweak.SetAlpha(vim.eval('a:alpha'))
 	let g:auxlib_tweak_alpha = 0 + a:alpha
-	echo "set alpha"
 endfunc
 
 function! auxlib#tweak_enable_capture(enable)
