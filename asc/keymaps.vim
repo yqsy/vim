@@ -220,6 +220,8 @@ let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
 exec 'noremap <space>hs :tabnew '.fnameescape(s:skywind).'<cr>'
 let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
 exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
+let s:asclib = fnamemodify(s:filename, ':h:h'). '/autoload/asclib.vim'
+exec 'noremap <space>hc :tabnew '.fnameescape(s:asclib).'<cr>'
 let s:auxlib = fnamemodify(s:filename, ':h:h'). '/autoload/auxlib.vim'
 exec 'noremap <space>hu :tabnew '.fnameescape(s:auxlib).'<cr>'
 

@@ -1530,6 +1530,7 @@ function! vimmake#toggle_quickfix(size, ...)
 	let s:quickfix_open = 0
 	let l:winnr = winnr()			
 	noautocmd windo call s:WindowCheck(0)
+	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if l:mode == 0
 		if s:quickfix_open != 0
 			silent! cclose
@@ -1548,10 +1549,7 @@ function! vimmake#toggle_quickfix(size, ...)
 		endif
 	endif
 	noautocmd windo call s:WindowCheck(1)
-	try
-		noautocmd silent exec ''.l:winnr.'wincmd w'
-	catch /.*/
-	endtry
+	noautocmd silent! exec ''.l:winnr.'wincmd w'
 endfunc
 
 

@@ -213,16 +213,12 @@ endif
 
 " check preview window is open ?
 function! asclib#preview_check()
-	function! s:preview_check()
-		if &previewwindow
-			let s:preview_check_result = asclib#window_uid('%', '%')
+	for i in range(winnr('$'))
+		if getwinvar(i + 1, '&previewwindow', 0)
+			return asclib#window_uid('%', i + 1)
 		endif
-	endfunc
-	let l:winnr = winnr()
-	let s:preview_check_result = 0
-	noautocmd windo call s:preview_check()
-	noautocmd silent! exec ''.l:winnr.'wincmd w'
-	return s:preview_check_result
+	endfor
+	return 0
 endfunc
 
 
@@ -394,8 +390,12 @@ function! asclib#preview_tag(tagname)
 		call winrestview(saveview)
 		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
 	else
-		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
+		let saveview = winsaveview()
+		noautocmd call asclib#window_goto_tabwin(l:tabnr, l:winnr)
 		silent exec 'e! '.fnameescape(filename)
+		noautocmd call asclib#window_goto_uid(uid)
+		call winrestview(saveview)
+		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
 	endif
 	if &previewwindow
 		match none
