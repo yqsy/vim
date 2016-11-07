@@ -486,11 +486,23 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" lint - pylint
+" lint - 
 "----------------------------------------------------------------------
+
+" python - pylint
 function! asclib#lint_pylint(filename)
+	let filename = (a:filename == '')? expand('%') : a:filename
 	let rc = asclib#path_runtime('tools/conf/pylint.conf') 
-	let cmd = 'pylint --rcfile='.shellescape(rc).' '.shellescape(a:filename)
+	let cmd = 'pylint --rcfile='.shellescape(rc).' '.shellescape(filename)
+	let opt = {'auto': "make"}
+	call vimmake#run('', opt, cmd)
+endfunc
+
+" python - flake8
+function! asclib#lint_flake8(filename)
+	let filename = (a:filename == '')? expand('%') : a:filename
+	let rc = asclib#path_runtime('tools/conf/flake8.conf') 
+	let cmd = 'flake8 --config='.shellescape(rc).' '.shellescape(filename)
 	let opt = {'auto': "make"}
 	call vimmake#run('', opt, cmd)
 endfunc

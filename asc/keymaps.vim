@@ -245,9 +245,14 @@ if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
 	noremap <space>ge :silent !start /b cmd.exe /C start .<cr>
 else
-
 endif
 
+
+"----------------------------------------------------------------------
+" linting
+"----------------------------------------------------------------------
+noremap <silent><space>lp :call asclib#lint_pylint('')<cr>
+noremap <silent><space>lf :call asclib#lint_flake8('')<cr>
 
 
 "----------------------------------------------------------------------
