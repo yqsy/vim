@@ -95,7 +95,7 @@ Plugin 'VundleVim/Vundle.vim'
 " Group - simple
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'simple') >= 0 || s:bundle_all
-	Plugin 'scrooloose/nerdtree'
+	"Plugin 'scrooloose/nerdtree'
 	Plugin 'vim-scripts/Colour-Sampler-Pack'
 endif
 

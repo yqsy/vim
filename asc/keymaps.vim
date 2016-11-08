@@ -49,6 +49,11 @@ noremap <silent><space>= :resize +3<cr>
 noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
 noremap <silent><space>. :vertical resize +3<cr>
+
+nnoremap <silent><c-w><c-e> :Explore<cr>
+nnoremap <silent><c-w>e :Explore<cr>
+nnoremap <silent><c-w>m :Vexplore! <C-R>=(winwidth(0)/4)<cr><cr>
+
 noremap <silent><space>hh :nohl<cr>
 noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
