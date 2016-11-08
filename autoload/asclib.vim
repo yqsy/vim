@@ -199,16 +199,16 @@ endfunc
 "----------------------------------------------------------------------
 " preview window
 "----------------------------------------------------------------------
-if !exists('g:asclib_preview_position')
-	let g:asclib_preview_position = "right"
+if !exists('g:asclib#preview_position')
+	let g:asclib#preview_position = "right"
 endif
 
-if !exists('g:asclib_preview_vsize')
-	let g:asclib_preview_vsize = 0
+if !exists('g:asclib#preview_vsize')
+	let g:asclib#preview_vsize = 0
 endif
 
-if !exists('g:asclib_preview_size')
-	let g:asclib_preview_size = 0
+if !exists('g:asclib#preview_size')
+	let g:asclib#preview_size = 0
 endif
 
 
@@ -238,11 +238,11 @@ function! asclib#preview_open()
 	let pid = asclib#preview_check()
 	if pid == 0
 		let uid = asclib#window_uid('%', '%')
-		let pos = g:asclib_preview_position
+		let pos = g:asclib#preview_position
 		if pos == 'top' || pos == 'bottom' || pos == '0' || pos == '1'
-			let pid = asclib#window_new(pos, g:asclib_preview_size)
+			let pid = asclib#window_new(pos, g:asclib#preview_size)
 		else
-			let pid = asclib#window_new(pos, g:asclib_preview_vsize)
+			let pid = asclib#window_new(pos, g:asclib#preview_vsize)
 		endif
 		if pid > 0
 			call asclib#window_goto_uid(pid)
@@ -484,6 +484,23 @@ function! asclib#path_runtime(path)
 	return substitute(pathname, '\\', '/', 'g')
 endfunc
 
+" find files in path
+function! asclib#path_which(name)
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		let sep = ';'
+	else
+		let sep = ':'
+	endif
+	for path in split($PATH, sep)
+		let filename = asclib#path_join(path, a:name)
+		if filereadable(filename)
+			return vimmake#fullname(filename)
+		endif
+	endfor
+	return ''
+endfunc
+
+
 
 "----------------------------------------------------------------------
 " lint - 
@@ -506,6 +523,31 @@ function! asclib#lint_flake8(filename)
 	let opt = {'auto': "make"}
 	call vimmake#run('', opt, cmd)
 endfunc
+
+" c/c++ - cppcheck
+function! asclib#lint_cppcheck(filename)
+	if !exists('g:asclib#lint_cppcheck_parameters')
+		let g:asclib#lint_cppcheck_parameters = '--library=windows'
+		let g:asclib#lint_cppcheck_parameters.= ' --quiet'
+		let g:asclib#lint_cppcheck_parameters.= ' --enable=warning'
+		let g:asclib#lint_cppcheck_parameters.= ',performance,portability'
+		let g:asclib#lint_cppcheck_parameters.= ' -DWIN32 -D_WIN32'
+	endif
+	let filename = (a:filename == '')? expand('%') : a:filename
+	let cfg = g:asclib#lint_cppcheck_parameters
+	let cmd = 'cppcheck '.cfg.' '.shellescape(filename)
+	call vimmake#run('', {'auto':'make'}, cmd)
+endfunc
+
+" c - splint
+function! asclib#lint_splint(filename)
+	let filename = (a:filename == '')? expand('%') : a:filename
+	let rc = asclib#path_runtime('tools/conf/splint.conf') 
+	let cmd = 'splint -f '.shellescape(rc).' '.shellescape(filename)
+	let opt = {'auto': "make"}
+	call vimmake#run('', opt, cmd)
+endfunc
+
 
 
 "----------------------------------------------------------------------

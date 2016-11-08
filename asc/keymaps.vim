@@ -253,6 +253,8 @@ endif
 "----------------------------------------------------------------------
 noremap <silent><space>lp :call asclib#lint_pylint('')<cr>
 noremap <silent><space>lf :call asclib#lint_flake8('')<cr>
+noremap <silent><space>ls :call asclib#lint_splint('')<cr>
+noremap <silent><space>lc :call asclib#lint_cppcheck('')<cr>
 
 
 "----------------------------------------------------------------------
