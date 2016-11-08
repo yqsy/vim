@@ -425,7 +425,7 @@ endfunc
 "----------------------------------------------------------------------
 " goto preview file
 "----------------------------------------------------------------------
-function! asclib#preview_goto(bang)
+function! asclib#preview_goto(mode)
 	let uid = asclib#window_uid('%', '%')
 	let pid = asclib#preview_check()
 	if pid == 0 || &previewwindow != 0 || uid == pid
@@ -436,12 +436,17 @@ function! asclib#preview_goto(bang)
 	let l:bufnr = winbufnr(l:winnr)
 	let l:line = line('.')
 	call asclib#window_goto_uid(uid)
-	if l:bufnr != winbufnr('%')
-		if a:bang == '' || a:bang == '0'
+	if a:mode == '' || a:mode == '0'
+		if l:bufnr != winbufnr('%')
 			silent exec 'b '.l:bufnr 
-		else
-			silent exec 'b! '.l:bufnr
 		endif
+	elseif a:mode == '!'
+		if l:bufnr != winbufnr('%')
+			silent exec 'b! '.l:bufnr 
+		endif
+	elseif a:mode == 'tab'
+		silent exec 'tabnew'
+		silent exec 'b '.l:bufnr
 	endif
 	if winbufnr('%') == l:bufnr
 		silent exec ''.l:line

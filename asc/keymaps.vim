@@ -136,8 +136,9 @@ noremap <silent><space>tb :TagbarToggle<cr>
 noremap <silent><S-F10> :call Toggle_Tagbar()<cr>
 inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
-noremap <silent><M-'> :call asclib#preview_goto('')<cr>
 noremap <silent><M-:> :call asclib#preview_close()<cr>
+noremap <silent><M-'> :call asclib#preview_goto('')<cr>
+noremap <silent><M-"> :call asclib#preview_goto('tab')<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
@@ -238,8 +239,9 @@ nnoremap <silent><space>gb :call Tools_QuickfixCursor(2)<cr>
 nnoremap <silent><space>g; :
 
 noremap <silent><space>g; :call asclib#preview_tag(expand("<cword>"))<cr>
-noremap <silent><space>g' :call asclib#preview_goto('')<cr>
 noremap <silent><space>g: :call asclib#preview_close()<cr>
+noremap <silent><space>g' :call asclib#preview_goto('')<cr>
+noremap <silent><space>g" :call asclib#preview_goto('tab')<cr>
 
 if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
