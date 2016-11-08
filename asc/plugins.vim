@@ -3,7 +3,7 @@
 "-----------------------------------------------------
 let g:netrw_liststyle = 1
 let g:netrw_winsize = 25
-let g:netrw_list_hide = '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn,\.obj'
+let g:netrw_list_hide = '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn,\.obj,'
 let g:netrw_list_hide.='\.tags,\(^\|\s\s)\zs\.\S\+'
 
 "let g:netrw_banner=0 
