@@ -13,6 +13,11 @@ import time
 import os
 import subprocess
 
+try:
+	import vim
+except ImportError:
+	vim = None
+
 
 #----------------------------------------------------------------------
 # Win32API
@@ -59,6 +64,10 @@ class Win32API (object):
 		args = (HWND, wintypes.COLORREF, wintypes.BYTE, DWORD)
 		self.user32.SetLayeredWindowAttributes.argtypes = args
 		self.user32.SetLayeredWindowAttributes.restype = BOOL
+		self.user32.GetAsyncKeyState.argtypes = (c_int,)
+		self.user32.GetAsyncKeyState.restype = wintypes.SHORT
+		self.user32.GetActiveWindow.argtypes = []
+		self.user32.GetActiveWindow.restype = HWND
 
 	def EnumThreadWindows (self, id, proc, lparam):
 		return self.user32.EnumThreadWindows(id, proc, lparam)
@@ -86,6 +95,14 @@ class Win32API (object):
 
 	def SetLayeredWindowAttributes (self, hwnd, cc, alpha, flag):
 		return self.user32.SetLayeredWindowAttributes(hwnd, cc, alpha, flag)
+
+	def GetAsyncKeyState (self, keycode):
+		if isinstance(keycode, str):
+			keycode = keycode and ord(keycode[0]) or 0
+		return self.user32.GetAsyncKeyState(keycode)
+
+	def GetActiveWindow (self):
+		return self.user32.GetActiveWindow()
 
 
 #----------------------------------------------------------------------
@@ -196,6 +213,25 @@ def VimTweakGetInstance():
 		return _VimTweakInstance
 	_VimTweakInstance = VimTweak()
 	return _VimTweakInstance
+
+
+
+#----------------------------------------------------------------------
+# testing case
+#----------------------------------------------------------------------
+if __name__ == "__main__":
+	def demo1():
+		api = Win32API()
+		while True:
+			keys = []
+			for i in xrange(1024):
+				if api.GetAsyncKeyState(i):
+					keys.append(i)	
+			print 'keycode: ', keys
+			time.sleep(0.1)
+		return 0
+
+	demo1()
 
 
 

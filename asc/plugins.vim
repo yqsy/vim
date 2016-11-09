@@ -6,6 +6,7 @@ let g:netrw_winsize = 25
 let g:netrw_list_hide = '.*\.swp$,.*\.pyc,*\.o,*\.bak,\.git,\.svn,\.obj,'
 let g:netrw_list_hide.='\.tags,\.cscope,\(^\|\s\s)\zs\.\S\+'
 let g:netrw_sort_sequence = '[\/]$,*,\.bak$,\.o$,\.info$,\.swp$,\.obj$'
+let g:netrw_preview = 0
 
 "let g:netrw_banner=0 
 "let g:netrw_browse_split=4   " open in prior window
@@ -21,6 +22,8 @@ if v:version < 704
 	"au FileType netrw au BufLeave <buffer> hi clear CursorLine
 	autocmd BufEnter * if &buftype == '' | :set nocursorline | endif
 endif
+
+let g:ft_man_open_mode = 'vert'
 
 
 "-----------------------------------------------------
