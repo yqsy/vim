@@ -554,6 +554,46 @@ function! asclib#lint_splint(filename)
 endfunc
 
 
+"----------------------------------------------------------------------
+" open something
+"----------------------------------------------------------------------
+
+" call winhlp32.exe to open .hlp
+function! asclib#open_win32_help(hlp, keyword)
+	if !filereadable(a:hlp)
+		call asclib#errmsg('can not open: '.a:hlp)
+		return 1
+	endif
+	if asclib#path_which('winhlp32.exe') == ''
+		call asclib#errmsg('can not find WinHlp32.exe, please install it')
+		return 2
+	endif
+	let cmd = 'WinHlp32.exe '
+	if a:keyword
+		let cmd .= '-k '.shellescape(a:keyword). ' '
+	endif
+	silent exec 'VimMake -mode=5 '.cmd. shellescape(a:hlp)
+	return 0
+endfunc
+
+
+function! asclib#open_win32_chm(chm, keyword)
+	if !filereadable(a:chm)
+		call asclib#errmsg('can not open: '.a:chm)
+		return 1
+	endif
+	if !a:keyword
+		silent exec 'VimMake -mode=5 '.shellescape(a:chm)
+		return 0
+	else
+		if asclib#path_which('KeyHH.exe') == ''
+			call asclib#errmsg('can not find KeyHH.exe, please install it')
+			return 2
+		endif
+	endif
+	let cmd = 'KeyHH.exe -MyHelp -#klink '.shellescape(a:keyword).' '.a:chm
+endfunc
+
 
 "----------------------------------------------------------------------
 " smooth interface

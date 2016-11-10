@@ -111,7 +111,8 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
-	Plugin 'airblade/vim-gitgutter'
+	"Plugin 'airblade/vim-gitgutter'
+	Plugin 'KabbAmine/zeavim.vim'
 	"Plugin 'ShowMarks'
 
 	if !has('gui_running')
@@ -129,6 +130,13 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	endif
 
 	let g:gitgutter_enabled = 0
+
+	let g:zv_file_types = {
+				\ "^c$" : 'cpp,c',
+				\ "^cpp$" : 'cpp,c',
+				\ "python": 'python',
+				\ "vim": 'vim'
+				\ }
 endif
 
 
