@@ -66,8 +66,8 @@ noremap <silent><tab>m :tabnew<cr>
 noremap <silent><tab>e :tabclose<cr>
 noremap <silent><tab>n :tabn<cr>
 noremap <silent><tab>p :tabp<cr>
-noremap <silent><tab><c-i> <c-i>
-noremap <silent><tab><c-o> <c-o>
+noremap <silent><tab>f <c-i>
+noremap <silent><tab>b <c-o>
 noremap <silent>\t :tabnew<cr>
 noremap <silent>\g :tabclose<cr>
 noremap <silent>\1 :tabn 1<cr>
