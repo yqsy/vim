@@ -50,7 +50,7 @@ noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
 noremap <silent><space>. :vertical resize +3<cr>
 
-nnoremap <silent><c-w><c-e> :Explore<cr>
+nnoremap <silent><c-w><c-e> :Rexplore<cr>
 nnoremap <silent><c-w>e :Explore<cr>
 nnoremap <silent><c-w>m :Vexplore! <C-R>=(winwidth(0)/4)<cr><cr>
 
@@ -179,6 +179,7 @@ endif
 noremap <silent><space>fd :call Open_Dictionary("<C-R>=expand("<cword>")<cr>")<cr>
 noremap <silent><space>fm :!man -S 3:2:1 "<C-R>=expand("<cword>")<CR>"<CR>
 noremap <silent><space>fh :call Open_HeaderFile(1)<cr>
+noremap <silent><space>ff :call Open_Explore(-1)<cr>
 noremap <silent><space>ft :call Open_Explore(0)<cr>
 noremap <silent><space>fe :call Open_Explore(1)<cr>
 noremap <silent><space>fo :call Open_Explore(2)<cr>

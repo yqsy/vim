@@ -161,14 +161,14 @@ function! Open_Explore(where)
 	if l:path == ''
 		let l:path = getcwd()
 	endif
-	if a:where == 0
-		exec 'Explore '.fnameescape(l:path)
+	if a:where < 0
+		exec 'Rexplore'
+	elseif a:where == 0
+		exec 'Explore '
 	elseif a:where == 1
-		exec 'vnew'
-		exec 'Explore '.fnameescape(l:path)
-	else
-		exec 'tabnew'
-		exec 'Explore '.fnameescape(l:path)
+		exec 'Vexplore! '
+	elseif a:where == 2
+		exec 'Texplore'
 	endif
 endfunc
 
