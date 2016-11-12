@@ -462,4 +462,7 @@ augroup NetrwSyntaxGroup
 augroup END
 
 
+let g:solarized_termcolors=256
+
+
 
