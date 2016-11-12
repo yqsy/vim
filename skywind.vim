@@ -384,8 +384,8 @@ command! -bang -nargs=* -complete=file Make VimMake -program=make @ <args>
 function! s:netrw_special()
 	hi netrwCompress term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green  ctermbg=0 guibg=black
 	hi netrwData	  term=NONE cterm=NONE gui=NONE ctermfg=9 guifg=blue ctermbg=0 guibg=black
-	"hi netrwHdr	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
 	hi netrwHdr	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
+	"hi! default link netrwHdr Float
 	hi netrwLex	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
 	hi netrwYacc	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
 	hi netrwLib	  term=NONE cterm=NONE gui=NONE ctermfg=14 guifg=yellow
@@ -397,10 +397,15 @@ function! s:netrw_special()
 	hi netrwSymLink  term=NONE cterm=NONE gui=NONE ctermfg=220 ctermbg=27 guifg=grey60
 endfunc
 
+function! s:netrw_highlight()
+	syn match netrwCpp	"\(\S\+ \)*\S\+\.\%(c\|cpp\|m\|cc\|mm\|cxx\)\>" contains=netrwTreeBar,@NoSpell
+	hi! default link netrwHdr Conditional
+	hi! default link netrwCpp Repeat
+endfunc
 
 augroup NetrwSyntaxGroup
 	au!
-	au Syntax netrw call s:netrw_special()
+	au Syntax netrw call s:netrw_highlight()
 augroup END
 
 
