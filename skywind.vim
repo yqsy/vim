@@ -77,6 +77,8 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 else
 	let g:vimmake_cflags = ['-O3', '-lstdc++']
 	runtime ftplugin/man.vim
+	nnoremap K :Man <cword><CR>
+	let g:ft_man_open_mode = 'vert'
 endif
 
 if has('nvim')
