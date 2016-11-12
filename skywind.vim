@@ -422,7 +422,7 @@ function! s:netrw_highlight()
 			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
 			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
 		elseif mode == 1
-			if &t_Co == 16
+			if &t_Co != 256
 				hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
 				hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
 				hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
