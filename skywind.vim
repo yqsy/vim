@@ -422,9 +422,15 @@ function! s:netrw_highlight()
 			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
 			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
 		elseif mode == 1
-			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
-			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
-			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
+			if &t_Co == 16
+				hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
+				hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
+				hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
+			else
+				hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
+				hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
+				hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
+			endif
 		elseif mode == 2
 			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
 			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
