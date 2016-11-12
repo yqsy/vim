@@ -398,9 +398,20 @@ function! s:netrw_special()
 endfunc
 
 function! s:netrw_highlight()
+	redir => x
+	silent color
+	redir END
 	syn match netrwCpp	"\(\S\+ \)*\S\+\.\%(c\|cpp\|m\|cc\|mm\|cxx\)\>" contains=netrwTreeBar,@NoSpell
-	hi! default link netrwHdr Conditional
-	hi! default link netrwCpp Repeat
+	syn match netrwPy	"\(\S\+ \)*\S\+\.\%(py\|pyw\)\>" contains=netrwTreeBar,@NoSpell
+	syn match netrwVim	"\(\S\+ \)*\S\+\.\%(vim\)\>" contains=netrwTreeBar,@NoSpell
+
+	if x =~ 'seoul256xxxx'
+		hi! default link netrwHdr Conditional
+		hi! default link netrwCpp Repeat
+	else
+		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=6 guifg=#00c0c0
+		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=14 guifg=#00efef
+	endif
 endfunc
 
 augroup NetrwSyntaxGroup
