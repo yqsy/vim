@@ -408,9 +408,12 @@ function! s:netrw_highlight()
 	if x =~ 'seoul256xxxx'
 		hi! default link netrwHdr Conditional
 		hi! default link netrwCpp Repeat
+	elseif &t_Co == '16'
+		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=2 guifg=#00bf00
+		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=#00ef00
 	else
-		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=6 guifg=#00c0c0
-		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=14 guifg=#00efef
+		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=5 guifg=#00bf00
+		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=13 guifg=#00ef00
 	endif
 endfunc
 
