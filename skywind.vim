@@ -90,6 +90,11 @@ endif
 "----------------------------------------------------------------------
 VimImport site/echofunc.vim
 VimImport site/calendar.vim
+"VimImport site/hilinks.vim
+
+if has('gui_running')
+	VimImport site/hexhigh.vim
+endif
 
 
 
@@ -402,20 +407,46 @@ function! s:netrw_highlight()
 	silent color
 	redir END
 	syn match netrwCpp	"\(\S\+ \)*\S\+\.\%(c\|cpp\|m\|cc\|mm\|cxx\)\>" contains=netrwTreeBar,@NoSpell
-	syn match netrwPy	"\(\S\+ \)*\S\+\.\%(py\|pyw\)\>" contains=netrwTreeBar,@NoSpell
-	syn match netrwVim	"\(\S\+ \)*\S\+\.\%(vim\)\>" contains=netrwTreeBar,@NoSpell
+	syn match netrwSrc	"\(\S\+ \)*\S\+\.\%(py\|pyw\|java\|s\|asm\|vim\)\>" contains=netrwTreeBar,@NoSpell
 
 	if x =~ 'seoul256xxxx'
 		hi! default link netrwHdr Conditional
 		hi! default link netrwCpp Repeat
-	elseif &t_Co == '16'
-		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=2 guifg=#00bf00
-		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=#00ef00
 	else
-		hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=5 guifg=#00bf00
-		hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=13 guifg=#00ef00
+		let mode = 3
+		if mode == 3 && &t_Co == 16 | let mode = 2 | endif
+		if mode == 0
+			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
+			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
+			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
+		elseif mode == 1
+			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
+			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
+			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#efefef
+		elseif mode == 2
+			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
+			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
+			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
+		elseif mode == 3
+			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
+			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
+			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
+		endif
+
+		hi netrwData term=NONE cterm=NONE gui=NONE ctermfg=9 guifg=blue
+		hi netrwLib term=NONE cterm=NONE gui=NONE ctermfg=13 guifg=magenta
+		hi netrwDoc term=NONE cterm=NONE gui=NONE ctermfg=11 guifg=yellow2
+		hi netrwObj term=NONE cterm=NONE gui=NONE ctermfg=8 guifg=#808080
+		hi netrwCompress term=NONE cterm=NONE gui=NONE ctermfg=11 guifg=yellow
+		hi netrwTilde term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
+		hi netrwTmp	term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
+		hi netrwSymLink term=NONE cterm=NONE gui=NONE ctermfg=220 ctermbg=27 guifg=grey60
 	endif
 endfunc
+
+map <leader><F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 augroup NetrwSyntaxGroup
 	au!
