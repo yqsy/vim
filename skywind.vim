@@ -405,6 +405,10 @@ function! s:netrw_special()
 endfunc
 
 function! s:netrw_highlight()
+	if !exists('g:netrw_special_syntax') || g:netrw_special_syntax == 0
+		return
+	endif
+
 	redir => x
 	silent color
 	redir END
