@@ -415,7 +415,7 @@ function! s:netrw_highlight()
 		hi! default link netrwHdr Conditional
 		hi! default link netrwCpp Repeat
 	else
-		let mode = 3
+		let mode = 1
 		if mode == 3 && &t_Co == 16 | let mode = 2 | endif
 		if mode == 0
 			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
