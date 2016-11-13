@@ -368,13 +368,12 @@ function! g:AsyncRun_Job_OnTimer(id)
 		if exists('s:async_job')
 			call job_status(s:async_job)
 		endif
-		call s:AsyncRun_Job_Update(limit)
-		if and(s:async_state, 7) == 7
-			if s:async_head == s:async_tail
-				call s:AsyncRun_Job_OnFinish()
-			endif
+	endif
+	call s:AsyncRun_Job_Update(limit)
+	if and(s:async_state, 7) == 7
+		if s:async_head == s:async_tail
+			call s:AsyncRun_Job_OnFinish()
 		endif
-	else
 	endif
 endfunc
 
@@ -479,12 +478,11 @@ function! s:AsyncRun_Job_NeoVim(job_id, data, event)
 			let s:async_head += 1
 			let l:index += 1
 		endwhile
-		call s:AsyncRun_Job_Update(-1)
 	elseif a:event == 'exit'
 		if type(a:data) == type(1)
 			let s:async_code = a:data
 		endif
-		call s:AsyncRun_Job_OnFinish()
+		let s:async_state = or(s:async_state, 6)
 	endif
 endfunc
 
