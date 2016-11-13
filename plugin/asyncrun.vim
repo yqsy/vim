@@ -894,7 +894,7 @@ function! asyncrun#run(bang, opts, args)
 			exec opts.post
 		endif
 	elseif l:mode <= 2
-		exec '!'. l:command
+		exec '!'. escape(l:command, '%#')
 		let g:asyncrun_text = opts.text
 		if opts.post != ''
 			exec opts.post
@@ -933,7 +933,7 @@ function! asyncrun#run(bang, opts, args)
 			redraw
 		else
 			if l:mode == 4
-				exec '!' . l:command
+				exec '!' . escape(l:command, '%#')
 			else
 				call system(l:command . ' &')
 			endif

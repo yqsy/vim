@@ -926,7 +926,7 @@ function! vimmake#run(bang, opts, args)
 			exec opts.post
 		endif
 	elseif l:mode <= 2
-		exec '!'. l:command
+		exec '!'. escape(l:command, '%#')
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
 			exec opts.post
@@ -965,7 +965,7 @@ function! vimmake#run(bang, opts, args)
 			redraw
 		else
 			if l:mode == 4
-				exec '!' . l:command
+				exec '!' . escape(l:command, '%#')
 			else
 				call system(l:command . ' &')
 			endif
@@ -1359,29 +1359,20 @@ endfunc
 "----------------------------------------------------------------------
 " grep code
 "----------------------------------------------------------------------
-if !exists('g:vimmake_grep')
-	let g:vimmake_grep = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'as']
-	let g:vimmake_grep += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
-	let g:vimmake_grep += ['asm', 's', 'pyw', 'lua', 'go']
+if !exists('g:vimmake_grep_exts')
+	let g:vimmake_grep_exts = ['c', 'cpp', 'cc', 'h', 'hpp', 'hh', 'as']
+	let g:vimmake_grep_exts += ['m', 'mm', 'py', 'js', 'php', 'java', 'vim']
+	let g:vimmake_grep_exts += ['asm', 's', 'pyw', 'lua', 'go']
 endif
 
 function! vimmake#grep(text, cwd)
-	let l:grep = &grepprg
-	if strpart(l:grep, 0, 8) == 'findstr '
+	let mode = get(g:, 'vimmake_grep_mode', '')
+	if mode == ''
+		let mode = (s:vimmake_windows == 0)? 'grep' : 'findstr'
+	endif
+	if mode == 'grep'
 		let l:inc = ''
-		for l:item in g:vimmake_grep
-            if a:cwd == '.' || a:cwd == ''
-                let l:inc .= '*.'.l:item.' '
-            else
-                let l:full = vimmake#fullname(a:cwd)
-				let l:inc .= '"%CD%/*.'.l:item.'" '
-            endif
-		endfor
-		let options = { 'program': 'grep', 'cwd':a:cwd }
-		call vimmake#run('', options, '@ /s /C:"'.a:text.'" '. l:inc)
-	else
-		let l:inc = ''
-		for l:item in g:vimmake_grep
+		for l:item in g:vimmake_grep_exts
 			let l:inc .= " --include=*." . l:item
 		endfor
         if a:cwd == '.' || a:cwd == ''
@@ -1390,7 +1381,34 @@ function! vimmake#grep(text, cwd)
             let l:full = vimmake#fullname(a:cwd)
             let l:inc .= ' '.shellescape(l:full)
         endif
-		exec 'VimMake -program=grep @ -R ' .shellescape(a:text). l:inc
+		let cmd = 'grep -n -R ' .shellescape(a:text). l:inc .' /dev/null'
+		call vimmake#run('', {}, cmd)
+	elseif mode == 'findstr'
+		let l:inc = ''
+		for l:item in g:vimmake_grep_exts
+            if a:cwd == '.' || a:cwd == ''
+                let l:inc .= '*.'.l:item.' '
+            else
+                let l:full = vimmake#fullname(a:cwd)
+				let l:inc .= '"%CD%/*.'.l:item.'" '
+            endif
+		endfor
+		let options = { 'cwd':a:cwd }
+		call vimmake#run('', options, 'findstr /n /s /C:"'.a:text.'" '.l:inc)
+	elseif mode == 'ag'
+		let inc = []
+		for item in g:vimmake_grep_exts
+			let inc += ['\.'.item]
+		endfor
+		let cmd = 'ag '
+		if len(inc) > 0
+			let cmd .= '-G '.shellescape('('.join(inc, '|').')$'). ' '
+		endif
+		let cmd .= '--nogroup --nocolor '.shellescape(a:text)
+        if a:cwd != '.' && a:cwd != ''
+			let cmd .= ' '. shellescape(vimmake#fullname(a:cwd))
+        endif
+		call vimmake#run('', {'mode':0}, cmd)
 	endif
 endfunc
 
