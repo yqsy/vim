@@ -77,7 +77,7 @@ endif
 
 " using timer to update quickfix
 if !exists('g:vimmake_build_timer')
-	let g:vimmake_build_timer = 150
+	let g:vimmake_build_timer = 100
 endif
 
 " will be executed after async build finished
@@ -406,10 +406,19 @@ endfunc
 
 " invoked on timer
 function! g:Vimmake_Build_OnTimer(id)
-	if exists('s:build_job')
-		call job_status(s:build_job)
+	let limit = (g:vimmake_build_timer < 10)? 10 : g:vimmake_build_timer
+	if s:build_nvim == 0
+		if exists('s:build_job')
+			call job_status(s:build_job)
+		endif
+		call s:Vimmake_Build_Update(limit)
+		if and(s:build_state, 7) == 7
+			if s:build_head == s:build_tail
+				call s:Vimmake_Build_OnFinish()
+			endif
+		endif
+	else
 	endif
-	call s:Vimmake_Build_Update(5 + g:vimmake_build_timer)
 endfunc
 
 " invoked on "callback" when job output
@@ -422,28 +431,12 @@ function! s:Vimmake_Build_OnCallback(channel, text)
 	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
-	if g:vimmake_build_timer <= 0
-		call s:Vimmake_Build_Update(-1)
-	endif
 endfunc
 
 " because exit_cb and close_cb are disorder, we need OnFinish to guarantee
 " both of then have already invoked
-function! s:Vimmake_Build_OnFinish(what)
+function! s:Vimmake_Build_OnFinish()
 	" caddexpr '(OnFinish): '.a:what.' '.s:build_state
-	if s:build_state == 0
-		return -1
-	endif
-	if a:what == 0
-		let s:build_state = or(s:build_state, 2)
-	elseif a:what == 1
-		let s:build_state = or(s:build_state, 4)
-	else
-		let s:build_state = 7
-	endif
-	if and(s:build_state, 7) != 7
-		return -2
-	endif
 	if exists('s:build_job')
 		unlet s:build_job
 	endif
@@ -502,18 +495,17 @@ function! s:Vimmake_Build_OnClose(channel)
 		endif
 	endwhile
 	let s:build_debug = 0
-	call s:Vimmake_Build_Update(-1)
-	call s:Vimmake_Build_OnFinish(1)
 	if exists('s:build_job')
 		call job_status(s:build_job)
 	endif
+	let s:build_state = or(s:build_state, 4)
 endfunc
 
 " invoked on "exit_cb" when job exited
 function! s:Vimmake_Build_OnExit(job, message)
 	" caddexpr "[exit]: ".a:message." ".type(a:message)
 	let s:build_code = a:message
-	call s:Vimmake_Build_OnFinish(0)
+	let s:build_state = or(s:build_state, 2)
 endfunc
 
 " invoked on neovim when stderr/stdout/exit
@@ -531,7 +523,7 @@ function! s:Vimmake_Build_NeoVim(job_id, data, event)
 		if type(a:data) == type(1)
 			let s:build_code = a:data
 		endif
-		call s:Vimmake_Build_OnFinish(2)
+		call s:Vimmake_Build_OnFinish()
 	endif
 endfunc
 
@@ -646,11 +638,8 @@ function! s:Vimmake_Build_Start(cmd)
 		endif
 		call setqflist([{'text':l:arguments}], 'a')
 		let s:build_start = float2nr(reltimefloat(reltime()))
-		if g:vimmake_build_timer > 0 && s:build_nvim == 0
-			let l:options = {'repeat':-1}
-			let l:name = 'g:Vimmake_Build_OnTimer'
-			let s:build_timer = timer_start(100, l:name, l:options)
-		endif
+		let l:name = 'g:Vimmake_Build_OnTimer'
+		let s:build_timer = timer_start(100, l:name, {'repeat':-1})
 		let s:build_state = 1
 		let g:vimmake_build_status = "running"
 		let s:build_info.post = s:build_info.postsave
@@ -676,6 +665,10 @@ function! s:Vimmake_Build_Stop(how)
 		return -1
 	endif
 	if l:how == '' | let l:how = 'term' | endif
+	while s:build_head > s:build_tail
+		let s:build_head -= 1
+		unlet s:build_output[s:build_head]
+	endwhile
 	if exists('s:build_job')
 		if s:build_nvim == 0
 			if job_status(s:build_job) == 'run'

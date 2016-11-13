@@ -363,10 +363,19 @@ endfunc
 
 " invoked on timer
 function! g:AsyncRun_Job_OnTimer(id)
-	if exists('s:async_job')
-		call job_status(s:async_job)
+	let limit = (g:asyncrun_timer < 10)? 10 : g:asyncrun_timer
+	if s:async_nvim == 0
+		if exists('s:async_job')
+			call job_status(s:async_job)
+		endif
+		call s:AsyncRun_Job_Update(limit)
+		if and(s:async_state, 7) == 7
+			if s:async_head == s:async_tail
+				call s:AsyncRun_Job_OnFinish()
+			endif
+		endif
+	else
 	endif
-	call s:AsyncRun_Job_Update(5 + g:asyncrun_timer)
 endfunc
 
 " invoked on "callback" when job output
@@ -379,27 +388,14 @@ function! s:AsyncRun_Job_OnCallback(channel, text)
 	endif
 	let s:async_output[s:async_head] = a:text
 	let s:async_head += 1
-	if g:asyncrun_timer <= 0
-		call s:AsyncRun_Job_Update(-1)
-	endif
 endfunc
 
 " because exit_cb and close_cb are disorder, we need OnFinish to guarantee
 " both of then have already invoked
-function! s:AsyncRun_Job_OnFinish(what)
+function! s:AsyncRun_Job_OnFinish()
 	" caddexpr '(OnFinish): '.a:what.' '.s:async_state
 	if s:async_state == 0
 		return -1
-	endif
-	if a:what == 0
-		let s:async_state = or(s:async_state, 2)
-	elseif a:what == 1
-		let s:async_state = or(s:async_state, 4)
-	else
-		let s:async_state = 7
-	endif
-	if and(s:async_state, 7) != 7
-		return -2
 	endif
 	if exists('s:async_job')
 		unlet s:async_job
@@ -460,18 +456,17 @@ function! s:AsyncRun_Job_OnClose(channel)
 		endif
 	endwhile
 	let s:async_debug = 0
-	call s:AsyncRun_Job_Update(-1)
-	call s:AsyncRun_Job_OnFinish(1)
 	if exists('s:async_job')
 		call job_status(s:async_job)
 	endif
+	let s:async_state = or(s:async_state, 4)
 endfunc
 
 " invoked on "exit_cb" when job exited
 function! s:AsyncRun_Job_OnExit(job, message)
 	" caddexpr "[exit]: ".a:message." ".type(a:message)
 	let s:async_code = a:message
-	call s:AsyncRun_Job_OnFinish(0)
+	let s:async_state = or(s:async_state, 2)
 endfunc
 
 " invoked on neovim when stderr/stdout/exit
@@ -489,7 +484,7 @@ function! s:AsyncRun_Job_NeoVim(job_id, data, event)
 		if type(a:data) == type(1)
 			let s:async_code = a:data
 		endif
-		call s:AsyncRun_Job_OnFinish(2)
+		call s:AsyncRun_Job_OnFinish()
 	endif
 endfunc
 
@@ -609,11 +604,8 @@ function! s:AsyncRun_Job_Start(cmd)
 		endif
 		call setqflist([{'text':l:arguments}], 'a')
 		let s:async_start = float2nr(reltimefloat(reltime()))
-		if g:asyncrun_timer > 0 && s:async_nvim == 0
-			let l:options = {'repeat':-1}
-			let l:name = 'g:AsyncRun_Job_OnTimer'
-			let s:async_timer = timer_start(100, l:name, l:options)
-		endif
+		let l:name = 'g:AsyncRun_Job_OnTimer'
+		let s:async_timer = timer_start(100, l:name, {'repeat':-1})
 		let s:async_state = 1
 		let g:asyncrun_status = "running"
 		let s:async_info.post = s:async_info.postsave
@@ -639,6 +631,10 @@ function! s:AsyncRun_Job_Stop(how)
 		call s:NotSupport()
 		return -1
 	endif
+	while s:async_head > s:async_tail
+		let s:async_head -= 1
+		unlet s:async_output[s:async_head]
+	endwhile
 	if exists('s:async_job')
 		if s:async_nvim == 0
 			if job_status(s:async_job) == 'run'
