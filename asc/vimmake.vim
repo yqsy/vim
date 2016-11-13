@@ -1381,7 +1381,7 @@ function! vimmake#grep(text, cwd)
             let l:full = vimmake#fullname(a:cwd)
             let l:inc .= ' '.shellescape(l:full)
         endif
-		let cmd = 'grep -n -R ' .shellescape(a:text). l:inc .' /dev/null'
+		let cmd = 'grep -n -s -R ' .shellescape(a:text). l:inc .' /dev/null'
 		call vimmake#run('', {}, cmd)
 	elseif mode == 'findstr'
 		let l:inc = ''
