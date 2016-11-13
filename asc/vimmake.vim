@@ -77,7 +77,7 @@ endif
 
 " using timer to update quickfix
 if !exists('g:vimmake_build_timer')
-	let g:vimmake_build_timer = 100
+	let g:vimmake_build_timer = 25
 endif
 
 " will be executed after async build finished
