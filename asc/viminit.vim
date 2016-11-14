@@ -1,3 +1,5 @@
+" vi:set ts=8 sts=4 sw=4 et:
+"
 " viminit.vim - Vim initialize script
 "
 " Maintainer: skywind3000 (at) gmail.com
@@ -9,10 +11,10 @@
 " initialize basic settings
 set nocompatible
 
+set tabstop=8
 set shiftwidth=4
 set softtabstop=4
-set noexpandtab
-set tabstop=4
+set expandtab
 set cindent
 set autoindent
 set winaltkeys=no
@@ -24,13 +26,13 @@ set ruler
 set nopaste
 
 if has('multi_byte')
-	set fileencodings=utf-8,gb2312,gbk,gb18030,big5
-	set fenc=utf-8
-	set enc=utf-8
+    set fileencodings=utf-8,gb2312,gbk,gb18030,big5
+    set fenc=utf-8
+    set enc=utf-8
 endif
 
 if has('mouse')
-	"set mouse=c
+    "set mouse=c
 endif
 
 
@@ -86,71 +88,71 @@ inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 " keymap to switch tab in both gui and terminal (need config)
 if has('gui_running') 
-	noremap <silent><c-tab> :tabprev<CR>
-	inoremap <silent><c-tab> <ESC>:tabprev<CR>
-	noremap <silent><m-1> :tabn 1<cr>
-	noremap <silent><m-2> :tabn 2<cr>
-	noremap <silent><m-3> :tabn 3<cr>
-	noremap <silent><m-4> :tabn 4<cr>
-	noremap <silent><m-5> :tabn 5<cr>
-	noremap <silent><m-6> :tabn 6<cr>
-	noremap <silent><m-7> :tabn 7<cr>
-	noremap <silent><m-8> :tabn 8<cr>
-	noremap <silent><m-9> :tabn 9<cr>
-	noremap <silent><m-0> :tabn 10<cr>
-	inoremap <silent><m-1> <ESC>:tabn 1<cr>
-	inoremap <silent><m-2> <ESC>:tabn 2<cr>
-	inoremap <silent><m-3> <ESC>:tabn 3<cr>
-	inoremap <silent><m-4> <ESC>:tabn 4<cr>
-	inoremap <silent><m-5> <ESC>:tabn 5<cr>
-	inoremap <silent><m-6> <ESC>:tabn 6<cr>
-	inoremap <silent><m-7> <ESC>:tabn 7<cr>
-	inoremap <silent><m-8> <ESC>:tabn 8<cr>
-	inoremap <silent><m-9> <ESC>:tabn 9<cr>
-	inoremap <silent><m-0> <ESC>:tabn 10<cr>
+    noremap <silent><c-tab> :tabprev<CR>
+    inoremap <silent><c-tab> <ESC>:tabprev<CR>
+    noremap <silent><m-1> :tabn 1<cr>
+    noremap <silent><m-2> :tabn 2<cr>
+    noremap <silent><m-3> :tabn 3<cr>
+    noremap <silent><m-4> :tabn 4<cr>
+    noremap <silent><m-5> :tabn 5<cr>
+    noremap <silent><m-6> :tabn 6<cr>
+    noremap <silent><m-7> :tabn 7<cr>
+    noremap <silent><m-8> :tabn 8<cr>
+    noremap <silent><m-9> :tabn 9<cr>
+    noremap <silent><m-0> :tabn 10<cr>
+    inoremap <silent><m-1> <ESC>:tabn 1<cr>
+    inoremap <silent><m-2> <ESC>:tabn 2<cr>
+    inoremap <silent><m-3> <ESC>:tabn 3<cr>
+    inoremap <silent><m-4> <ESC>:tabn 4<cr>
+    inoremap <silent><m-5> <ESC>:tabn 5<cr>
+    inoremap <silent><m-6> <ESC>:tabn 6<cr>
+    inoremap <silent><m-7> <ESC>:tabn 7<cr>
+    inoremap <silent><m-8> <ESC>:tabn 8<cr>
+    inoremap <silent><m-9> <ESC>:tabn 9<cr>
+    inoremap <silent><m-0> <ESC>:tabn 10<cr>
 endif
 
 " cmd+N to switch tab quickly in macvim
 if has("gui_macvim")
-	set macmeta
-	noremap <silent><c-tab> :tabprev<CR>
-	inoremap <silent><c-tab> <ESC>:tabprev<CR>
-	noremap <silent><d-1> :tabn 1<cr>
-	noremap <silent><d-2> :tabn 2<cr>
-	noremap <silent><d-3> :tabn 3<cr>
-	noremap <silent><d-4> :tabn 4<cr>
-	noremap <silent><d-5> :tabn 5<cr>
-	noremap <silent><d-6> :tabn 6<cr>
-	noremap <silent><d-7> :tabn 7<cr>
-	noremap <silent><d-8> :tabn 8<cr>
-	noremap <silent><d-9> :tabn 9<cr>
-	noremap <silent><d-0> :tabn 10<cr>
-	inoremap <silent><d-1> <ESC>:tabn 1<cr>
-	inoremap <silent><d-2> <ESC>:tabn 2<cr>
-	inoremap <silent><d-3> <ESC>:tabn 3<cr>
-	inoremap <silent><d-4> <ESC>:tabn 4<cr>
-	inoremap <silent><d-5> <ESC>:tabn 5<cr>
-	inoremap <silent><d-6> <ESC>:tabn 6<cr>
-	inoremap <silent><d-7> <ESC>:tabn 7<cr>
-	inoremap <silent><d-8> <ESC>:tabn 8<cr>
-	inoremap <silent><d-9> <ESC>:tabn 9<cr>
-	inoremap <silent><d-0> <ESC>:tabn 10<cr>
-	noremap <silent><d-o> :browse tabnew<cr>
-	inoremap <silent><d-o> <ESC>:browse tabnew<cr>
+    set macmeta
+    noremap <silent><c-tab> :tabprev<CR>
+    inoremap <silent><c-tab> <ESC>:tabprev<CR>
+    noremap <silent><d-1> :tabn 1<cr>
+    noremap <silent><d-2> :tabn 2<cr>
+    noremap <silent><d-3> :tabn 3<cr>
+    noremap <silent><d-4> :tabn 4<cr>
+    noremap <silent><d-5> :tabn 5<cr>
+    noremap <silent><d-6> :tabn 6<cr>
+    noremap <silent><d-7> :tabn 7<cr>
+    noremap <silent><d-8> :tabn 8<cr>
+    noremap <silent><d-9> :tabn 9<cr>
+    noremap <silent><d-0> :tabn 10<cr>
+    inoremap <silent><d-1> <ESC>:tabn 1<cr>
+    inoremap <silent><d-2> <ESC>:tabn 2<cr>
+    inoremap <silent><d-3> <ESC>:tabn 3<cr>
+    inoremap <silent><d-4> <ESC>:tabn 4<cr>
+    inoremap <silent><d-5> <ESC>:tabn 5<cr>
+    inoremap <silent><d-6> <ESC>:tabn 6<cr>
+    inoremap <silent><d-7> <ESC>:tabn 7<cr>
+    inoremap <silent><d-8> <ESC>:tabn 8<cr>
+    inoremap <silent><d-9> <ESC>:tabn 9<cr>
+    inoremap <silent><d-0> <ESC>:tabn 10<cr>
+    noremap <silent><d-o> :browse tabnew<cr>
+    inoremap <silent><d-o> <ESC>:browse tabnew<cr>
 endif
 
 " fast file/tab actions in gui
 if has('gui_running')
-	noremap <silent><m-o> :tabnew<cr>
-	inoremap <silent><m-o> <ESC>:tabnew<cr>
-	noremap <silent><m-t> :tabnew<cr>
-	inoremap <silent><m-t> <ESC>:tabnew<cr>
-	noremap <silent><m-w> :tabclose<cr>  
-	inoremap <silent><m-w> <ESC>:tabclose<cr>
-	noremap <silent><m-e> :tabclose<cr>
-	inoremap <silent><m-e> <ESC>:tabclose<cr>
-	noremap <m-s> :w<cr>
-	inoremap <m-s> <esc>:w<cr>
+    noremap <silent><m-o> :tabnew<cr>
+    inoremap <silent><m-o> <ESC>:tabnew<cr>
+    noremap <silent><m-t> :tabnew<cr>
+    inoremap <silent><m-t> <ESC>:tabnew<cr>
+    noremap <silent><m-w> :tabclose<cr>  
+    inoremap <silent><m-w> <ESC>:tabclose<cr>
+    noremap <silent><m-e> :tabclose<cr>
+    inoremap <silent><m-e> <ESC>:tabclose<cr>
+    noremap <m-s> :w<cr>
+    inoremap <m-s> <esc>:w<cr>
 endif
 
 

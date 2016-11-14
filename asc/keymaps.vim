@@ -11,7 +11,7 @@
 " VimTools
 "----------------------------------------------------------------------
 for s:index in range(10)
-	exec 'noremap <space>'.s:index.' :VimTool ' . s:index . '<cr>'
+    exec 'noremap <space>'.s:index.' :VimTool ' . s:index . '<cr>'
 endfor
 
 noremap <F1> :VimTool 1<cr>
@@ -26,19 +26,19 @@ inoremap <F4> <ESC>:VimTool 4<cr>
 
 " keymap for VimTool
 if has('gui_running') && (has('win32') || has('win64'))
-	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
-	for s:index in range(10)
-		let s:name = ''.s:index
-		if s:index == 0 | let s:name = '10' | endif
-		exec 'noremap <silent><M-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
-		exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
-	endfor
+    let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
+    for s:index in range(10)
+        let s:name = ''.s:index
+        if s:index == 0 | let s:name = '10' | endif
+        exec 'noremap <silent><M-'.s:keys[s:index].'> :VimTool '.s:index.'<cr>'
+        exec 'inoremap <silent><M-'.s:keys[s:index].'> <ESC>:VimTool '.s:index.'<cr>'
+    endfor
 else
-	" require to config terminal to remap key alt-shift+? to '\033[{0}?~'
-	for s:index in range(10)
-		let s:name = ''.s:index
-		if s:index == 0 | let s:name = '10' | endif
-	endfor
+    " require to config terminal to remap key alt-shift+? to '\033[{0}?~'
+    for s:index in range(10)
+        let s:name = ''.s:index
+        if s:index == 0 | let s:name = '10' | endif
+    endfor
 endif
 
 
@@ -60,7 +60,7 @@ noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
 
 noremap <silent><space>ha :GuiSignRemove 
-			\ errormarker_error errormarker_warning<cr>
+            \ errormarker_error errormarker_warning<cr>
 
 " replace
 noremap <space>p viw"0p
@@ -79,43 +79,43 @@ noremap <silent><space>el :nohl<cr>
 " gui hotkeys - alt + ?
 "----------------------------------------------------------------------
 if has('gui_running')
-	noremap <M-=> :resize +3<cr>
-	noremap <M--> :resize -3<cr>
-	noremap <M-,> :vertical resize -3<cr>
-	noremap <M-.> :vertical resize +3<cr>
-	noremap <silent><A-o> :call Open_Browse(2)<cr>
-	inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
-	noremap <S-cr> o<ESC>
-	noremap <c-cr> O<esc>
-	noremap <M-l> w
-	noremap <M-h> b
-	noremap <M-j> 10j
-	noremap <M-k> 10k
-	vnoremap <M-c> "+y
-	noremap <M-V> "+P
-	noremap <M-v> "+p
-	noremap <M-p> "0p
-	noremap <C-S> :w<cr>
-	inoremap <C-S> <ESC>:w<cr>
-	noremap <M-Left> :call Tab_MoveLeft()<cr>
-	noremap <M-Right> :call Tab_MoveRight()<cr>
-	inoremap <M-Left> <ESC>:call Tab_MoveLeft()<cr>
-	inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
-	noremap <M-r> :VimExecute run<cr>
-	inoremap <M-r> <ESC>:VimExecute run<cr>
-	noremap <M-b> :VimBuild emake<cr>
-	inoremap <M-b> <ESC>:VimBuild emake<cr>
-	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
-	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
-	noremap <M-a> ggVG
-	inoremap <M-a> <ESC>ggVG
-	noremap <m-_> :call Change_Transparency(-2)<cr>
-	noremap <m-+> :call Change_Transparency(+2)<cr>
-	if has('gui_macvim')
-		noremap <m-\|> :call Toggle_Transparency(9)<cr>
-	else
-		noremap <m-\|> :call Toggle_Transparency(15)<cr>
-	endif
+    noremap <M-=> :resize +3<cr>
+    noremap <M--> :resize -3<cr>
+    noremap <M-,> :vertical resize -3<cr>
+    noremap <M-.> :vertical resize +3<cr>
+    noremap <silent><A-o> :call Open_Browse(2)<cr>
+    inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
+    noremap <S-cr> o<ESC>
+    noremap <c-cr> O<esc>
+    noremap <M-l> w
+    noremap <M-h> b
+    noremap <M-j> 10j
+    noremap <M-k> 10k
+    vnoremap <M-c> "+y
+    noremap <M-V> "+P
+    noremap <M-v> "+p
+    noremap <M-p> "0p
+    noremap <C-S> :w<cr>
+    inoremap <C-S> <ESC>:w<cr>
+    noremap <M-Left> :call Tab_MoveLeft()<cr>
+    noremap <M-Right> :call Tab_MoveRight()<cr>
+    inoremap <M-Left> <ESC>:call Tab_MoveLeft()<cr>
+    inoremap <M-Right> <ESC>:call Tab_MoveRight()<cr>
+    noremap <M-r> :VimExecute run<cr>
+    inoremap <M-r> <ESC>:VimExecute run<cr>
+    noremap <M-b> :VimBuild emake<cr>
+    inoremap <M-b> <ESC>:VimBuild emake<cr>
+    noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
+    inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
+    noremap <M-a> ggVG
+    inoremap <M-a> <ESC>ggVG
+    noremap <m-_> :call Change_Transparency(-2)<cr>
+    noremap <m-+> :call Change_Transparency(+2)<cr>
+    if has('gui_macvim')
+        noremap <m-\|> :call Toggle_Transparency(9)<cr>
+    else
+        noremap <m-\|> :call Toggle_Transparency(15)<cr>
+    endif
 endif
 
 
@@ -147,13 +147,13 @@ noremap <silent><M-'> :call asclib#preview_goto('')<cr>
 noremap <silent><M-"> :call asclib#preview_goto('tab')<cr>
 
 if !has('gui_running')
-	exec "set <S-F10>=\e[34~"
-	exec "set <S-F4>=\e[25~"
-	if !has('nvim')
-		exec "set <M-;>=\e]{0};~"
-		exec "set <M-'>=\e]{0}'~"
-		exec "set <M-:>=\e]{0}:~"
-	endif
+    exec "set <S-F10>=\e[34~"
+    exec "set <S-F4>=\e[25~"
+    if !has('nvim')
+        exec "set <M-;>=\e]{0};~"
+        exec "set <M-'>=\e]{0}'~"
+        exec "set <M-:>=\e]{0}:~"
+    endif
 endif
 
 
@@ -167,10 +167,10 @@ noremap <silent><M-{> :call Tools_QuickfixCursor(4)<cr>
 noremap <silent><M-}> :call Tools_QuickfixCursor(5)<cr>
 
 if (!has('gui_running')) && (!has('nvim'))
-	exec "set <m-[>=\e]{0}[~"
-	exec "set <m-]>=\e]{0}]~"
-	exec "set <m-{>=\e]{0}{~"
-	exec "set <m-}>=\e]{0}}~"
+    exec "set <m-[>=\e]{0}[~"
+    exec "set <m-]>=\e]{0}]~"
+    exec "set <m-{>=\e]{0}{~"
+    exec "set <m-}>=\e]{0}}~"
 endif
 
 
@@ -193,8 +193,8 @@ set ssop-=options    " do not store global and local values in a session
 set ssop-=folds      " do not store folds
 
 for s:index in range(10)
-	exec 'noremap <silent><space>f'.s:index.'s :mksession! ~/.vim/session.'.s:index.'<cr>'
-	exec 'noremap <silent><space>f'.s:index.'l :so ~/.vim/session.'.s:index.'<cr>'
+    exec 'noremap <silent><space>f'.s:index.'s :mksession! ~/.vim/session.'.s:index.'<cr>'
+    exec 'noremap <silent><space>f'.s:index.'l :so ~/.vim/session.'.s:index.'<cr>'
 endfor
 
 
@@ -215,11 +215,11 @@ noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
 noremap <space>ho :only<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
-	noremap <space>hr :tabnew ~/_vimrc<cr>
+    noremap <space>hr :tabnew ~/_vimrc<cr>
 elseif !has('nvim')
-	noremap <space>hr :tabnew ~/.vimrc<cr>
+    noremap <space>hr :tabnew ~/.vimrc<cr>
 else
-	noremap <space>hr :tabnew ~/.config/nvim/init.vim<cr>
+    noremap <space>hr :tabnew ~/.config/nvim/init.vim<cr>
 endif
 
 let s:filename = expand('<sfile>:p')
@@ -251,8 +251,8 @@ noremap <silent><space>g' :call asclib#preview_goto('')<cr>
 noremap <silent><space>g" :call asclib#preview_goto('tab')<cr>
 
 if has('win32') || has('win64')
-	noremap <space>gc :silent !start cmd.exe<cr>
-	noremap <space>ge :silent !start /b cmd.exe /C start .<cr>
+    noremap <space>gc :silent !start cmd.exe<cr>
+    noremap <space>ge :silent !start /b cmd.exe /C start .<cr>
 else
 endif
 
@@ -270,18 +270,18 @@ noremap <silent><space>lc :call asclib#lint_cppcheck('')<cr>
 " more personal in gvim
 "----------------------------------------------------------------------
 if has('gui_running') && (has('win32') || has('win64'))
-	noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
-	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
-	noremap <S-F12> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
-	inoremap <S-F12> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+    noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
+    inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
+    noremap <S-F12> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+    inoremap <S-F12> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 endif
 
 
 if has('gui_running')
-	noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
-	noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
-	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
-	noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
+    noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
+    noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
+    noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
+    noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
 endif
 
 
