@@ -460,6 +460,7 @@ endfunc
 "----------------------------------------------------------------------
 let s:scriptname = expand('<sfile>:p')
 let s:scripthome = fnamemodify(s:scriptname, ':h')
+let s:windows = (has('win95') || has('win32') || has('win64') || has('win16'))
 
 " join path
 function! asclib#path_join(home, name)
@@ -505,6 +506,21 @@ function! asclib#path_which(name)
 	return ''
 endfunc
 
+" find executable
+function! asclib#path_executable(name)
+	if s:windows != 0
+		for n in ['', '.exe', '.cmd', '.bat', '.vbs']
+			let nname = a:name . n
+			let npath = asclib#path_which(nname)
+			if npath != ''
+				return npath
+			endif
+		endfor
+	else
+		return asclib#path_which(a:name)
+	endif
+	return ''
+endfunc
 
 
 "----------------------------------------------------------------------
