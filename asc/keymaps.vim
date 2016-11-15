@@ -241,9 +241,9 @@ nnoremap <space>gr :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <space>gq :AsyncStop<cr>
 nnoremap <space>gQ :AsyncStop!<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
+nnoremap <space>gg :setlocal ts=8 sts=4 sw=4 et<cr>
 nnoremap <silent><space>gf :call Tools_QuickfixCursor(3)<cr>
 nnoremap <silent><space>gb :call Tools_QuickfixCursor(2)<cr>
-nnoremap <silent><space>g; :
 
 noremap <silent><space>g; :call asclib#preview_tag(expand("<cword>"))<cr>
 noremap <silent><space>g: :call asclib#preview_close()<cr>
