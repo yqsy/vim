@@ -6,7 +6,7 @@
 function! QuickfixChineseConvert()
    let qflist = getqflist()
    for i in qflist
-      let i.text = iconv(i.text, "gbk", "utf-8")
+	  let i.text = iconv(i.text, "gbk", "utf-8")
    endfor
    call setqflist(qflist)
 endfunction
@@ -16,18 +16,18 @@ endfunction
 "- FontBoldOff
 "----------------------------------------------------------------------
 function! s:FontBoldOff()
-    let hid = 1
-    while 1
-        let hln = synIDattr(hid, 'name')
-        if !hlexists(hln) | break | endif
-        if hid == synIDtrans(hid) && synIDattr(hid, 'bold')
-            let atr = ['underline', 'undercurl', 'reverse', 'inverse', 'italic', 'standout']
-            call filter(atr, 'synIDattr(hid, v:val)')
-            let gui = empty(atr) ? 'NONE' : join(atr, ',')
-            exec 'highlight ' . hln . ' gui=' . gui
-        endif
-        let hid += 1
-    endwhile
+	let hid = 1
+	while 1
+		let hln = synIDattr(hid, 'name')
+		if !hlexists(hln) | break | endif
+		if hid == synIDtrans(hid) && synIDattr(hid, 'bold')
+			let atr = ['underline', 'undercurl', 'reverse', 'inverse', 'italic', 'standout']
+			call filter(atr, 'synIDattr(hid, v:val)')
+			let gui = empty(atr) ? 'NONE' : join(atr, ',')
+			exec 'highlight ' . hln . ' gui=' . gui
+		endif
+		let hid += 1
+	endwhile
 endfunc
 
 command! FontBoldOff call s:FontBoldOff()
@@ -37,24 +37,24 @@ command! FontBoldOff call s:FontBoldOff()
 "- GUI Setting
 "----------------------------------------------------------------------
 function! s:GuiTheme(theme)
-    if type(a:theme) == 0
-        let l:theme = string(a:theme)
-    else
-        let l:theme = a:theme
-    endif
-    if l:theme == '0'
-        set guifont=inconsolata:h11
-        color desert256
-        highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
-            \ gui=NONE guifg=DarkGrey guibg=NONE
-    elseif l:theme == '1'
-        set guifont=inconsolata:h11
-        color seoul256
-    elseif l:theme == '2'
-        set guifont=fixedsys:h10
-        color seoul256
-        FontBoldOff
-    endif
+	if type(a:theme) == 0
+		let l:theme = string(a:theme)
+	else
+		let l:theme = a:theme
+	endif
+	if l:theme == '0'
+		set guifont=inconsolata:h11
+		color desert256
+		highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
+			\ gui=NONE guifg=DarkGrey guibg=NONE
+	elseif l:theme == '1'
+		set guifont=inconsolata:h11
+		color seoul256
+	elseif l:theme == '2'
+		set guifont=fixedsys:h10
+		color seoul256
+		FontBoldOff
+	endif
 endfunc
 
 command! -nargs=1 GuiTheme call s:GuiTheme(<f-args>)
@@ -64,22 +64,22 @@ command! -nargs=1 GuiTheme call s:GuiTheme(<f-args>)
 " remove signs
 "----------------------------------------------------------------------
 function! s:GuiSignRemove(...)
-    if a:0 == 0 | return | endif
-    redir => x
-    silent sign place
-    redir END
-    let lines = split(x, '\n')
-    for line in lines
-        if line =~ '^\s*line=\d*\s*id=\d*\s*name='
-            let name = matchstr(line, '^\s*line=.*name=\zs\w*')
-            let id = matchstr(line, '^\s*line=\d*\s*id=\zs\w*')
-            for x in range(a:0)
-                if name == a:{x + 1}
-                    silent exec 'sign unplace '.id
-                endif
-            endfor
-        endif
-    endfor
+	if a:0 == 0 | return | endif
+	redir => x
+	silent sign place
+	redir END
+	let lines = split(x, '\n')
+	for line in lines
+		if line =~ '^\s*line=\d*\s*id=\d*\s*name='
+			let name = matchstr(line, '^\s*line=.*name=\zs\w*')
+			let id = matchstr(line, '^\s*line=\d*\s*id=\zs\w*')
+			for x in range(a:0)
+				if name == a:{x + 1}
+					silent exec 'sign unplace '.id
+				endif
+			endfor
+		endif
+	endfor
 endfunc
 
 command! -nargs=+ GuiSignRemove call s:GuiSignRemove(<f-args>)
@@ -90,7 +90,7 @@ command! -nargs=+ GuiSignRemove call s:GuiSignRemove(<f-args>)
 " Gui quit
 "----------------------------------------------------------------------
 if !has('gui_running')
-    finish
+	finish
 endif
 
 
@@ -98,33 +98,33 @@ endif
 "- GUI Setting
 "----------------------------------------------------------------------
 if has('gui_running')
-    set guioptions-=L
-    set mouse=a
-    set showtabline=2
-    set laststatus=2
-    set number
-    set t_Co=256
-    if has('win32') || has('win64') || has('win16') || has('win95')
-        language messages en
-        set langmenu=en_US
-        set guifont=inconsolata:h11
-        "set guifont=fixedsys
-        "au QuickfixCmdPost make call QuickfixChineseConvert()
-        let g:config_vim_gui_label = 3
-        "color desert256
-        try
-            color seoul256
-        catch
-        endtry
-        set guioptions-=t
-        set guioptions=egrmT
-    elseif has('gui_macvim')
-        color seoul256
-        set guioptions=egrm
-    endif
-    highlight Pmenu guibg=darkgrey guifg=black
+	set guioptions-=L
+	set mouse=a
+	set showtabline=2
+	set laststatus=2
+	set number
+	set t_Co=256
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		language messages en
+		set langmenu=en_US
+		set guifont=inconsolata:h11
+		"set guifont=fixedsys
+		"au QuickfixCmdPost make call QuickfixChineseConvert()
+		let g:config_vim_gui_label = 3
+		"color desert256
+		try
+			color seoul256
+		catch
+		endtry
+		set guioptions-=t
+		set guioptions=egrmT
+	elseif has('gui_macvim')
+		color seoul256
+		set guioptions=egrm
+	endif
+	highlight Pmenu guibg=darkgrey guifg=black
 else
-    set t_Co=256 t_md=
+	set t_Co=256 t_md=
 endif
 
 
