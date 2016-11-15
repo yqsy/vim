@@ -455,7 +455,6 @@ function! Tools_SwitchLayout()
 	set laststatus=2
 	if !has('gui_running')
 		set t_Co=256
-		set ttimeoutlen=100
 	endif
 	if $SSH_CONNECTION != ''
 		let g:vimmake_build_bell = 1

@@ -190,7 +190,6 @@ function! Terminal_SwitchTab()
 			exec "set <M-".i.">=\e]{0}".i."~"
 		endif
 	endfor
-	set ttimeout ttimeoutlen=100
 endfunc
 
 

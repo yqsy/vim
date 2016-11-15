@@ -19,6 +19,8 @@ set winaltkeys=no
 set nowrap
 set wildignore=*.swp,*.bak,*.pyc,*.obj,*.o,*.class
 set backspace=eol,start,indent
+set ttimeout
+set ttimeoutlen=100
 set cmdheight=1
 set ruler
 set nopaste
@@ -155,7 +157,7 @@ endif
 
 
 " miscs
-set scrolloff=3
+set scrolloff=2
 set showmatch
 set display=lastline
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
