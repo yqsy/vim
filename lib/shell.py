@@ -632,6 +632,45 @@ def svnlook_cat(repos, filepath, revision = None):
 
 
 #----------------------------------------------------------------------
+# expand tab
+#----------------------------------------------------------------------
+def expandtab (tabsize, text):
+	output = []
+	for line in text.split('\r\n'):
+		line = line.rstrip()
+		text = ''
+		pos = 0
+		size = abs(tabsize)
+		if tabsize > 0:
+			for ch in line:
+				if ch != '\t':
+					text += ch
+					pos += 1
+				else:
+					inc = size - (pos % size)
+					pos += inc
+					text += ' ' * inc
+		elif tabsize < 0:
+			offset = 0
+			for ch in line:
+				if ch == ' ':
+					pos += 1
+				elif ch == '\t':
+					inc = size - (pos % size)
+					pos += inc
+				else:
+					break
+				offset += 1
+			count = pos
+			head = '\t' * (count / size) + (' ' * (count % size))
+			text = head + line[offset:]
+		else:
+			text = line
+		output.append(text)
+	return '\n'.join(output)
+
+
+#----------------------------------------------------------------------
 # testing case
 #----------------------------------------------------------------------
 if __name__ == '__main__':
