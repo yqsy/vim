@@ -242,6 +242,7 @@ nnoremap <space>gq :AsyncStop<cr>
 nnoremap <space>gQ :AsyncStop!<cr>
 nnoremap <space>gj :%!python -m json.tool<cr>
 nnoremap <space>gg :setlocal ts=8 sts=4 sw=4 et<cr>
+nnoremap <space>gG :setlocal ts=4 sts=4 sw=4 noet<cr>
 nnoremap <silent><space>gf :call Tools_QuickfixCursor(3)<cr>
 nnoremap <silent><space>gb :call Tools_QuickfixCursor(2)<cr>
 
