@@ -3,7 +3,7 @@
 " Maintainer: skywind3000 (at) gmail.com
 " Homepage: http://www.vim.org/scripts/script.php?script_id=5431
 "
-" Last change: 2016.11.13
+" Last change: 2016.11.17
 "
 " Run shell command in background and output to quickfix:
 "     :AsyncRun[!] [options] {cmd} ...
@@ -88,6 +88,10 @@
 "----------------------------------------------------------------------
 "- Global Settings & Variables
 "----------------------------------------------------------------------
+if !exists('g:asyncrun_start')
+	let g:asyncrun_start = ''
+endif
+
 if !exists('g:asyncrun_exit')
 	let g:asyncrun_exit = ''
 endif
@@ -355,9 +359,11 @@ function! s:AsyncRun_Job_AutoCmd(mode, auto)
 		return
 	endif
 	if a:mode == 0
+		silent doautocmd User AsyncRunStart
 		exec 'silent doautocmd QuickFixCmdPre '. name
 	else
 		exec 'silent doautocmd QuickFixCmdPost '. name
+		silent doautocmd User AsyncRunExit
 	endif
 endfunc
 
@@ -611,8 +617,11 @@ function! s:AsyncRun_Job_Start(cmd)
 		let s:async_info.postsave = ''
 		let s:async_info.autosave = ''
 		let g:asyncrun_text = s:async_info.text
-		redrawstatus!
 		call s:AsyncRun_Job_AutoCmd(0, s:async_info.auto)
+		if g:asyncrun_start != ''
+			exec g:asyncrun_start
+		endif
+		redrawstatus!
 	else
 		unlet s:async_job
 		call s:ErrorMsg("Background job start failed '".a:cmd."'")

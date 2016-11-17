@@ -1,7 +1,7 @@
 " vimmake.vim - Enhenced Customize Make system for vim
 "
 " Maintainer: skywind3000 (at) gmail.com
-" Last change: 2016.11.13
+" Last change: 2016.11.17
 "
 " Execute customize tools: ~/.vim/vimmake.{name} directly:
 "     :VimTool {name}
@@ -78,6 +78,11 @@ endif
 " using timer to update quickfix
 if !exists('g:vimmake_build_timer')
 	let g:vimmake_build_timer = 25
+endif
+
+" will be executed before async build start
+if !exists('g:vimmake_build_start')
+	let g:vimmake_build_start = ''
 endif
 
 " will be executed after async build finished
@@ -398,9 +403,11 @@ function! s:Vimmake_Build_AutoCmd(mode, auto)
 		return
 	endif
 	if a:mode == 0
+		silent doautocmd User VimMakeStart
 		exec 'silent doautocmd QuickFixCmdPre '. name
 	else
 		exec 'silent doautocmd QuickFixCmdPost '. name
+		silent doautocmd User VimMakeExit
 	endif
 endfunc
 
@@ -645,8 +652,11 @@ function! s:Vimmake_Build_Start(cmd)
 		let s:build_info.postsave = ''
 		let s:build_info.autosave = ''
 		let g:vimmake_text = s:build_info.text
-		redrawstatus!
 		call s:Vimmake_Build_AutoCmd(0, s:build_info.auto)
+		if g:vimmake_build_start != ''
+			exec g:vimmake_build_start
+		endif
+		redrawstatus!
 	else
 		unlet s:build_job
 		call s:ErrorMsg("Background job start failed '".a:cmd."'")
