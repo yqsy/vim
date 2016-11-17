@@ -400,7 +400,7 @@ function! s:Vimmake_Build_AutoCmd(mode, auto)
 	if !has('autocmd') | return | endif
 	let name = (a:auto == '')? g:vimmake_build_auto : a:auto
 	if a:mode == 0
-		silent doautocmd User VimMakeStart
+		doautocmd User VimMakeStart
 		if name =~ '^\w\+' && name != 'NONE' && name != '<NONE>'
 			silent exec 'doautocmd QuickFixCmdPre '. name
 		endif
@@ -408,7 +408,7 @@ function! s:Vimmake_Build_AutoCmd(mode, auto)
 		if name =~ '^\w\+' && name != 'NONE' && name != '<NONE>'
 			silent exec 'doautocmd QuickFixCmdPost '. name
 		endif
-		silent doautocmd User VimMakeExit
+		doautocmd User VimMakeExit
 	endif
 endfunc
 
