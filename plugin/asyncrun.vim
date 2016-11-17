@@ -355,15 +355,16 @@ endfunc
 function! s:AsyncRun_Job_AutoCmd(mode, auto)
 	if !has('autocmd') | return | endif
 	let name = (a:auto == '')? g:asyncrun_auto : a:auto
-	if name !~ '^\w\+' || name == 'NONE' || name == '<NONE>'
-		return
-	endif
 	if a:mode == 0
-		silent doautocmd User AsyncRunStart
-		exec 'silent doautocmd QuickFixCmdPre '. name
+		doautocmd User AsyncRunStart
+		if name =~ '^\w\+' && name != 'NONE' && name != '<NONE>'
+			silent exec 'doautocmd QuickFixCmdPre '. name
+		endif
 	else
-		exec 'silent doautocmd QuickFixCmdPost '. name
-		silent doautocmd User AsyncRunExit
+		if name =~ '^\w\+' && name != 'NONE' && name != '<NONE>'
+			silent exec 'doautocmd QuickFixCmdPost '. name
+		endif
+		doautocmd User AsyncRunExit
 	endif
 endfunc
 
