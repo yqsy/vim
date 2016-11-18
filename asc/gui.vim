@@ -104,6 +104,7 @@ if has('gui_running')
 	set laststatus=2
 	set number
 	set t_Co=256
+	let g:seoul256_background = 236
 	if has('win32') || has('win64') || has('win16') || has('win95')
 		language messages en
 		set langmenu=en_US
