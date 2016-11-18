@@ -149,11 +149,6 @@ noremap <silent><M-"> :call asclib#preview_goto('tab')<cr>
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"
 	exec "set <S-F4>=\e[25~"
-	if !has('nvim')
-		exec "set <M-;>=\e]{0};~"
-		exec "set <M-'>=\e]{0}'~"
-		exec "set <M-:>=\e]{0}:~"
-	endif
 endif
 
 
@@ -165,13 +160,6 @@ noremap <silent><M-[> :call Tools_QuickfixCursor(2)<cr>
 noremap <silent><M-]> :call Tools_QuickfixCursor(3)<cr>
 noremap <silent><M-{> :call Tools_QuickfixCursor(4)<cr>
 noremap <silent><M-}> :call Tools_QuickfixCursor(5)<cr>
-
-if (!has('gui_running')) && (!has('nvim'))
-	exec "set <m-[>=\e]{0}[~"
-	exec "set <m-]>=\e]{0}]~"
-	exec "set <m-{>=\e]{0}{~"
-	exec "set <m-}>=\e]{0}}~"
-endif
 
 
 "----------------------------------------------------------------------
