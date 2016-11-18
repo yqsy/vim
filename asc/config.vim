@@ -190,31 +190,30 @@ function! Terminal_SwitchTab()
 	endfor
 endfunc
 
-function! Terminal_MetaCode(mode, key)
+function! Terminal_MetaMode(mode)
 	if has('nvim') || has('gui_running')
 		return
 	endif
-	if a:mode == 0
-		exec "set <M-".a:key.">=\e".a:key
-	else
-		exec "set <M-".a:key.">=\e]{0}".a:key."~"
-	endif
-endfunc
-
-function! Terminal_MetaMode(mode)
+	function! s:metacode(mode, key)
+		if a:mode == 0
+			exec "set <M-".a:key.">=\e".a:key
+		else
+			exec "set <M-".a:key.">=\e]{0}".a:key."~"
+		endif
+	endfunc
 	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for i in range(10)
-		call Terminal_MetaCode(a:mode, nr2char(char2nr('0') + i))
+		call s:metacode(a:mode, nr2char(char2nr('0') + i))
 	endfor
 	for i in range(26)
-		call Terminal_MetaCode(a:mode, nr2char(char2nr('a') + i))
-		call Terminal_MetaCode(a:mode, nr2char(char2nr('A') + i))
+		call s:metacode(a:mode, nr2char(char2nr('a') + i))
+		call s:metacode(a:mode, nr2char(char2nr('A') + i))
 	endfor
 	for c in [',', '.', '/', ';', '[', ']', '-']
-		call Terminal_MetaCode(a:mode, c)
+		call s:metacode(a:mode, c)
 	endfor
 	for c in ['?', ':', '{', '}', '_']
-		call Terminal_MetaCode(a:mode, c)
+		call s:metacode(a:mode, c)
 	endfor
 endfunc
 
