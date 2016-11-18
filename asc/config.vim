@@ -183,13 +183,10 @@ function! Terminal_SwitchTab()
 	if has('gui_running')
 		return
 	endif
-	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for i in range(10)
 		let x = (i == 0)? 10 : i
 		exec "noremap <silent><M-".i."> :tabn ".x."<cr>"
-		exec "noremap <silent><M-".keys[i]."> :tabn ".x."<cr>"
 		exec "inoremap <silent><M-".i."> <ESC>:tabn ".x."<cr>"
-		exec "inoremap <silent><M-".keys[i]."> <ESC>:tabn ".x."<cr>"
 	endfor
 endfunc
 
@@ -208,7 +205,6 @@ function! Terminal_MetaMode(mode)
 	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for i in range(10)
 		call Terminal_MetaCode(a:mode, nr2char(char2nr('0') + i))
-		call Terminal_MetaCode(a:mode, keys[i])
 	endfor
 	for i in range(26)
 		call Terminal_MetaCode(a:mode, nr2char(char2nr('a') + i))
