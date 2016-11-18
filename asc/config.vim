@@ -201,7 +201,6 @@ function! Terminal_MetaMode(mode)
 			exec "set <M-".a:key.">=\e]{0}".a:key."~"
 		endif
 	endfunc
-	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for i in range(10)
 		call s:metacode(a:mode, nr2char(char2nr('0') + i))
 	endfor
@@ -209,12 +208,21 @@ function! Terminal_MetaMode(mode)
 		call s:metacode(a:mode, nr2char(char2nr('a') + i))
 		call s:metacode(a:mode, nr2char(char2nr('A') + i))
 	endfor
-	for c in [',', '.', '/', ';', '[', ']', '-']
-		call s:metacode(a:mode, c)
-	endfor
-	for c in ['?', ':', '{', '}', '_']
-		call s:metacode(a:mode, c)
-	endfor
+	if a:mode != 0
+		for c in [',', '.', '/', ';', '[', ']', '{', '}']
+			call s:metacode(a:mode, c)
+		endfor
+		for c in ['?', ':', '-', '_']
+			call s:metacode(a:mode, c)
+		endfor
+	else
+		for c in [',', '.', '/', ';', '{', '}']
+			call s:metacode(a:mode, c)
+		endfor
+		for c in ['?', ':', '-', '_']
+			call s:metacode(a:mode, c)
+		endfor
+	endif
 endfunc
 
 call Terminal_SwitchTab()
