@@ -87,6 +87,18 @@ command! -nargs=+ GuiSignRemove call s:GuiSignRemove(<f-args>)
 
 
 "----------------------------------------------------------------------
+" Update Highlight
+"----------------------------------------------------------------------
+function! s:GuiThemeHighlight()
+	highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE 
+		\ gui=NONE guifg=DarkGrey guibg=NONE
+	highlight Pmenu guibg=darkgrey guifg=black
+endfunc
+
+command! -nargs=0 GuiThemeHighlight call s:GuiThemeHighlight()
+
+
+"----------------------------------------------------------------------
 " Gui quit
 "----------------------------------------------------------------------
 if !has('gui_running')
@@ -127,6 +139,8 @@ if has('gui_running')
 else
 	set t_Co=256 t_md=
 endif
+
+
 
 
 "----------------------------------------------------------------------

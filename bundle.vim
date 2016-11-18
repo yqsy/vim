@@ -153,13 +153,12 @@ endif
 " 
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
-	Plugin 'airblade/vim-gitgutter'
 	Plugin 'mgedmin/pythonhelper.vim'
 	Plugin 'mgedmin/chelper.vim'
-	Plugin 'vim-scripts/svn-diff.vim'
-
-	let g:gitgutter_enabled = 1
-	let g:gitgutter_sign_column_always = 1
+	"Plugin 'vim-scripts/svn-diff.vim'
+	"Plugin 'airblade/vim-gitguttr'
+	"let g:gitgutter_enabled = 1
+	"let g:gitgutter_sign_column_always = 1
 endif
 
 
@@ -200,6 +199,10 @@ if index(g:bundle_group, 'special') >= 0
 	"Plugin 'bling/vim-airline'
 	Plugin 'mh21/errormarker.vim'
 	Plugin 'dracula/vim'
+
+	if s:uname != 'windows'
+		"Plugin 'mhinz/vim-signify'
+	endif
 
 	let g:syntastic_always_populate_loc_list = 1
 	let g:syntastic_auto_loc_list = 0
@@ -283,7 +286,6 @@ let g:startify_session_dir = '~/.vim/session'
 " keymaps
 "----------------------------------------------------------------------
 noremap <space>ht :Startify<cr>
-
 
 
 

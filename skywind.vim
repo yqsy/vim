@@ -457,13 +457,19 @@ map <leader><F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '
 	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
-augroup NetrwSyntaxGroup
+augroup ThemeUpdateGroup
 	au!
 	au Syntax netrw call s:netrw_highlight()
+	"au ColorScheme * GuiThemeHighlight
 augroup END
 
 
 let g:solarized_termcolors=256
 
+
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+          \ | wincmd p | diffthis
+endif
 
 
