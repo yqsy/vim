@@ -3,13 +3,12 @@
 "-----------------------------------------------------
 let g:netrw_liststyle = 1
 let g:netrw_winsize = 25
-let g:netrw_list_hide = '.*\.swp$,.*\.pyc$,.*\.o$,*\.bak,\.git,\.svn,\.obj,'
-let g:netrw_list_hide.='\.tags$,\.cscope$,\(^\|\s\s)\zs\.\S\+'
+let g:netrw_list_hide = '\.swp\($\|\t\),\.py[co]\($\|\t\),\.o\($\|\t\),\.bak\($\|\t\),\(^\|\s\s\)\zs\.\S\+'
 let g:netrw_sort_sequence = '[\/]$,*,\.bak$,\.o$,\.info$,\.swp$,\.obj$'
 let g:netrw_preview = 0
 let g:netrw_special_syntax = 1
 let g:netrw_sort_options = 'i'
-"let g:netrw_timefmt = "%Y-%m-%d %T"
+"let g:netrw_timefmt = "%Y-%m-%d %H:%M:%S"
 
 "let g:netrw_banner=0 
 "let g:netrw_browse_split=4   " open in prior window

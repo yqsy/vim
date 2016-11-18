@@ -89,9 +89,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
-	"Plugin 'airblade/vim-gitgutter'
 	Plugin 'KabbAmine/zeavim.vim'
-	"Plugin 'ShowMarks'
 
 	if !has('gui_running')
 		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
@@ -107,7 +105,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 		endif
 	endif
 
-	let g:gitgutter_enabled = 0
+	"let g:gitgutter_enabled = 0
 
 	let g:zv_file_types = {
 				\ "^c$" : 'cpp,c',
@@ -147,6 +145,21 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	map <silent> <leader>sw <Plug>StlRefVimAsk
 	map <silent> <leader>sc <Plug>StlRefVimInvoke
 	map <silent> <leader>se <Plug>StlRefVimExample
+endif
+
+
+
+"----------------------------------------------------------------------
+" 
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'opt') >= 0
+	Plugin 'airblade/vim-gitgutter'
+	Plugin 'mgedmin/pythonhelper.vim'
+	Plugin 'mgedmin/chelper.vim'
+	Plugin 'vim-scripts/svn-diff.vim'
+
+	let g:gitgutter_enabled = 1
+	let g:gitgutter_sign_column_always = 1
 endif
 
 
