@@ -183,16 +183,47 @@ function! Terminal_SwitchTab()
 	if has('gui_running')
 		return
 	endif
+	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for i in range(10)
-		exec "noremap <silent><M-".i."> :tabn ".i."<cr>"
-		exec "inoremap <silent><M-".i."> <ESC>:tabn ".i."<cr>"
-		if !has('nvim')
-			exec "set <M-".i.">=\e]{0}".i."~"
-		endif
+		let x = (i == 0)? 10 : i
+		exec "noremap <silent><M-".i."> :tabn ".x."<cr>"
+		exec "noremap <silent><M-".keys[i]."> :tabn ".x."<cr>"
+		exec "inoremap <silent><M-".i."> <ESC>:tabn ".x."<cr>"
+		exec "inoremap <silent><M-".keys[i]."> <ESC>:tabn ".x."<cr>"
 	endfor
 endfunc
 
+function! Terminal_MetaCode(mode, key)
+	if has('nvim') || has('gui_running')
+		return
+	endif
+	if a:mode == 0
+		exec "set <M-".a:key.">=\e".a:key
+	else
+		exec "set <M-".a:key.">=\e]{0}".a:key."~"
+	endif
+endfunc
+
+function! Terminal_MetaMode(mode)
+	let keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
+	for i in range(10)
+		call Terminal_MetaCode(a:mode, nr2char(char2nr('0') + i))
+		call Terminal_MetaCode(a:mode, keys[i])
+	endfor
+	for i in range(26)
+		call Terminal_MetaCode(a:mode, nr2char(char2nr('a') + i))
+		call Terminal_MetaCode(a:mode, nr2char(char2nr('A') + i))
+	endfor
+	for c in [',', '.', '/', ';', '[', ']', '-']
+		call Terminal_MetaCode(a:mode, c)
+	endfor
+	for c in ['?', ':', '{', '}', '_']
+		call Terminal_MetaCode(a:mode, c)
+	endfor
+endfunc
 
 call Terminal_SwitchTab()
+call Terminal_MetaMode(1)
+
 
 
