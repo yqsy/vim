@@ -147,7 +147,7 @@ if has('gui_running')
 	inoremap <silent><m-o> <ESC>:tabnew<cr>
 	noremap <silent><m-t> :tabnew<cr>
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
-	noremap <silent><m-w> :tabclose<cr>  
+	noremap <silent><m-w> :tabclose<cr>
 	inoremap <silent><m-w> <ESC>:tabclose<cr>
 	noremap <silent><m-e> :tabclose<cr>
 	inoremap <silent><m-e> <ESC>:tabclose<cr>

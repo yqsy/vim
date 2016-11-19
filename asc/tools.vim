@@ -515,5 +515,33 @@ endfunc
 
 
 
+function! Tools_ListMeta(mapmode, upper)
+	let text = []
+	for i in range(26)
+		let ch = nr2char(char2nr(a:upper? 'A' : 'a') + i)
+		redir => x
+		exec "silent ". a:mapmode . " <M-" . ch . ">"
+		redir END
+		let x = substitute(x, '^\s*\(.\{-}\)\s*\n*$', '\1', '')
+		let h = "<M-". ch . ">     "
+		if x =~ 'No mapping found'
+			let text += [h . "                 ---<free>---"]
+		else
+			for y in split(x, '\n')
+				let z = substitute(y, '\n', '', 'g')
+				let text += [h .z]
+			endfor
+		endif
+	endfor
+	call sort(text)
+	for x in text
+		echo x
+	endfor
+endfunc
+
+
+command! -nargs=1 -bang AscListMeta 
+			\ call Tools_ListMeta(<q-args>, <bang>0)
+
 
 
