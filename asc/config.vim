@@ -226,7 +226,7 @@ function! Terminal_MetaMode(mode)
 	endif
 endfunc
 
-command! -nargs=0 -bang VimMetaMode call Terminal_MetaMode(<bang>0)
+command! -nargs=0 -bang VimMetaInit call Terminal_MetaMode(<bang>0)
 
 call Terminal_SwitchTab()
 call Terminal_MetaMode(1)
