@@ -191,7 +191,6 @@ function! Terminal_SwitchTab()
 endfunc
 
 function! Terminal_MetaMode(mode)
-	echo "mode: ".a:mode
 	if has('nvim') || has('gui_running')
 		return
 	endif
