@@ -223,6 +223,12 @@ function! Terminal_MetaMode(mode)
 			call s:metacode(a:mode, c)
 		endfor
 	endif
+	if &ttimeout == 0
+		set ttimeout
+	endif
+	if &ttimeoutlen <= 0
+		set ttimeoutlen=100
+	endif
 endfunc
 
 command! -nargs=0 -bang VimMetaInit call Terminal_MetaMode(<bang>0)
