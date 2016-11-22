@@ -671,6 +671,28 @@ def expandtab (tabsize, text):
 
 
 #----------------------------------------------------------------------
+# find project root
+#----------------------------------------------------------------------
+root_marker = ['.git', '.svn', '.project', '.root', '.space']
+
+def find_root (path, marker = None):
+	marker = (marker is None) and root_marker or marker
+	path = os.path.abspath(path)
+	if not os.path.isdir(path):
+		path = os.path.split(path)[0]
+	test = path
+	while 1:
+		for n in marker:
+			if os.path.exists(os.path.join(test, n)):
+				return test
+		newtest = os.path.abspath(os.path.join(test, '..'))
+		if newtest == test:
+			break
+		test = newtest
+	return path
+
+
+#----------------------------------------------------------------------
 # testing case
 #----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -698,13 +720,16 @@ if __name__ == '__main__':
 			print n
 	def test6():
 		redirect(['python', 'e:/lab/timer.py'], lambda n, x: sys.stdout.write(x))
+	def test7():
+		print find_root('e:/lab/wind/GlobalVoice/voice/AudioCore/build')
+		print find_root('e:/lab/svn/incoming/abc')
 	# shcmd.py
 	# shlib.py
 	# shlib.py
 	# coresh.py system.py
 	# shkit.py shset.py osset.py kitos.py 
 	# oskit.py shellkit.py shellos shells.py
-	test5()
+	test7()
 
 
 
