@@ -75,7 +75,6 @@ noremap <silent><space>en :call Tools_SwitchNumber()<cr>
 noremap <silent><space>el :nohl<cr>
 
 
-
 "----------------------------------------------------------------------
 " Movement Enhancement
 "----------------------------------------------------------------------
