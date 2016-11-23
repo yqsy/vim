@@ -1239,7 +1239,7 @@ function! s:Cmd_VimBuild(bang, ...)
 		return
 	endif
 	if a:bang != '!'
-		try | silent update | catch | endtry
+		silent! update
 	endif
 	let l:what = a:1
 	let l:conf = ""
@@ -1261,7 +1261,8 @@ function! s:Cmd_VimBuild(bang, ...)
 			let l:flags .= ' -lstdc++'
 		endif
 		let l:cmd = l:cc . ' -Wall '. l:source . ' -o ' . l:output
-		exec vimmake .l:cmd . ' ' . l:flags
+		let l:cmd .= (l:conf == '')? '' : (' '. l:conf)
+		exec vimmake .l:cmd . ' ' . l:flags 
 	elseif index(['1', 'make'], l:what) >= 0
 		if l:conf == ''
 			exec vimmake .'make'
