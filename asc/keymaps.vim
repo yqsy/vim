@@ -75,6 +75,24 @@ noremap <silent><space>en :call Tools_SwitchNumber()<cr>
 noremap <silent><space>el :nohl<cr>
 
 
+
+"----------------------------------------------------------------------
+" Movement Enhancement
+"----------------------------------------------------------------------
+noremap <M-h> b
+noremap <M-l> w
+noremap <M-j> 10j
+noremap <M-k> 10k
+inoremap <M-h> <c-\><c-o>b
+inoremap <M-l> <c-\><c-o>w
+inoremap <M-j> <c-\><c-o>10j
+inoremap <M-k> <c-\><c-o>10k
+cnoremap <M-h> <c-left>
+cnoremap <M-l> <c-right>
+cnoremap <M-b> <c-left>
+cnoremap <M-f> <c-right>
+
+
 "----------------------------------------------------------------------
 " gui hotkeys - alt + ?
 "----------------------------------------------------------------------
@@ -87,10 +105,6 @@ if has('gui_running')
 	inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
 	noremap <S-cr> o<ESC>
 	noremap <c-cr> O<esc>
-	noremap <M-l> w
-	noremap <M-h> b
-	noremap <M-j> 10j
-	noremap <M-k> 10k
 	vnoremap <M-c> "+y
 	noremap <M-V> "+P
 	noremap <M-v> "+p
