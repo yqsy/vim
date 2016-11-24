@@ -277,6 +277,7 @@ if has('gui_running') && (has('win32') || has('win64'))
 	inoremap <S-F12> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 endif
 
+noremap <C-F9> :VimBuild gcc -pg<cr>
 
 if has('gui_running')
 	noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
