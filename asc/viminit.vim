@@ -191,10 +191,8 @@ cnoremap <c-k> <up>
 cnoremap <c-l> <right>
 cnoremap <c-a> <home>
 cnoremap <c-e> <end>
-cnoremap <c-f> <right>
+cnoremap <c-f> <c-d>
 cnoremap <c-b> <left>
-cnoremap <c-p> <up>
-cnoremap <c-n> <down>
 cnoremap <c-d> <del>
 
 

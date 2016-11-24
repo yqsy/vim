@@ -82,8 +82,8 @@ noremap <M-h> b
 noremap <M-l> w
 noremap <M-j> 10j
 noremap <M-k> 10k
-inoremap <M-h> <c-\><c-o>b
-inoremap <M-l> <c-\><c-o>w
+inoremap <M-h> <c-left>
+inoremap <M-l> <c-right>
 inoremap <M-j> <c-\><c-o>10j
 inoremap <M-k> <c-\><c-o>10k
 cnoremap <M-h> <c-left>
@@ -156,8 +156,8 @@ noremap <silent><S-F10> :call Toggle_Tagbar()<cr>
 inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
 noremap <silent><M-:> :call asclib#preview_close()<cr>
-noremap <silent><M-'> :call asclib#preview_goto('')<cr>
-noremap <silent><M-"> :call asclib#preview_goto('tab')<cr>
+noremap <silent><M-/> :call asclib#preview_goto('')<cr>
+noremap <silent><M-?> :call asclib#preview_goto('tab')<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"

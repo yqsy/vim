@@ -645,3 +645,45 @@ function! asclib#smooth_scroll_down(dist, duration, speed)
 endfunc
 
 
+"----------------------------------------------------------------------
+" gprof
+"----------------------------------------------------------------------
+function! asclib#open_gprof(image, profile)
+	let l:image = a:image
+	let l:profile = a:profile
+	if asclib#path_executable('gprof') == ''
+		call s:errmsg('cannot find gprof')
+		return
+	endif
+	if l:image == ''
+		let l:image = expand("%:p:h") . '/' . expand("%:t:r") 
+		let l:image.= s:windows? '.exe' : ''
+		if l:profile == ''
+			let l:profile = expand("%:p:h") . '/gmon.out'
+		endif
+	elseif l:profile == ''
+		let l:profile = 'gmon.out'
+	endif
+	let command = 'gprof '.shellescape(l:image).' '.shellescape(l:profile)
+	let text = vimmake#python_system(command)
+	let text = substitute(text, '\r', '', 'g')
+	vnew
+	let l:save = @0
+	let @0 = text
+	normal! "0P
+	let @0 = l:save
+    setlocal noshowcmd
+    setlocal noswapfile
+    setlocal buftype=nofile
+    setlocal bufhidden=delete
+    setlocal nobuflisted
+    setlocal nomodifiable
+    setlocal nowrap
+    setlocal nonumber
+	setlocal readonly
+	setlocal filetype=gprof
+endfunc
+
+
+
+
