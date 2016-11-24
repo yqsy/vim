@@ -19,6 +19,7 @@ Shift+End=[0]ID_SCROLL_BOTTOM
 Shift+Down=[0]ID_SCROLL_DOWN
 Pause=[0]ID_EDIT_SEND_BREAK
 Ctrl+-=[1]\037
+Ctrl+S=[1]
 Ctrl+Tab=[0]ID_VIEW_NEXT_SESSION
 Ctrl+Shift+Tab=[0]ID_VIEW_PREV_SESSION
 Ctrl+Shift+Alt+]=[0]ID_FONT_SIZE_INCREASE
