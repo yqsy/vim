@@ -172,6 +172,8 @@ noremap <silent><M-[> :call Tools_QuickfixCursor(2)<cr>
 noremap <silent><M-]> :call Tools_QuickfixCursor(3)<cr>
 noremap <silent><M-{> :call Tools_QuickfixCursor(4)<cr>
 noremap <silent><M-}> :call Tools_QuickfixCursor(5)<cr>
+noremap <silent><M-u> :call Tools_PreviousCursor(6)<cr>
+noremap <silent><M-d> :call Tools_PreviousCursor(7)<cr>
 
 
 "----------------------------------------------------------------------
@@ -280,11 +282,9 @@ endif
 
 noremap <C-F9> :VimBuild gcc -pg<cr>
 
-if has('gui_running')
-	noremap <silent> <m-u> :call asclib#smooth_scroll_up(&scroll, 0, 2)<CR>
-	noremap <silent> <m-d> :call asclib#smooth_scroll_down(&scroll, 0, 2)<CR>
-	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll * 2, 0, 4)<CR>
-	noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll * 2, 0, 4)<CR>
+if has('gui_running') && 0
+	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll, 0, 4)<CR>
+	noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll, 0, 4)<CR>
 endif
 
 
