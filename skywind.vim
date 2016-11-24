@@ -7,7 +7,12 @@ let &tags = './.tags;,.tags,' . expand('~/.vim/tags/standard.tags')
 filetype plugin indent on
 set hlsearch
 set incsearch
+set wildmenu
+set cpo-=<
+set wcm=<C-Z>
+noremap <tab>/ :emenu <C-Z>
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
+
 if 0
 	set errorformat+=[%f:%l]:\ (%trror)\ %m
 	set errorformat+=[%f:%l]:\ (%tarning)\ %m

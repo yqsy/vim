@@ -183,6 +183,7 @@ noremap <tab>O O<ESC>
 inoremap <c-a> <home>
 inoremap <c-e> <end>
 inoremap <c-d> <del>
+inoremap <c-_> <c-k>
 
 " faster command mode
 cnoremap <c-h> <left>
@@ -194,6 +195,7 @@ cnoremap <c-e> <end>
 cnoremap <c-f> <c-d>
 cnoremap <c-b> <left>
 cnoremap <c-d> <del>
+cnoremap <c-_> <c-k>
 
 
 

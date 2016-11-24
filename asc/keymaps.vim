@@ -156,8 +156,8 @@ noremap <silent><S-F10> :call Toggle_Tagbar()<cr>
 inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
 noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
 noremap <silent><M-:> :call asclib#preview_close()<cr>
-noremap <silent><M-/> :call asclib#preview_goto('')<cr>
-noremap <silent><M-?> :call asclib#preview_goto('tab')<cr>
+noremap <silent><tab>; :call asclib#preview_goto('')<cr>
+noremap <silent><tab>: :call asclib#preview_goto('tab')<cr>
 
 if !has('gui_running')
 	exec "set <S-F10>=\e[34~"

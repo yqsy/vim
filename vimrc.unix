@@ -32,6 +32,7 @@ else
 	let g:vim_startup = ''
 endif
 
+
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
 
 if has('patch-7.4.2100')
