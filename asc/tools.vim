@@ -519,6 +519,9 @@ endfunc
 
 " 0:up, 1:down, 2:pgup, 3:pgdown, 4:top, 5:bottom
 function! Tools_PreviousCursor(mode)
+	if winnr('$') <= 1
+		return
+	endif
 	noautocmd silent! wincmd p
 	if a:mode == 0
 		exec "normal! \<c-y>"
