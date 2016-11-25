@@ -222,6 +222,7 @@ endif
 " check if we have vim 8.0.100
 if s:async_nvim == 0 && v:version >= 800
 	let s:async_congest = has('patch-8.0.100')? 1 : 0
+	let s:async_congest = 0
 endif
 
 " scroll quickfix down
@@ -404,8 +405,8 @@ function! s:AsyncRun_Job_OnCallback(channel, text)
 	endif
 	let s:async_output[s:async_head] = a:text
 	let s:async_head += 1
-	if s:async_congest != 0 && 0
-		call s:AsyncRun_Job_OnFinish()
+	if s:async_congest != 0 
+		call s:AsyncRun_Job_Update(-1)
 	endif
 endfunc
 

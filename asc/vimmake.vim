@@ -261,6 +261,7 @@ endif
 " check if we have vim 8.0.100
 if s:build_nvim == 0 && v:version >= 800
 	let s:build_congest = has('patch-8.0.100')? 1 : 0
+	let s:build_congest = 0
 endif
 
 " scroll quickfix down
@@ -447,7 +448,7 @@ function! s:Vimmake_Build_OnCallback(channel, text)
 	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
-	if s:build_congest != 0 && 0
+	if s:build_congest != 0
 		call s:Vimmake_Build_Update(-1)
 	endif
 endfunc
