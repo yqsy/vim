@@ -468,6 +468,12 @@ augroup ThemeUpdateGroup
 	"au ColorScheme * GuiThemeHighlight
 augroup END
 
+augroup SkywindGroup
+	au!
+	au User AsyncRunStart call asyncrun#quickfix_toggle(6, 1)
+	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
+augroup END
+
 
 let g:solarized_termcolors=256
 
