@@ -447,7 +447,7 @@ function! s:Vimmake_Build_OnCallback(channel, text)
 	endif
 	let s:build_output[s:build_head] = a:text
 	let s:build_head += 1
-	if s:build_congest != 0 
+	if s:build_congest != 0 && 0
 		call s:Vimmake_Build_Update(-1)
 	endif
 endfunc
