@@ -59,7 +59,7 @@ augroup END
 " keymaps 
 "----------------------------------------------------------------------
 if has('win32') || has('win16') || has('win64') || has('win95')
-	noremap <space>hw :call Tools_FileSwitch('tabe', 'e:/svn/doc/linwei/agenda.otl')<cr>
+	noremap <space>hw :FileSwitch tabe e:/svn/doc/linwei/GTD.otl<cr>
 else
 endif
 
