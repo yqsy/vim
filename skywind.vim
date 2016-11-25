@@ -46,10 +46,22 @@ endif
 "----------------------------------------------------------------------
 "- Autocmds
 "----------------------------------------------------------------------
-au BufNewFile,BufRead *.as setlocal filetype=actionscript
-au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
-" au FileType c,cpp set foldmethod=syntax 
-" au FileType python set foldmethod=syntax 
+augroup SkywindGroup
+	au!
+	au User AsyncRunStart call asyncrun#quickfix_toggle(6, 1)
+	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
+	au BufNewFile,BufRead *.as setlocal filetype=actionscript
+	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
+augroup END
+
+
+"----------------------------------------------------------------------
+" keymaps 
+"----------------------------------------------------------------------
+if has('win32') || has('win16') || has('win64') || has('win95')
+	noremap <space>hw :call Tools_FileSwitch('tabe', 'e:/svn/doc/linwei/agenda.otl')<cr>
+else
+endif
 
 
 "----------------------------------------------------------------------
@@ -468,11 +480,6 @@ augroup ThemeUpdateGroup
 	"au ColorScheme * GuiThemeHighlight
 augroup END
 
-augroup SkywindGroup
-	au!
-	au User AsyncRunStart call asyncrun#quickfix_toggle(6, 1)
-	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
-augroup END
 
 
 let g:solarized_termcolors=256

@@ -125,6 +125,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	Plugin 'rust-lang/rust.vim'
 	Plugin 'vim-scripts/CRefVim'
 	Plugin 'vim-scripts/stlrefvim'
+	Plugin 'skywind3000/vimoutliner'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'

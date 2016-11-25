@@ -58,6 +58,7 @@ nnoremap <silent><c-w>M :Texplore<cr>
 noremap <silent><space>hh :nohl<cr>
 noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
+noremap <silent>+ :wincmd w<cr>
 
 noremap <silent><space>ha :GuiSignRemove 
 			\ errormarker_error errormarker_warning<cr>
@@ -217,30 +218,31 @@ noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 "----------------------------------------------------------------------
 " space + h : fast open files
 "----------------------------------------------------------------------
-noremap <space>hp :tabnew ~/.vim/project.txt<cr>
+noremap <space>hp :FileSwitch tabe ~/.vim/project.txt<cr>
+noremap <space>hl :FileSwitch tabe ~/.vim/agenda.otl<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
-noremap <space>hb :tabnew ~/.vim/bundle.vim<cr>
+noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
 noremap <space>ho :only<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
-	noremap <space>hr :tabnew ~/_vimrc<cr>
+	noremap <space>hr :FileSwitch tabe ~/_vimrc<cr>
 elseif !has('nvim')
-	noremap <space>hr :tabnew ~/.vimrc<cr>
+	noremap <space>hr :FileSwitch tabe ~/.vimrc<cr>
 else
-	noremap <space>hr :tabnew ~/.config/nvim/init.vim<cr>
+	noremap <space>hr :FileSwitch tabe ~/.config/nvim/init.vim<cr>
 endif
 
 let s:filename = expand('<sfile>:p')
-exec 'noremap <space>hk :tabnew '.fnameescape(s:filename).'<cr>'
+exec 'noremap <space>hk :FileSwitch tabe '.fnameescape(s:filename).'<cr>'
 let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
-exec 'noremap <space>hs :tabnew '.fnameescape(s:skywind).'<cr>'
+exec 'noremap <space>hs :FileSwitch tabe '.fnameescape(s:skywind).'<cr>'
 let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
-exec 'noremap <space>hv :tabnew '.fnameescape(s:bundle).'<cr>'
+exec 'noremap <space>hv :FileSwitch tabe '.fnameescape(s:bundle).'<cr>'
 let s:asclib = fnamemodify(s:filename, ':h:h'). '/autoload/asclib.vim'
-exec 'noremap <space>hc :tabnew '.fnameescape(s:asclib).'<cr>'
+exec 'noremap <space>hc :FileSwitch tabe '.fnameescape(s:asclib).'<cr>'
 let s:auxlib = fnamemodify(s:filename, ':h:h'). '/autoload/auxlib.vim'
-exec 'noremap <space>hu :tabnew '.fnameescape(s:auxlib).'<cr>'
+exec 'noremap <space>hu :FileSwitch tabe '.fnameescape(s:auxlib).'<cr>'
 
 
 "----------------------------------------------------------------------
