@@ -3,7 +3,7 @@
 " Maintainer: skywind3000 (at) gmail.com
 " Homepage: http://www.vim.org/scripts/script.php?script_id=5431
 "
-" Last change: 2016.11.17
+" Last change: 2016.11.25
 "
 " Run shell command in background and output to quickfix:
 "     :AsyncRun[!] [options] {cmd} ...
@@ -207,6 +207,7 @@ let s:async_debug = 0
 let s:async_quick = 0
 let s:async_scroll = 0
 let s:async_hold = 0
+let s:async_congest = 0
 let s:async_efm = &errorformat
 
 " check :cbottom available, cursor in quick need to hold ?
@@ -216,6 +217,11 @@ if s:async_nvim == 0
 else
 	let s:async_quick = 0
 	let s:async_hold = 1
+endif
+
+" check if we have vim 8.0.100
+if s:async_nvim == 0 && v:version >= 800
+	let s:async_congest = has('patch-8.0.100')? 1 : 0
 endif
 
 " scroll quickfix down
@@ -398,6 +404,9 @@ function! s:AsyncRun_Job_OnCallback(channel, text)
 	endif
 	let s:async_output[s:async_head] = a:text
 	let s:async_head += 1
+	if s:async_congest != 0 && 0
+		call s:AsyncRun_Job_OnFinish()
+	endif
 endfunc
 
 " because exit_cb and close_cb are disorder, we need OnFinish to guarantee
