@@ -82,7 +82,6 @@ endif
 " Group - basic
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
-	Plugin 'SirVer/ultisnips'
 	Plugin 'honza/vim-snippets'
 	Plugin 'tpope/vim-fugitive'
 	Plugin 'lambdalisue/vim-gista'
@@ -90,6 +89,9 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
 	Plugin 'KabbAmine/zeavim.vim'
+	if has('python') || has('python3')
+		Plugin 'SirVer/ultisnips'
+	endif
 
 	if !has('gui_running')
 		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
@@ -154,8 +156,10 @@ endif
 " 
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
-	Plugin 'mgedmin/pythonhelper.vim'
-	Plugin 'mgedmin/chelper.vim'
+	if has('python')
+		Plugin 'mgedmin/pythonhelper.vim'
+		Plugin 'mgedmin/chelper.vim'
+	endif
 	"Plugin 'vim-scripts/svn-diff.vim'
 	"Plugin 'airblade/vim-gitguttr'
 	"let g:gitgutter_enabled = 1
@@ -175,7 +179,9 @@ endif
 " Group - neocomplete
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'neocomplete') >= 0
-	Plugin 'Shougo/neocomplete.vim'
+	if has('lua')
+		Plugin 'Shougo/neocomplete.vim'
+	endif
 	set completeopt=longest,menuone
 	"inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<tab>"
 	"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
