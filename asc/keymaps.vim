@@ -107,10 +107,6 @@ if has('gui_running')
 	inoremap <silent><A-o> <ESC>:call Open_Browse(2)<cr>
 	noremap <S-cr> o<ESC>
 	noremap <c-cr> O<esc>
-	vnoremap <M-c> "+y
-	noremap <M-V> "+P
-	noremap <M-v> "+p
-	noremap <M-p> "0p
 	noremap <C-S> :w<cr>
 	inoremap <C-S> <ESC>:w<cr>
 	noremap <M-Left> :call Tab_MoveLeft()<cr>
