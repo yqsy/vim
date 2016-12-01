@@ -101,6 +101,13 @@ if has('nvim')
 	let g:vimmake_build_trim = 1
 endif
 
+let g:vimmake_mode = {}
+
+for s:i in range(10)
+	let g:vimmake_mode[s:i] = 'async'
+	let g:vimmake_mode['c'.s:i] = 'async'
+endfor
+
 
 "----------------------------------------------------------------------
 "- OptImport
