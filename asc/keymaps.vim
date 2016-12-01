@@ -12,6 +12,10 @@
 "----------------------------------------------------------------------
 for s:index in range(10)
 	exec 'noremap <space>'.s:index.' :VimTool ' . s:index . '<cr>'
+	if has('gui_running') == 0 && s:index >= 1 && s:index <= 9
+		exec "noremap <S-F".s:index."> :VimTool ".s:index . '<cr>'
+		exec "inoremap <S-F".s:index."> <ESC>:VimTool ".s:index . '<cr>'
+	endif
 endfor
 
 noremap <F1> :VimTool 1<cr>
@@ -157,11 +161,6 @@ noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
 noremap <silent><M-:> :call asclib#preview_close()<cr>
 noremap <silent><tab>; :call asclib#preview_goto('')<cr>
 noremap <silent><tab>: :call asclib#preview_goto('tab')<cr>
-
-if !has('gui_running')
-	exec "set <S-F10>=\e[34~"
-	exec "set <S-F4>=\e[25~"
-endif
 
 
 "----------------------------------------------------------------------

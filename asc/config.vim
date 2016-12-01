@@ -231,10 +231,43 @@ function! Terminal_MetaMode(mode)
 	endif
 endfunc
 
+
+function! Terminal_KeyEscape(name, code)
+	if has('nvim') || has('gui_running')
+		return
+	endif
+	exec "set ".a:name."=\e".a:code
+endfunc
+
+
 command! -nargs=0 -bang VimMetaInit call Terminal_MetaMode(<bang>0)
+command! -nargs=+ VimKeyEscape call Terminal_KeyEscape(<f-args>)
+
+
+function! Terminal_FnInit(mode)
+	if has('nvim') || has('gui_running')
+		return
+	endif
+	if a:mode == 1
+		VimKeyEscape <S-F1> [1;2P
+		VimKeyEscape <S-F2> [1;2Q
+		VimKeyEscape <S-F3> [1;2R
+		VimKeyEscape <S-F4> [1;2S
+		VimKeyEscape <S-F5> [15;2~
+		VimKeyEscape <S-F6> [17;2~
+		VimKeyEscape <S-F7> [18;2~
+		VimKeyEscape <S-F8> [19;2~
+		VimKeyEscape <S-F9> [20;2~
+		VimKeyEscape <S-F10> [21;2~
+		VimKeyEscape <S-F11> [23;2~
+		VimKeyEscape <S-F12> [24;2~
+	endif
+endfunc
+
 
 call Terminal_SwitchTab()
 call Terminal_MetaMode(1)
+call Terminal_FnInit(1)
 
 
 
