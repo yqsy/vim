@@ -15,6 +15,8 @@ for s:index in range(10)
 	if has('gui_running') == 0 && s:index >= 1 && s:index <= 9
 		exec "noremap <S-F".s:index."> :VimTool ".s:index . '<cr>'
 		exec "inoremap <S-F".s:index."> <ESC>:VimTool ".s:index . '<cr>'
+		exec "noremap <C-F".s:index."> :VimTool c".s:index . '<cr>'
+		exec "inoremap <C-F".s:index."> <ESC>:VimTool c".s:index . '<cr>'
 	endif
 endfor
 
@@ -282,11 +284,11 @@ noremap <silent><space>lg :call asclib#open_gprof('', '')<cr>
 if has('gui_running') && (has('win32') || has('win64'))
 	noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
 	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
-	noremap <S-F12> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
-	inoremap <S-F12> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+	inoremap <S-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 endif
 
-noremap <C-F9> :VimBuild gcc -pg<cr>
+noremap <C-F10> :VimBuild gcc -pg<cr>
 
 if has('gui_running') && 0
 	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll, 0, 4)<CR>
