@@ -13,18 +13,6 @@ set wcm=<C-Z>
 noremap <tab>/ :emenu <C-Z>
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 
-if 0
-	set errorformat+=[%f:%l]:\ (%trror)\ %m
-	set errorformat+=[%f:%l]:\ (%tarning)\ %m
-	set errorformat+=[%f:%l]:\ (%ttyle)\ %m
-	set errorformat+=[%f:%l]:\ (%terformance)\ %m
-	set errorformat+=[%f:%l]:\ (%tortability)\ %m
-	set errorformat+=[%f:%l]:\ (%tnformation)\ %m
-	set errorformat+=[%f:%l]:\ (%tnconclusive)\ %m
-	"set errorformat+=%-G%.%#
-endif
-
-
 command! -nargs=1 VimImport exec 'so '.s:home.'/'.'<args>'
 command! -nargs=1 VimLoad exec 'set rtp+='.s:home.'/'.'<args>'
 
@@ -108,6 +96,9 @@ for s:i in range(10)
 	let g:vimmake_mode['c'.s:i] = 'async'
 endfor
 
+let g:asyncrun_timer = 100
+let g:vimmake_build_timer = 100
+
 
 "----------------------------------------------------------------------
 "- OptImport
@@ -133,28 +124,6 @@ let OmniCpp_MayCompleteDot = 1
 let OmniCpp_MayCompleteArrow = 1 
 let OmniCpp_MayCompleteScope = 1
 let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-
-
-"----------------------------------------------------------------------
-"- Terminal Keymaps
-"----------------------------------------------------------------------
-function! TerminalKeyInit(term)
-	if has('gui_running')
-		return
-	endif
-	if a:term == 0
-		exec "set <m-i>=\e]{0}i~"
-		exec "set <m-j>=\e]{0}j~"
-		exec "set <m-k>=\e]{0}k~"
-		exec "set <m-l>=\e]{0}l~"
-	else
-		exec "set <m-i>=\ei"
-		exec "set <m-j>=\ej"
-		exec "set <m-k>=\ek"
-		exec "set <m-l>=\el"
-	endif
-endfunc
-
 
 
 "----------------------------------------------------------------------
