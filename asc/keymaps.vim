@@ -164,6 +164,14 @@ noremap <silent><M-:> :call asclib#preview_close()<cr>
 noremap <silent><tab>; :call asclib#preview_goto('')<cr>
 noremap <silent><tab>: :call asclib#preview_goto('tab')<cr>
 
+if has('autocmd')
+	augroup AscQuickfix
+		autocmd!
+		autocmd FileType qf nnoremap <silent><buffer> p 
+					\ :call asclib#preview_quickfix(line('.'))<cr>
+	augroup END
+endif
+
 
 "----------------------------------------------------------------------
 " GUI/Terminal 

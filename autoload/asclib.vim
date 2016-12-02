@@ -412,11 +412,11 @@ function! asclib#preview_tag(tagname)
 	if &previewwindow
 		match none
 	endif
-	if has("folding")
-		silent! .foldopen
-	endif
 	normal! gg
 	silent! exec taginfo.cmd
+	if has("folding")
+		silent! .foldopen!
+	endif
 	normal! zz
 	let height = winheight('%') / 4
 	if height >= 2
@@ -453,10 +453,11 @@ function! asclib#preview_edit(bufnr, filename, line)
 	endif
 	call asclib#window_loadview()
 	if a:line > 0
+		noautocmd exec "normal! ".a:line.'G'
 		if has('folding')
-			silent! .foldopen
+			silent! .foldopen!
 		endif
-		noautocmd exec "normal! ".a:line."Gzz"
+		noautocmd exec "normal! zz"
 		let height = winheight('%') / 4
 		if height >= 2
 			noautocmd exec "normal! ".height."\<c-e>"
@@ -510,6 +511,32 @@ function! asclib#preview_goto(mode)
 		if height >= 2
 			exec "normal! ".height."\<c-e>"
 		endif
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" display quickfix item in preview
+"----------------------------------------------------------------------
+function! asclib#preview_quickfix(linenr)
+	let qflist = getqflist()
+	if a:linenr < 1 || a:linenr > len(qflist)
+		exec "norm! \<esc>"
+		return
+	endif
+	let entry = qflist[a:linenr - 1]
+	unlet qflist
+	if entry.valid
+		if entry.bufnr > 0
+			call asclib#preview_edit(entry.bufnr, '', entry.lnum)
+			let text = 'Preview: '.bufname(entry.bufnr)
+			let text.= ' ('.entry.lnum.')'
+			call asclib#cmdmsg(text, 1)
+		else
+			exec "norm! \<esc>"
+		endif
+	else
+		exec "norm! \<esc>"
 	endif
 endfunc
 

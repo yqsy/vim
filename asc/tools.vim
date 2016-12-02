@@ -509,6 +509,10 @@ function! Tools_QuickfixCursor(mode)
 				exec "normal! \<c-u>"
 			elseif a:mode == 7
 				exec "normal! \<c-d>"
+			elseif a:mode == 8
+				exec "normal! k"
+			elseif a:mode == 9
+				exec "normal! j"
 			endif
 		endif
 	endfunc
@@ -539,6 +543,10 @@ function! Tools_PreviousCursor(mode)
 		exec "normal! \<c-u>"
 	elseif a:mode == 7
 		exec "normal! \<c-d>"
+	elseif a:mode == 8
+		exec "normal! k"
+	elseif a:mode == 9
+		exec "normal! j"
 	endif
 	noautocmd silent! wincmd p
 endfunc
