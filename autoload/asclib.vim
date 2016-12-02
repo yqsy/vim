@@ -489,17 +489,17 @@ function! asclib#preview_goto(mode)
 	endif
 	let [l:tabnr, l:winnr] = asclib#window_find(pid)
 	silent! wincmd P
-	let l:bufname = expand('%:p')
 	let l:bufnr = winbufnr(l:winnr)
+	let l:bufname = bufname(l:bufnr)
 	let l:line = line('.')
 	call asclib#window_goto_uid(uid)
 	if a:mode == '' || a:mode == '0'
 		if l:bufnr != winbufnr('%')
-			silent exec 'b '.l:bufnr 
+			silent exec 'e '.fnameescape(l:bufname)
 		endif
 	elseif a:mode == '!'
 		if l:bufnr != winbufnr('%')
-			silent exec 'b! '.l:bufnr 
+			silent exec 'e! '.fnameescape(l:bufname)
 		endif
 	elseif a:mode == 'tab'
 		silent exec 'tabe '. fnameescape(l:bufname)
