@@ -143,7 +143,7 @@ function! asclib#window_goto_uid(uid)
 endfunc
 
 " new window and return window uid, zero for error
-function! asclib#window_new(position, size)
+function! asclib#window_new(position, size, avoid)
 	function! s:window_new_action(mode)
 		if a:mode == 0
 			let w:asclib_window_saveview = winsaveview()
@@ -158,6 +158,22 @@ function! asclib#window_new(position, size)
 	let retval = 0
 	noautocmd windo call s:window_new_action(0)
 	noautocmd call asclib#window_goto_uid(uid)
+	if type(a:avoid) == 3
+		for i in range(winnr('$'))
+			let ok = 1
+			let bt = &buftype
+			for skip in a:avoid
+				if skip == bt
+					let ok = 0
+					break
+				endif
+			endfor
+			if ok != 0
+				break
+			endif
+			noautocmd wincmd w
+		endfor
+	endif
 	if a:position == 'top' || a:position == '0'
 		if a:size <= 0
 			leftabove new 
@@ -225,30 +241,21 @@ endfunc
 
 " open preview vertical or horizon
 function! asclib#preview_open()
-	function! s:preview_action(mode)
-		if a:mode == 0
-			let w:asclib_preview_save = winsaveview()
-		else
-			if exists('w:asclib_preview_save')
-				call winrestview(w:asclib_preview_save)
-				unlet w:asclib_preview_save
-			endif
-		endif
-	endfunc
 	let pid = asclib#preview_check()
 	if pid == 0
 		let uid = asclib#window_uid('%', '%')
 		let pos = g:asclib#preview_position
+		let size = g:asclib#preview_vsize
 		if pos == 'top' || pos == 'bottom' || pos == '0' || pos == '1'
-			let pid = asclib#window_new(pos, g:asclib#preview_size)
-		else
-			let pid = asclib#window_new(pos, g:asclib#preview_vsize)
+			let size = g:asclib#preview_size
 		endif
+		let avoid = ['quickfix', 'help', 'nofile']
+		let pid = asclib#window_new(pos, size, avoid)
 		if pid > 0
-			call asclib#window_goto_uid(pid)
+			noautocmd call asclib#window_goto_uid(pid)
 			set previewwindow
 		endif
-		call asclib#window_goto_uid(uid)
+		noautocmd call asclib#window_goto_uid(uid)
 	endif
 	return pid
 endfunc
@@ -329,6 +336,12 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" preview word highlight
+"----------------------------------------------------------------------
+hi previewWord term=bold ctermbg=green ctermfg=black guibg=green guifg=black
+
+
+"----------------------------------------------------------------------
 " display matched tag in the preview window
 "----------------------------------------------------------------------
 function! asclib#preview_tag(tagname)
@@ -385,18 +398,16 @@ function! asclib#preview_tag(tagname)
 	endif
 	call settabwinvar(l:tabnr, l:winnr, varname, opt)
 	call asclib#window_goto_uid(uid)
-	if 1
+	if 0
 		let saveview = winsaveview()
 		silent exec 'pedit '.fnameescape(filename)
 		call winrestview(saveview)
 		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
 	else
-		let saveview = winsaveview()
-		noautocmd call asclib#window_goto_tabwin(l:tabnr, l:winnr)
-		silent exec 'e! '.fnameescape(filename)
-		noautocmd call asclib#window_goto_uid(uid)
-		call winrestview(saveview)
+		call asclib#window_saveview()
 		call asclib#window_goto_tabwin(l:tabnr, l:winnr)
+		silent exec 'e! '.fnameescape(filename)
+		call asclib#window_loadview()
 	endif
 	if &previewwindow
 		match none
@@ -407,10 +418,13 @@ function! asclib#preview_tag(tagname)
 	normal! gg
 	silent! exec taginfo.cmd
 	normal! zz
+	let height = winheight('%') / 4
+	if height >= 2
+		silent! exec 'normal! '.height."\<c-e>"
+	endif
 	if 1
 		call search("$", "b")
 		call search(escape(a:tagname, '[\*~^'))
-		hi previewWord term=bold ctermbg=green ctermfg=black guibg=green guifg=black
 		exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
 	endif
 	call asclib#window_goto_uid(uid)
@@ -421,6 +435,40 @@ function! asclib#preview_tag(tagname)
 endfunc
 
 
+"----------------------------------------------------------------------
+" display preview file
+"----------------------------------------------------------------------
+function! asclib#preview_edit(bufnr, filename, line)
+	let uid = asclib#window_uid('%', '%')
+	let pid = asclib#preview_open()
+	let [l:tabnr, l:winnr] = asclib#window_find(pid)
+	call asclib#window_goto_tabwin(l:tabnr, l:winnr)
+	call asclib#window_saveview()
+	if a:bufnr <= 0
+		silent exec "e! ".fnameescape(a:filename)
+	else
+		if winbufnr('%') != a:bufnr
+			silent exec "b! ".a:bufnr
+		endif
+	endif
+	call asclib#window_loadview()
+	if a:line > 0
+		if has('folding')
+			silent! .foldopen
+		endif
+		noautocmd exec "normal! ".a:line."Gzz"
+		let height = winheight('%') / 4
+		if height >= 2
+			noautocmd exec "normal! ".height."\<c-e>"
+		endif
+		if &previewwindow
+			match none
+			exec 'match previewWord "\%'. a:line.'l"'
+		endif
+	endif
+	call asclib#window_goto_uid(uid)
+endfunc
+
 
 "----------------------------------------------------------------------
 " goto preview file
@@ -429,10 +477,18 @@ function! asclib#preview_goto(mode)
 	let uid = asclib#window_uid('%', '%')
 	let pid = asclib#preview_check()
 	if pid == 0 || &previewwindow != 0 || uid == pid
+		exec "norm! \<esc>"
 		return
+	endif
+	if index(['quickfix', 'help', 'nofile'], &buftype) >= 0
+		if a:mode == '' || a:mode == '0' || a:mode == '!'
+			exec "norm! \<esc>"
+			return
+		endif
 	endif
 	let [l:tabnr, l:winnr] = asclib#window_find(pid)
 	silent! wincmd P
+	let l:bufname = expand('%:p')
 	let l:bufnr = winbufnr(l:winnr)
 	let l:line = line('.')
 	call asclib#window_goto_uid(uid)
@@ -445,12 +501,15 @@ function! asclib#preview_goto(mode)
 			silent exec 'b! '.l:bufnr 
 		endif
 	elseif a:mode == 'tab'
-		silent exec 'tabnew'
-		silent exec 'b '.l:bufnr
+		silent exec 'tabe '. fnameescape(l:bufname)
 	endif
 	if winbufnr('%') == l:bufnr
 		silent exec ''.l:line
-		silent normal zz
+		silent normal! zz
+		let height = winheight('%') / 4
+		if height >= 2
+			exec "normal! ".height."\<c-e>"
+		endif
 	endif
 endfunc
 
