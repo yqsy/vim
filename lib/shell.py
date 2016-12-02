@@ -846,6 +846,8 @@ if __name__ == '__main__':
 		keymap = data['New Bookmarks'][0]['Keyboard Map']
 		for key in keymap:
 			print key, keymap[key]
+		plist_save('e:/com.xml.plist', data)
+		plist_save('e:/com.binary.plist', data, True)
 		return 0
 	# shcmd.py
 	# shlib.py
