@@ -96,8 +96,8 @@ for s:i in range(10)
 	let g:vimmake_mode['c'.s:i] = 'async'
 endfor
 
-let g:asyncrun_timer = 100
-let g:vimmake_build_timer = 100
+let g:asyncrun_timer = 50
+let g:vimmake_build_timer = 50
 
 
 "----------------------------------------------------------------------

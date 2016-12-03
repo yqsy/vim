@@ -230,7 +230,6 @@ noremap <space>hl :FileSwitch tabe ~/.vim/agenda.otl<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
-noremap <space>ho :only<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
 	noremap <space>hr :FileSwitch tabe ~/_vimrc<cr>

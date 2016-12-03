@@ -453,7 +453,7 @@ function! asclib#preview_edit(bufnr, filename, line)
 	endif
 	call asclib#window_loadview()
 	if a:line > 0
-		noautocmd exec "normal! ".a:line.'G'
+		noautocmd exec "".a:line
 		if has('folding')
 			silent! .foldopen!
 		endif
