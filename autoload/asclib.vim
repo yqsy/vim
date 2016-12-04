@@ -807,14 +807,14 @@ function! asclib#function_prototype(funcname, filetype)
 		unlet w:asclib_prototype_cache
 		return ''
 	endif
-	let res = proto.data[proto.index]
-	let res = substitute(res, '^\s*', '', '')
+	let text = proto.data[proto.index]
+	let text = substitute(text, '^\s*', '', '')
 	let proto.index += 1
 	if proto.index >= len(proto.data)
 		let proto.index = 0
 		unlet w:asclib_prototype_cache
 	endif
-	return res
+	return text
 endfunc
 
 
