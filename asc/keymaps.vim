@@ -123,8 +123,6 @@ if has('gui_running')
 	inoremap <M-r> <ESC>:VimExecute run<cr>
 	noremap <M-b> :VimBuild emake<cr>
 	inoremap <M-b> <ESC>:VimBuild emake<cr>
-	noremap <M-f> <c-w>gf:call Change_DirectoryToFile()<cr>
-	inoremap <M-f> <ESC><c-w>gf:call Change_DirectoryToFile()<cr>
 	noremap <M-a> ggVG
 	inoremap <M-a> <ESC>ggVG
 	noremap <m-_> :call Change_Transparency(-2)<cr>
@@ -182,7 +180,9 @@ if has('autocmd')
 endif
 
 nnoremap <silent><c-^> :call asclib#function_echo(0)<cr>
+nnoremap <silent><m-f> :call asclib#function_echo(0)<cr>
 inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
+inoremap <silent><m-f> <c-\><c-o>:call asclib#function_echo(1)<cr>
 "nnoremap <silent><m-/> :call asclib#function_echo()<cr>
 
 
