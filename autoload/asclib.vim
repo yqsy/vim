@@ -319,17 +319,19 @@ function! asclib#taglist(pattern)
 endfunc
 
 
-
 "----------------------------------------------------------------------
 " easy tagname
 "----------------------------------------------------------------------
 function! asclib#tagfind(tagname)
 	let pattern = escape(a:tagname, '[\*~^')
 	let result = asclib#taglist("^". pattern . "$")
-	if result == []
+	if type(result) == 0 || (type(result) == 3 && result == [])
 		if pattern !~ '^\(catch\|if\|for\|while\|switch\)$'
 			let result = asclib#taglist('::'. pattern .'$')
 		endif
+	endif
+	if type(result) == 0 || (type(result) == 3 && result == [])
+		return []
 	endif
 	return result
 endfunc
@@ -610,6 +612,258 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" function signature
+"----------------------------------------------------------------------
+function! asclib#function_signature(funname, fn_only, filetype)
+	let tags = asclib#tagfind(a:funname)
+    let funpat = escape(a:funname, '[\*~^')
+	let fill_tag = []
+	let ft = (a:filetype == '')? &filetype : a:filetype
+	for i in tags
+		if !has_key(i, 'name')
+			continue
+		endif
+		if has_key(i, 'language')
+		endif
+		if has_key(i, 'filename') && ft != '*'
+			let ename = tolower(fnamemodify(i.filename, ':e'))
+			let c = ['c', 'cpp', 'cc', 'cxx', 'h', 'hpp', 'hh', 'm', 'mm']
+			if index(['c', 'cpp', 'objc', 'objcpp'], ft) >= 0
+				if index(c, ename) < 0
+					continue
+				endif
+			elseif ft == 'python'
+				if index(['py', 'pyw'], ename) < 0
+					continue
+				endif
+			elseif ft == 'java' && ename != 'java'
+				continue
+			elseif ft == 'ruby' && ename != 'rb'
+				continue
+			elseif ft == 'vim' && ename != 'vim'
+				continue
+			elseif ft == 'cs' && ename != 'cs'
+				continue
+			elseif ft == 'php' 
+				if index(['php', 'php4', 'php5', 'php6'], ename) < 0
+					continue
+				endif
+			elseif ft == 'javascript'
+				if index(['html', 'js', 'html5', 'xhtml', 'php'], ename) < 0
+					continue
+				endif
+			endif
+		endif
+		if has_key(i, 'kind')
+			" p: prototype/procedure; f: function; m: member
+			if (a:fn_only == 0 || (i.kind == 'p' || i.kind == 'f') ||
+						\ (i.kind == 'm' && has_key(i, 'cmd') &&
+						\		match(i.cmd, '(') != -1)) &&
+						\ i.name =~ funpat
+				if ft != 'cpp' || !has_key(i, 'class') ||
+							\ i.name !~ '::' || i.name =~ i.class
+					let fill_tag += [i]
+				endif
+			endif
+		else
+			if a:fn_only == 0 && i.name == a:funname
+				let fill_tag += [i]
+			endif
+		endif
+	endfor
+	let res = []
+	let index = 1
+	for i in fill_tag
+		if has_key(i, 'kind') && has_key(i, 'signature')
+			let name = i.name . i.signature
+			if has_key(i, 'kind') && match('fm', i.kind) >= 0
+				let sep = (ft == 'cpp' || ft == 'c')? '::' : '.'
+				if has_key(i, 'class')
+					let name = i.class . sep . name
+				elseif has_key(i, 'struct')
+					let name = i.struct . sep. name
+				elseif has_key(i, 'union')
+					let name = i.struct . sep. name
+				endif
+			endif
+		elseif has_key(i, 'kind')
+			if i.kind == 'd'
+				let name = 'macro '. i.name
+			elseif i.kind == 'c'
+				let name = ((ft == 'vim')? 'command ' : 'class '). i.name
+			elseif i.kind == 's'
+				let name = 'struct '. i.name
+			elseif i.kind == 'u'
+				let name = 'union '. i.name
+			elseif (match('fpmvt', i.kind) != -1) &&
+						\(has_key(i, 'cmd') && i.cmd[0] == '/')
+				let tmppat = '\(\<'.i.name.'\>.\{-}\)'
+				if index(['c', 'cpp', 'cs', 'java', 'javascript'], ft) >= 0
+					let tmppat = tmppat . ';.*'
+				elseif ft == 'python' && (i.kind == 'm' || i.kind == 'f')
+					let tmppat = tmppat . ':.*'
+				elseif ft == 'tcl' && (i.kind == 'm' || i.kind == 'p')
+					let tmppat = tmppat . '\({\)\?$'
+				endif
+                if i.kind == 'm' && &filetype == 'cpp'
+                    let tmppat=substitute(tmppat,'^\(.*::\)','\\(\1\\)\\?','')
+                endif
+                if match(i.cmd[2:-3], tmppat) != -1
+                    let name=substitute(i.cmd[2:-3], tmppat, '\1', '')
+                    if i.kind == 't' && name !~ '^\s*typedef\>'
+                        let name = 'typedef ' . i.name
+                    endif
+                elseif i.kind == 't'
+                    let name = 'typedef ' . i.name
+                elseif i.kind == 'v'
+                    let name = 'var ' . i.name
+                else
+                    let name = i.name
+                endif
+                if i.kind == 'm'
+                    if has_key(i, 'class')
+                        let name = name . ' <-- class ' . i.class
+                    elseif has_key(i, 'struct')
+                        let name = name . ' <-- struct ' . i.struct
+                    elseif has_key(i, 'union')
+                        let name = name . ' <-- union ' . i.union
+                    endif
+                endif
+			else
+				let name = i.name
+			endif
+		else
+			let name = i.name
+		endif
+		let name = substitute(name, '^\s\+', '', '')
+		let name = substitute(name, '\s\+$', '', '')
+		let name = substitute(name, '\s\+', ' ', 'g')
+		let file_line = ''
+		if has_key(i, 'filename')
+			let file_line = fnamemodify(i.filename, ':t')
+			if i.cmd > 0
+				let file_line .= ':'. i.cmd
+			endif
+		endif
+		let desc = name. ' ('.index.'/'.len(fill_tag).') '.file_line
+		let res += [desc]
+		let index += 1
+	endfor
+	return res
+endfunc
+
+
+"----------------------------------------------------------------------
+" function name normalize
+"----------------------------------------------------------------------
+
+" get function name
+function! asclib#function_name(text)
+    let name = substitute(a:text,'.\{-}\(\(\k\+::\)*\(\~\?\k*\|'.
+                \'operator\s\+new\(\[]\)\?\|'.
+                \'operator\s\+delete\(\[]\)\?\|'.
+                \'operator\s*[[\]()+\-*/%<>=!~\^&|]\+'.
+                \'\)\)\s*$','\1','')
+    if name =~ '\<operator\>'  " tags have exactly one space after 'operator'
+        let name = substitute(name,'\<operator\s*','operator ','')
+    endif
+    return name
+endfunc
+
+" guess function names
+function! asclib#function_guess(text)
+	let size = len(a:text)
+	while size > 0
+		if index(['(', ')', ',', ' ', "\t"], a:text[size - 1]) >= 0
+			let size -= 1
+		else
+			break
+		endif
+	endwhile
+	let limit = (size == 0)? 0 : size - 1
+	return asclib#function_name(a:text[0:limit])
+endfunc
+
+
+"----------------------------------------------------------------------
+" function next 
+"----------------------------------------------------------------------
+function! asclib#function_prototype(funcname, filetype)
+	let ft = (a:filetype == '')? &filetype : a:filetype
+	if !exists('w:asclib_prototype_cache')
+		let w:asclib_prototype_cache = { 'name': '', 'index': 0, 'data': [] }
+		let w:asclib_prototype_cache.ft = ''
+	endif
+	let proto = w:asclib_prototype_cache
+	if proto.name != a:funcname || proto.ft != ft
+		let res = asclib#function_signature(a:funcname, 0, ft)
+		let proto.data = res
+		let proto.index = 0
+		let proto.name = a:funcname
+		let proto.ft = ft
+		let w:asclib_prototype_cache = proto
+	endif
+	if len(proto.data) == 0
+		unlet w:asclib_prototype_cache
+		return ''
+	endif
+	let res = proto.data[proto.index]
+	let res = substitute(res, '^\s*', '', '')
+	let proto.index += 1
+	if proto.index >= len(proto.data)
+		let proto.index = 0
+		unlet w:asclib_prototype_cache
+	endif
+	return res
+endfunc
+
+
+"----------------------------------------------------------------------
+" prototype 
+"----------------------------------------------------------------------
+function! asclib#function_define()
+	let line = getline('.')
+	let pos = col('.') - 1
+	let endpos = match(line, '\W', pos)
+	if endpos != -1 && &filetype == 'cpp'
+		let word = expand('<cword>')
+		if word == 'operator'
+			if line[endpos:] =~ '^\s*\(new\(\[]\)\?\|delete\(\[]\)\?\|[[\]'
+						\.'+\-*/%<>=!~\^&|]\+\|()\)'
+				let endpos = matchend(line, '^\s*\(new\(\[]\)\?\|delete\(\['
+							\.']\)\?\|[[\]+\-*/%<>=!~\^&|]\+\|()\)', endpos)
+			endif
+		elseif word == 'new' || word == 'delete'
+            if line[:endpos + 1] =~ 'operator\s\+\(new\|delete\)\[]$'
+				let endpos = endpos + 2
+			endif
+		endif
+	endif
+	if endpos != -1
+		let endpos = endpos - 1
+	endif
+	let name = asclib#function_guess(line[0:endpos])
+	if name == ''
+		return ''
+	endif
+	return asclib#function_prototype(name, &filetype)
+endfunc
+
+" function preview
+function! asclib#function_echo(nosc)
+	let text = asclib#function_define()
+	if text == ''
+		return ''
+	endif
+	if a:nosc != 0
+		set noshowmode
+	endif
+	call asclib#cmdmsg(text, 1)
+	return ''
+endfunc
+
+
+"----------------------------------------------------------------------
 " lint - 
 "----------------------------------------------------------------------
 
@@ -769,7 +1023,5 @@ function! asclib#open_gprof(image, profile)
 	setlocal readonly
 	setlocal filetype=gprof
 endfunc
-
-
 
 

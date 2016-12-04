@@ -467,4 +467,7 @@ if !exists(":DiffOrig")
           \ | wincmd p | diffthis
 endif
 
+nnoremap <leader><F1> :call Tools_ProfileStart('~/.vim/profile.log')<cr>
+nnoremap <leader><F2> :call Tools_ProfileStop()<cr>
+
 

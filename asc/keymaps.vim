@@ -165,12 +165,25 @@ noremap <silent><tab>; :call asclib#preview_goto('')<cr>
 noremap <silent><tab>: :call asclib#preview_goto('tab')<cr>
 
 if has('autocmd')
+	function! s:update_tags()
+		let names = []
+		let name = expand('~/.vim/tags/'. &filetype .'.tags')
+		if filereadable(name)
+			let &l:tags = &g:tags . ',' . name
+		endif
+	endfunc
 	augroup AscQuickfix
 		autocmd!
 		autocmd FileType qf nnoremap <silent><buffer> p 
 					\ :call asclib#preview_quickfix(line('.'))<cr>
+		autocmd FileType * call s:update_tags()
+		autocmd InsertLeave * set showmode
 	augroup END
 endif
+
+nnoremap <silent><c-^> :call asclib#function_echo(0)<cr>
+inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
+"nnoremap <silent><m-/> :call asclib#function_echo()<cr>
 
 
 "----------------------------------------------------------------------

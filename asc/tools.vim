@@ -1,7 +1,7 @@
 " global settings
 let s:winopen = 0
 let g:status_var = ""
-set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %v:%l/%L%)
+set statusline=\ %<%F[%1*%M%*%n%R%H]\ %{''.g:status_var}%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %v:%l/%L%)
 set splitright
 set switchbuf=useopen,usetab,newtab
 "set splitbelow
@@ -581,5 +581,18 @@ command! -nargs=1 -bang AscListMeta
 			\ call Tools_ListMeta(<q-args>, <bang>0)
 
 
+function! Tools_ProfileStart(filename)
+	silent! profile stop
+	if filereadable(a:filename)
+		call delete(a:filename)
+	endif
+	exec "profile start ".fnameescape(a:filename)
+	profile func *
+	profile file *
+endfunc
+
+function! Tools_ProfileStop()
+	profile stop
+endfunc
 
 
