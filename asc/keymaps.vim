@@ -180,9 +180,9 @@ if has('autocmd')
 endif
 
 nnoremap <silent><c-^> :call asclib#function_echo(0)<cr>
-nnoremap <silent><m-f> :call asclib#function_echo(0)<cr>
+nnoremap <silent><m-q> :call asclib#function_echo(0)<cr>
 inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
-inoremap <silent><m-f> <c-\><c-o>:call asclib#function_echo(1)<cr>
+inoremap <silent><m-q> <c-\><c-o>:call asclib#function_echo(1)<cr>
 "nnoremap <silent><m-/> :call asclib#function_echo()<cr>
 
 
