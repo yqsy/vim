@@ -68,7 +68,7 @@ autocmd BufReadPost *
 let g:vimmake_cwd = 1
 let g:vimmake_run_guess = ['go']
 let g:vimmake_build_name = 'make'
-let g:vimmake_extrun = {'hs': 'runghc'}
+let g:vimmake_extrun = {'hs': 'runghc', 'lisp': 'sbcl --script'}
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_build_encoding = 'gbk'
