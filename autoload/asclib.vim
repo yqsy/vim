@@ -679,7 +679,7 @@ function! asclib#function_signature(funname, fn_only, filetype)
 	let index = 1
 	for i in fill_tag
 		if has_key(i, 'kind') && has_key(i, 'signature')
-			if i.cmd[:1] == '/^'
+			if i.cmd[:1] == '/^' && i.cmd[-2:] == '$/'
 				let tmppat = substitute(escape(i.name,'[\*~^'),
 							\ '^.*::','','')
 				if &filetype == 'cpp'
