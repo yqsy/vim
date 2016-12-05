@@ -418,6 +418,7 @@ function! asclib#preview_tag(tagname)
 	if has_key(taginfo, 'line')
 		silent! exec "".taginfo.line
 	else
+		silent! exec "1"
 		silent! exec taginfo.cmd
 	endif
 	if has("folding")

@@ -1668,7 +1668,7 @@ endfunc
 
 if !exists('g:vimmake_ctags_flags')
 	let g:vimmake_ctags_flags = '--fields=+niazS --extra=+q --c++-kinds=+px'
-	let g:vimmake_ctags_flags.= ' --c-kinds=+p'
+	let g:vimmake_ctags_flags.= ' --c-kinds=+p -n'
 endif
 
 function! vimmake#update_tags(cwd, mode, outname)
