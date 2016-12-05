@@ -692,6 +692,15 @@ function! asclib#function_signature(funname, fn_only, filetype)
 				endif
 				let name = substitute(i.cmd[2:-3],tmppat,'','').
 							\ i.name . i.signature
+                if i.kind == 'm'
+                    if has_key(i, 'class')
+                        let name = name . ' <-- class ' . i.class
+                    elseif has_key(i, 'struct')
+                        let name = name . ' <-- struct ' . i.struct
+                    elseif has_key(i, 'union')
+                        let name = name . ' <-- union ' . i.union
+                    endif
+                endif
 			else
 				let name = i.name . i.signature
 				if has_key(i, 'kind') && match('fm', i.kind) >= 0
