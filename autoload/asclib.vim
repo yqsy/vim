@@ -682,7 +682,7 @@ function! asclib#function_signature(funname, fn_only, filetype)
 			if i.cmd[:1] == '/^' && i.cmd[-2:] == '$/'
 				let tmppat = substitute(escape(i.name,'[\*~^'),
 							\ '^.*::','','')
-				if &filetype == 'cpp'
+				if ft == 'cpp'
 					let tmppat = substitute(tmppat,'\<operator ',
 								\ 'operator\\s*','')
 					let tmppat=tmppat . '\s*(.*'
