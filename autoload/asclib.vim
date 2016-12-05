@@ -415,7 +415,11 @@ function! asclib#preview_tag(tagname)
 		match none
 	endif
 	normal! gg
-	silent! exec taginfo.cmd
+	if has_key(taginfo, 'line')
+		silent! exec "".taginfo.line
+	else
+		silent! exec taginfo.cmd
+	endif
 	if has("folding")
 		silent! .foldopen!
 	endif
@@ -675,15 +679,30 @@ function! asclib#function_signature(funname, fn_only, filetype)
 	let index = 1
 	for i in fill_tag
 		if has_key(i, 'kind') && has_key(i, 'signature')
-			let name = i.name . i.signature
-			if has_key(i, 'kind') && match('fm', i.kind) >= 0
-				let sep = (ft == 'cpp' || ft == 'c')? '::' : '.'
-				if has_key(i, 'class')
-					let name = i.class . sep . name
-				elseif has_key(i, 'struct')
-					let name = i.struct . sep. name
-				elseif has_key(i, 'union')
-					let name = i.struct . sep. name
+			if i.cmd[:1] == '/^'
+				let tmppat = substitute(escape(i.name,'[\*~^'),
+							\ '^.*::','','')
+				if &filetype == 'cpp'
+					let tmppat = substitute(tmppat,'\<operator ',
+								\ 'operator\\s*','')
+					let tmppat=tmppat . '\s*(.*'
+					let tmppat='\([A-Za-z_][A-Za-z_0-9]*::\)*'.tmppat
+				else
+					let tmppat=tmppat . '\>.*'
+				endif
+				let name = substitute(i.cmd[2:-3],tmppat,'','').
+							\ i.name . i.signature
+			else
+				let name = i.name . i.signature
+				if has_key(i, 'kind') && match('fm', i.kind) >= 0
+					let sep = (ft == 'cpp' || ft == 'c')? '::' : '.'
+					if has_key(i, 'class')
+						let name = i.class . sep . name
+					elseif has_key(i, 'struct')
+						let name = i.struct . sep. name
+					elseif has_key(i, 'union')
+						let name = i.struct . sep. name
+					endif
 				endif
 			endif
 		elseif has_key(i, 'kind')
@@ -741,7 +760,9 @@ function! asclib#function_signature(funname, fn_only, filetype)
 		let file_line = ''
 		if has_key(i, 'filename')
 			let file_line = fnamemodify(i.filename, ':t')
-			if i.cmd > 0
+			if has_key(i, 'line')
+				let file_line .= ':'. i.line
+			elseif i.cmd > 0
 				let file_line .= ':'. i.cmd
 			endif
 		endif
