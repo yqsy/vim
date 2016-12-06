@@ -40,6 +40,7 @@ augroup SkywindGroup
 	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
 	au BufNewFile,BufRead *.as setlocal filetype=actionscript
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
+	au FileType lisp setlocal ts=8 sts=4 sw=4 noet
 augroup END
 
 

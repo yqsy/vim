@@ -115,6 +115,9 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 				\ "python": 'python',
 				\ "vim": 'vim'
 				\ }
+
+	noremap <space>ht :Startify<cr>
+	noremap <space>hy :tabnew<cr>:Startify<cr> 
 endif
 
 
@@ -292,7 +295,6 @@ let g:startify_session_dir = '~/.vim/session'
 "----------------------------------------------------------------------
 " keymaps
 "----------------------------------------------------------------------
-noremap <space>ht :Startify<cr>
 
 
 
