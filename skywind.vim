@@ -73,6 +73,10 @@ let g:vimmake_extrun = {'hs': 'runghc', 'lisp': 'sbcl --script'}
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_build_encoding = 'gbk'
 	let g:asyncrun_encs = 'gbk'
+elseif has('win32unix')
+	if executable('clisp')
+		let g:vimmake_extrun['lisp'] = 'clisp'
+	endif
 endif
 
 if has('win32') || has('win64') || has('win16') || has('win95')
