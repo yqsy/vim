@@ -40,7 +40,7 @@ augroup SkywindGroup
 	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
 	au BufNewFile,BufRead *.as setlocal filetype=actionscript
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
-	au FileType lisp setlocal ts=8 sts=4 sw=4 noet
+	au FileType lisp setlocal ts=8 sts=2 sw=2 et
 augroup END
 
 
@@ -71,7 +71,11 @@ let g:vimmake_run_guess = ['go']
 let g:vimmake_build_name = 'make'
 let g:vimmake_extrun = {'hs': 'runghc', 'lisp': 'sbcl --script'}
 
+let g:vimmake_extrun['scala'] = 'scala'
+
+
 if has('win32') || has('win64') || has('win16') || has('win95')
+	let g:vimmake_extrun['scm'] = "d:\\linux\\bin\\guile.exe"
 	let g:vimmake_build_encoding = 'gbk'
 	let g:asyncrun_encs = 'gbk'
 elseif has('win32unix')
