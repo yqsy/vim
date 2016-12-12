@@ -306,6 +306,7 @@ if has('gui_running') && (has('win32') || has('win64'))
 	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
 	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 	inoremap <S-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+	noremap <S-F12> <ESC>:VimMake -mode=5 -cwd=$(VIM_FILEDIR) d:\\dev\\swipl\\bin\\swipl-win.exe -s "$(VIM_FILENAME)"<cr>
 endif
 
 noremap <C-F10> :VimBuild gcc -pg<cr>
