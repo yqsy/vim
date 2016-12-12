@@ -39,6 +39,7 @@ augroup SkywindGroup
 	au User AsyncRunStart call asyncrun#quickfix_toggle(6, 1)
 	au User VimMakeStart call vimmake#toggle_quickfix(6, 1)
 	au BufNewFile,BufRead *.as setlocal filetype=actionscript
+	au BufNewFile,BufRead *.pro setlocal filetype=prolog
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
 	au FileType lisp setlocal ts=8 sts=2 sw=2 et
 augroup END
@@ -76,11 +77,19 @@ let g:vimmake_extrun['scala'] = 'scala'
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_extrun['scm'] = "d:\\linux\\bin\\guile.exe"
+	let g:vimmake_extrun['io'] = "d:\\dev\\IoLanguage\\bin\\io.exe"
+	let g:vimmake_extrun['pro'] = "d:\\dev\\swipl\\bin\\swipl.exe -s"
+	let g:vimmake_extrun['pl'] = "d:\\dev\\swipl\\bin\\swipl.exe -s"
 	let g:vimmake_build_encoding = 'gbk'
 	let g:asyncrun_encs = 'gbk'
-elseif has('win32unix')
+else
 	if executable('clisp')
 		let g:vimmake_extrun['lisp'] = 'clisp'
+	elseif executable('sbcl')
+		let g:vimmake_extrun['list'] = 'sbcl --script'
+	endif
+	if executable('swipl')
+		let g:vimmake_extrun['pro'] = 'swipl -s'
 	endif
 endif
 
