@@ -42,6 +42,7 @@ augroup SkywindGroup
 	au BufNewFile,BufRead *.pro setlocal filetype=prolog
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
 	au FileType lisp setlocal ts=8 sts=2 sw=2 et
+	au FileType scala setlocal sts=4 sw=4 noet
 augroup END
 
 

@@ -211,6 +211,22 @@ function! asclib#window_new(position, size, avoid)
 endfunc
 
 
+"----------------------------------------------------------------------
+" search buftype and filetype
+"----------------------------------------------------------------------
+function! asclib#window_search(buftype, filetype, modifiable)
+	for i in range(winnr('$'))
+		if getwinvar(i + 1, '&buftype') == a:buftype 
+			if getwinvar(i + 1, '&filetype') == a:filetype
+				if getwinvar(i + 1, '&modifiable') == a:modifiable
+					return i + 1
+				endif
+			endif
+		endif
+	endfor
+	return 0
+endfunc
+
 
 "----------------------------------------------------------------------
 " preview window
@@ -890,7 +906,94 @@ function! asclib#function_echo(nosc)
 		set noshowmode
 	endif
 	call asclib#cmdmsg(text, 1)
+	"call asclib#miniwin_display(text)
 	return ''
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" miniwin_name
+"----------------------------------------------------------------------
+function! asclib#miniwin_name() abort
+	if !exists('s:buffer_seqno')
+		let s:buffer_seqno = 0
+	endif
+    if !exists('t:asclib_miniwin_buf_name')
+        let s:buffer_seqno += 1
+        let t:asclib_miniwin_buf_name = '__MiniWin__.' . s:buffer_seqno
+    endif
+    return t:asclib_miniwin_buf_name
+endfunc
+
+
+"----------------------------------------------------------------------
+" open mini window below the tagbar
+"----------------------------------------------------------------------
+function! asclib#miniwin_toggle()
+	let tagbar_win = asclib#window_search('nofile', 'tagbar', 0)
+	let mini_win = asclib#window_search('nofile', 'miniwin', 0)
+	if tagbar_win == 0
+		if mini_win > 0
+			let uid = asclib#window_uid('%', '%')
+			silent! exec ''.mini_win.'wincmd w'
+			silent! close
+			if exists('t:asclib_miniwin')
+				unlet t:asclib_miniwin
+			endif
+			call asclib#window_goto_uid(uid)
+		endif
+	else
+		let height = get(g:, 'asclib_miniwin_height', 10)
+		let tagbar_uid = asclib#window_uid('%', tagbar_win)
+		if mini_win == 0
+			let uid = asclib#window_uid('%', '%')
+			silent! exec ''.tagbar_win.'wincmd w'
+			let view = winsaveview()
+			exec 'belowright '.height.'split '.asclib#miniwin_name()
+			setlocal buftype=nofile 
+			setlocal filetype=miniwin
+			setlocal nomodifiable
+			setlocal nonumber
+			setlocal signcolumn=no
+			setlocal statusline=[miniwin]
+			setlocal wrap
+			call asclib#window_goto_uid(tagbar_uid)
+			call winrestview(view)
+			call asclib#window_goto_uid(uid)
+		endif
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" asclib#miniwin_display
+"----------------------------------------------------------------------
+function! asclib#miniwin_display(string)
+	let wid = asclib#window_search('nofile', 'miniwin', 0)
+	if wid == 0
+		return
+	endif
+	let uid = asclib#window_uid('%', '%')
+	let xid = asclib#window_uid('%', wid)
+	noautocmd call asclib#window_goto_uid(xid)
+	let save = @0
+	setlocal modifiable
+	silent exec "normal! ggVGx"
+	let @" = a:string
+	silent exec "normal! ggPgg"
+	let @" = save
+	setlocal nomodifiable
+	noautocmd call asclib#window_goto_uid(uid)
+endfunc
+
+
+"----------------------------------------------------------------------
+" toggle tagbar and miniwin together
+"----------------------------------------------------------------------
+function! asclib#miniwin_tagbar_toggle()
+	silent TagbarToggle
+	silent call asclib#miniwin_toggle()
 endfunc
 
 
