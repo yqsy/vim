@@ -17,6 +17,9 @@ if "%VIM_FILEEXT%" == ".cmd" GOTO RUN_CMD
 
 if "%VIM_FILEEXT%" == ".js" GOTO RUN_NODE
 if "%VIM_FILEEXT%" == ".pro" GOTO RUN_PROLOG
+if "%VIM_FILEEXT%" == ".scala" GOTO RUN_SCALA
+if "%VIM_FILEEXT%" == ".erl" GOTO RUN_ERLANG
+if "%VIM_FILEEXT%" == ".clj" GOTO RUN_CLOJURE
 
 
 echo unsupported file type %VIM_FILEEXT%
@@ -42,9 +45,24 @@ GOTO END
 start d:\dev\swipl\bin\swipl-win.exe -s "%VIM_FILENAME%"
 EXIT
 
+:RUN_SCALA
+SET SCALA=d:\dev\scala\scala-2.11.6
+%SCALA%\bin\scala.cmd -cp %SCALA%\lib\scala-actors-2.11.0.jar;%SCALA%\lib\akka-actor_2.11-2.3.4.jar;%SCALA%\lib\*.jar "%VIM_FILENAME%"
+GOTO END
+
+:RUN_ERLANG
+d:\dev\erl8.2\bin\erl.exe
+EXIT
+GOTO END
+
+:RUN_CLOJURE
+d:\dev\clojure-1.8.0\clojure
+GOTO END
+
 :ERROR_NO_FILE
 echo missing filename
 GOTO END
 
 :END
+
 
