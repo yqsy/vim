@@ -20,6 +20,7 @@ if "%VIM_FILEEXT%" == ".pro" GOTO RUN_PROLOG
 if "%VIM_FILEEXT%" == ".scala" GOTO RUN_SCALA
 if "%VIM_FILEEXT%" == ".erl" GOTO RUN_ERLANG
 if "%VIM_FILEEXT%" == ".clj" GOTO RUN_CLOJURE
+if "%VIM_FILEEXT%" == ".hs" GOTO RUN_HASKELL
 
 
 echo unsupported file type %VIM_FILEEXT%
@@ -57,6 +58,10 @@ GOTO END
 
 :RUN_CLOJURE
 d:\dev\clojure-1.8.0\clojure
+GOTO END
+
+:RUN_HASKELL
+D:\Dev\ghc\ghc-8.0.1\bin\ghci.exe "%VIM_FILENAME%"
 GOTO END
 
 :ERROR_NO_FILE
