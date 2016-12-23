@@ -905,8 +905,8 @@ function! asclib#function_echo(nosc)
 	if a:nosc != 0
 		set noshowmode
 	endif
-	call asclib#cmdmsg(text, 1)
 	"call asclib#miniwin_display(text)
+	call asclib#cmdmsg(text, 1)
 	return ''
 endfunc
 
@@ -931,9 +931,9 @@ endfunc
 " open mini window below the tagbar
 "----------------------------------------------------------------------
 function! asclib#miniwin_toggle()
-	let tagbar_win = asclib#window_search('nofile', 'tagbar', 0)
+	let mark_win = asclib#window_search('quickfix', 'qf', 0)
 	let mini_win = asclib#window_search('nofile', 'miniwin', 0)
-	if tagbar_win == 0
+	if mark_win == 0
 		if mini_win > 0
 			let uid = asclib#window_uid('%', '%')
 			silent! exec ''.mini_win.'wincmd w'
@@ -945,12 +945,14 @@ function! asclib#miniwin_toggle()
 		endif
 	else
 		let height = get(g:, 'asclib_miniwin_height', 10)
-		let tagbar_uid = asclib#window_uid('%', tagbar_win)
+		let width = get(g:, 'asclib_miniwin_width', 80)
+		let mark_uid = asclib#window_uid('%', mark_win)
 		if mini_win == 0
 			let uid = asclib#window_uid('%', '%')
-			silent! exec ''.tagbar_win.'wincmd w'
+			silent! exec ''.mark_win.'wincmd w'
 			let view = winsaveview()
-			exec 'belowright '.height.'split '.asclib#miniwin_name()
+			exec "vs ".asclib#miniwin_name()
+			"exec 'belowright '.height.'split '.asclib#miniwin_name()
 			setlocal buftype=nofile 
 			setlocal filetype=miniwin
 			setlocal nomodifiable
@@ -958,7 +960,7 @@ function! asclib#miniwin_toggle()
 			setlocal signcolumn=no
 			setlocal statusline=[miniwin]
 			setlocal wrap
-			call asclib#window_goto_uid(tagbar_uid)
+			call asclib#window_goto_uid(mark_uid)
 			call winrestview(view)
 			call asclib#window_goto_uid(uid)
 		endif
@@ -991,8 +993,8 @@ endfunc
 "----------------------------------------------------------------------
 " toggle tagbar and miniwin together
 "----------------------------------------------------------------------
-function! asclib#miniwin_tagbar_toggle()
-	silent TagbarToggle
+function! asclib#miniwin_quickfix_toggle()
+	silent call vimmake#toggle_quickfix(6)
 	silent call asclib#miniwin_toggle()
 endfunc
 

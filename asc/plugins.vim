@@ -71,6 +71,29 @@ let g:ctrlp_custom_ignore = {
   \ 'link': 'some_bad_symbolic_links',
   \ }
 
+let g:ctrlp_working_path = 0
+
+let g:ctrlp_user_command = {
+			\   'types' : {
+			\      1: ['.git', 'cd %s && git ls-files'],
+			\      2: ['.svn', 'cd %s && svn ls -R'],
+			\   },
+			\   'fallback': 'find %s -type f'
+			\ }
+
+if has('win32') || has('win16') || has('win64') || has('win95')
+	let g:ctrlp_user_command['fallback'] = 'dir %s /-n /b /s /a-d'
+	" let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d' " Windows
+else
+	" let g:ctrlp_user_command = 'find %s -type f'       " MacOSX/Linux
+endif
+
+unlet g:ctrlp_user_command
+
+if v:version >= 800
+	let g:user_command_async = 1
+endif
+
 
 "----------------------------------------------------------------------
 " UltiSnips

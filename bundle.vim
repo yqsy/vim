@@ -87,7 +87,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'lambdalisue/vim-gista'
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
-	Plugin 'kien/ctrlp.vim'
+	Plugin 'ctrlpvim/ctrlp.vim'
 	Plugin 'KabbAmine/zeavim.vim'
 	Plugin 'lifepillar/vim-solarized8'
 
