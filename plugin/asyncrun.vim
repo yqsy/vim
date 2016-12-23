@@ -3,7 +3,7 @@
 " Maintainer: skywind3000 (at) gmail.com
 " Homepage: http://www.vim.org/scripts/script.php?script_id=5431
 "
-" Last change: 2016.11.25
+" Last change: 2016.12.23
 "
 " Run shell command in background and output to quickfix:
 "     :AsyncRun[!] [options] {cmd} ...
@@ -143,6 +143,15 @@ endif
 if !exists('g:asyncrun_auto')
 	let g:asyncrun_auto = ''
 endif
+
+if !exists('g:asyncrun_shell')
+	let g:asyncrun_shell = ''
+endif
+
+if !exists('g:asyncrun_shellflag')
+	let g:asyncrun_shellflag = ''
+endif
+
 
 
 "----------------------------------------------------------------------
@@ -545,12 +554,21 @@ function! s:AsyncRun_Job_Start(cmd)
 		call s:ErrorMsg("empty arguments")
 		return -3
 	endif
-	if !executable(&shell)
-		let l:text = "invalid config in &shell and &shellcmdflag"
-		call s:ErrorMsg(l:text . ", &shell must be an executable.")
-		return -4
+	if g:asyncrun_shell == ''
+		if !executable(&shell)
+			let l:text = "invalid config in &shell and &shellcmdflag"
+			call s:ErrorMsg(l:text . ", &shell must be an executable.")
+			return -4
+		endif
+		let l:args = [&shell, &shellcmdflag]
+	else
+		if !executable(g:asyncrun_shell)
+			let l:text = "invalid config in g:asyncrun_shell"
+			call s:ErrorMsg(l:text . ", it must be an executable.")
+			return -4
+		endif
+		let l:args = [g:asyncrun_shell, g:asyncrun_shellflag]
 	endif
-	let l:args = [&shell, &shellcmdflag]
 	let l:name = []
 	if type(a:cmd) == 1
 		let l:name = a:cmd
