@@ -89,6 +89,8 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'kien/ctrlp.vim'
 	Plugin 'KabbAmine/zeavim.vim'
+	Plugin 'lifepillar/vim-solarized8'
+
 	if has('python') || has('python3')
 		Plugin 'SirVer/ultisnips'
 	endif
