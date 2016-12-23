@@ -28,9 +28,9 @@ def flow_control(command, hz):
 		if current < ts:
 			delta = (ts - current)
 			time.sleep(delta * 0.001 * 0.001)
-			ts += period
-		if ts < current - 100000:
-			ts = period + current
+		elif ts < current - period * 10:
+			ts = current
+		ts += period
 		sys.stdout.write(text + '\n')
 		sys.stdout.flush()
 	return 0
