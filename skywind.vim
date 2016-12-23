@@ -70,9 +70,7 @@ autocmd BufReadPost *
 "----------------------------------------------------------------------
 "- Vimmake
 "----------------------------------------------------------------------
-let g:vimmake_cwd = 1
 let g:vimmake_run_guess = ['go']
-let g:vimmake_build_name = 'make'
 let g:vimmake_extrun = {'hs': 'runghc', 'lisp': 'sbcl --script'}
 
 let g:vimmake_extrun['scala'] = 'scala'
@@ -80,7 +78,6 @@ let g:vimmake_extrun['es'] = 'escript'
 let g:vimmake_extrun['erl'] = 'escript'
 let g:vimmake_extrun['clj'] = 'clojure'
 let g:vimmake_extrun['hs'] = 'runghc'
-
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_extrun['scm'] = "d:\\linux\\bin\\guile.exe"
@@ -124,9 +121,6 @@ for s:i in range(10)
 	let g:vimmake_mode[s:i] = 'async'
 	let g:vimmake_mode['c'.s:i] = 'async'
 endfor
-
-let g:asyncrun_timer = 50
-let g:vimmake_build_timer = 50
 
 
 "----------------------------------------------------------------------
