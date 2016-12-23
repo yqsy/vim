@@ -482,7 +482,7 @@ map <leader><F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '
 
 augroup ThemeUpdateGroup
 	au!
-	au Syntax netrw call s:netrw_highlight()
+	"au Syntax netrw call s:netrw_highlight()
 	"au ColorScheme * GuiThemeHighlight
 augroup END
 
