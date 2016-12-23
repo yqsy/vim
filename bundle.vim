@@ -91,6 +91,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'KabbAmine/zeavim.vim'
 	Plugin 'lifepillar/vim-solarized8'
 	Plugin 'godlygeek/tabular'
+	"Plugin 'sheerun/vim-polyglot'
 
 	if has('python') || has('python3')
 		Plugin 'SirVer/ultisnips'
