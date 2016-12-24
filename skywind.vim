@@ -11,7 +11,7 @@ set wildmenu
 set cpo-=<
 set wcm=<C-Z>
 noremap <tab>/ :emenu <C-Z>
-noremap <c-n>  :emenu <C-Z>
+" noremap <c-n>  :emenu <C-Z>
 set lazyredraw
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 
