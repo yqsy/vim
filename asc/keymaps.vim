@@ -31,7 +31,7 @@ inoremap <F4> <ESC>:VimTool 4<cr>
 
 
 " keymap for VimTool
-if has('gui_running') && (has('win32') || has('win64'))
+if (has('gui_running') || has('nvim')) && (has('win32') || has('win64'))
 	let s:keys = [')', '!', '@', '#', '$', '%', '^', '&', '*', '(']
 	for s:index in range(10)
 		let s:name = ''.s:index
@@ -104,7 +104,7 @@ cnoremap <M-f> <c-right>
 "----------------------------------------------------------------------
 " gui hotkeys - alt + ?
 "----------------------------------------------------------------------
-if has('gui_running')
+if has('gui_running') || (has('nvim') && (has('win32') || has('win64')))
 	noremap <M-=> :resize +3<cr>
 	noremap <M--> :resize -3<cr>
 	noremap <M-,> :vertical resize -3<cr>
@@ -253,15 +253,20 @@ else
 endif
 
 let s:filename = expand('<sfile>:p')
-exec 'noremap <space>hk :FileSwitch tabe '.fnameescape(s:filename).'<cr>'
+exec 'nnoremap <space>hk :FileSwitch tabe '.fnameescape(s:filename).'<cr>'
 let s:skywind = fnamemodify(s:filename, ':h:h'). '/skywind.vim'
-exec 'noremap <space>hs :FileSwitch tabe '.fnameescape(s:skywind).'<cr>'
+exec 'nnoremap <space>hs :FileSwitch tabe '.fnameescape(s:skywind).'<cr>'
 let s:bundle = fnamemodify(s:filename, ':h:h'). '/bundle.vim'
-exec 'noremap <space>hv :FileSwitch tabe '.fnameescape(s:bundle).'<cr>'
+exec 'nnoremap <space>hv :FileSwitch tabe '.fnameescape(s:bundle).'<cr>'
 let s:asclib = fnamemodify(s:filename, ':h:h'). '/autoload/asclib.vim'
-exec 'noremap <space>hc :FileSwitch tabe '.fnameescape(s:asclib).'<cr>'
+exec 'nnoremap <space>hc :FileSwitch tabe '.fnameescape(s:asclib).'<cr>'
 let s:auxlib = fnamemodify(s:filename, ':h:h'). '/autoload/auxlib.vim'
-exec 'noremap <space>hu :FileSwitch tabe '.fnameescape(s:auxlib).'<cr>'
+exec 'nnoremap <space>hu :FileSwitch tabe '.fnameescape(s:auxlib).'<cr>'
+let s:nvimrc = expand("~/.config/nvim/init.vim")
+if has('win32') || has('win16') || has('win95') || has('win64')
+	let s:nvimrc = expand("~/AppData/Local/nvim/init.vim")
+endif
+exec 'nnoremap <space>hn :FileSwitch tabe '.fnameescape(s:nvimrc).'<cr>'
 
 
 "----------------------------------------------------------------------
@@ -306,7 +311,7 @@ if has('gui_running') && (has('win32') || has('win64'))
 	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
 	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 	inoremap <S-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
-	noremap <S-F12> <ESC>:VimMake -mode=5 -cwd=$(VIM_FILEDIR) d:\\dev\\swipl\\bin\\swipl-win.exe -s "$(VIM_FILENAME)"<cr>
+	"noremap <S-F12> <ESC>:VimMake -mode=5 -cwd=$(VIM_FILEDIR) d:\\dev\\swipl\\bin\\swipl-win.exe -s "$(VIM_FILENAME)"<cr>
 endif
 
 noremap <C-F10> :VimBuild gcc -pg<cr>

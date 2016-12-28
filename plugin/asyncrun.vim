@@ -988,7 +988,7 @@ function! asyncrun#run(bang, opts, args)
 			exec opts.post
 		endif
 	elseif l:mode <= 5
-		if s:asyncrun_windows != 0 && has('gui_running')
+		if s:asyncrun_windows != 0 && (has('gui_running') || has('nvim'))
 			let l:ccc = shellescape(s:ScriptWrite(l:command, 1))
 			if l:mode == 4
 				silent exec '!start cmd /C '. l:ccc
