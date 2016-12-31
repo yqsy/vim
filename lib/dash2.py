@@ -77,6 +77,18 @@ class DashDoc (object):
 			raise IOError('not a dash docset: ' + self._root)
 		self._read_info()
 
+	def _read_info (self):
+		self._info = self.plist_load(self.path_root('Contents/Info.plist'))
+		self._database = self.path_resource('docSet.dsidx')
+		self._conn = None
+		return 0
+
+	def close (self):
+		if self._conn is not None:
+			self._conn.close()
+			self._conn = None
+		return 0
+
 	def path_root (self, path):
 		return os.path.join(self._root, path)
 
@@ -86,12 +98,6 @@ class DashDoc (object):
 	def path_document (self, path):
 		p = self.path_root('Contents/Resources/Documents')
 		return os.path.join(p, path)
-
-	def _read_info (self):
-		self.info = self.plist_load(self.path_root('Contents/Info.plist'))
-		self.database = self.path_resource('docSet.dsidx')
-		self.conn = None
-		return 0
 
 	def plist_load (self, filename):
 		import plistlib
@@ -108,7 +114,15 @@ class DashDoc (object):
 			return data
 		data = plistlib.readPlist(filename)
 		return data	
+
+	def connection (self):
+		if self._conn is None:
+			self._conn = sqlite3.connect(self.data)
+		return self._conn
 	
+	def search (self, keyword):
+		conn = self.connection()
+		return 0
 
 
 #----------------------------------------------------------------------
@@ -118,9 +132,8 @@ if __name__ == '__main__':
 	docsets = 'd:/Program Files/zeal-portable-0.3.1-windows-x86/docsets'
 
 	def test1():
-		print 'hello'
 		dash = DashDoc(os.path.join(docsets, 'C.docset'))
-		print dash.info
+		print dash._info
 		return 0
 
 	test1()
