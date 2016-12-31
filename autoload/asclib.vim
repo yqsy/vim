@@ -542,12 +542,13 @@ endfunc
 " display quickfix item in preview
 "----------------------------------------------------------------------
 function! asclib#preview_quickfix(linenr)
+	let linenr = (a:linenr > 0)? a:linenr : line('.')
 	let qflist = getqflist()
-	if a:linenr < 1 || a:linenr > len(qflist)
+	if linenr < 1 || linenr > len(qflist)
 		exec "norm! \<esc>"
 		return
 	endif
-	let entry = qflist[a:linenr - 1]
+	let entry = qflist[linenr - 1]
 	unlet qflist
 	if entry.valid
 		if entry.bufnr > 0
@@ -562,6 +563,90 @@ function! asclib#preview_quickfix(linenr)
 		exec "norm! \<esc>"
 	endif
 endfunc
+
+
+"----------------------------------------------------------------------
+" switch to buffer
+"----------------------------------------------------------------------
+function! asclib#buffer_switch(bufnr, filename, linenr, position)
+	let l:filename = (a:filename != '')? fnamemodify(a:filename, ':p') : ''
+	for i in range(tabpagenr('$'))
+		let l:buflist = tabpagebuflist(i + 1)
+		for j in range(len(l:buflist))
+			let l:bufnr = l:buflist[j]
+			if !getbufvar(l:bufnr, '&modifiable')
+				continue
+			endif
+			let l:buftype = getbufvar(l:bufnr, '&buftype')
+			if l:buftype == 'quickfix' || l:buftype == 'nofile'
+				continue
+			endif
+			let l:name = fnamemodify(bufname(l:bufnr), ':p')
+			let l:compare = l:filename
+			if has('win32') || has('win16') || has('win95') || has('win64')
+				let l:name = tolower(l:name)
+				let l:name = substitute(l:name, "\\", '/', 'g')
+				let l:compare = tolower(l:filename)
+				let l:compare = substitute(l:compare, "\\", '/', 'g')
+			endif
+			if (a:bufnr > 0 && a:bufnr == l:bufnr) || l:name == l:compare
+				silent exec 'tabn '.(i + 1)
+				silent exec ''.(j + 1).'wincmd w'
+				if a:linenr > 0
+					silent exec ''.a:linenr
+				endif
+				return
+			endif
+		endfor
+	endfor
+	let avoid = ['quickfix', 'nofile', 'help']
+	if a:position != 'self' || index(avoid, &buftype) >= 0
+		if a:position != 'tab'
+			let uid = asclib#window_new(a:position, -1, avoid)
+			call asclib#window_goto_uid(uid)
+		else
+			silent exec 'tabnew'
+		endif
+	endif
+	if a:bufnr <= 0
+		silent exec "e! ".fnameescape(a:filename)
+	else
+		if winbufnr('%') != a:bufnr
+			silent exec "b! ". a:bufnr
+		endif
+	endif
+	if a:linenr > 0
+		silent exec ''.a:linenr
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" quickfix_switch
+"----------------------------------------------------------------------
+function! asclib#quickfix_switch(linenr, position)
+	let qflist = getqflist()
+	let linenr = (a:linenr > 0)? a:linenr : line('.')
+	if linenr < 1 || linenr > len(qflist)
+		exec "norm! \<esc>"
+		return
+	endif
+	let entry = qflist[linenr - 1]
+	unlet qflist
+	if entry.valid
+		if entry.bufnr > 0
+			call asclib#buffer_switch(entry.bufnr, '', entry.lnum, a:position)
+			let text = 'Switch: '.bufname(entry.bufnr)
+			let text.= ' ('.entry.lnum.')'
+			call asclib#cmdmsg(text, 1)
+		else
+			exec "norm! \<esc>"
+		endif
+	else
+		exec "norm! \<esc>"
+	endif
+endfunc
+
 
 
 "----------------------------------------------------------------------

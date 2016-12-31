@@ -170,19 +170,24 @@ if has('autocmd')
 			let &l:tags = &g:tags . ',' . name
 		endif
 	endfunc
+	function! s:quickfix_keymap()
+		if &buftype != 'quickfix'
+			return
+		endif
+		nnoremap <silent><buffer> p :call asclib#preview_quickfix(0)<cr>
+		nnoremap <silent><buffer> u :call asclib#quickfix_switch(0, 'bottom')<cr>
+	endfunc
 	augroup AscQuickfix
 		autocmd!
-		autocmd FileType qf nnoremap <silent><buffer> p 
-					\ :call asclib#preview_quickfix(line('.'))<cr>
+		autocmd FileType qf call s:quickfix_keymap()
 		autocmd FileType * call s:update_tags()
 		autocmd InsertLeave * set showmode
 	augroup END
 endif
 
-nnoremap <silent><c-^> :call asclib#function_echo(0)<cr>
 nnoremap <silent><m-q> :call asclib#function_echo(0)<cr>
-inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
 inoremap <silent><m-q> <c-\><c-o>:call asclib#function_echo(1)<cr>
+"inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
 "nnoremap <silent><m-/> :call asclib#function_echo()<cr>
 
 
@@ -320,5 +325,22 @@ if has('gui_running') && 0
 	noremap <silent> <m-U> :call asclib#smooth_scroll_up(&scroll, 0, 4)<CR>
 	noremap <silent> <m-D> :call asclib#smooth_scroll_down(&scroll, 0, 4)<CR>
 endif
+
+
+"----------------------------------------------------------------------
+" vimmake faster
+"----------------------------------------------------------------------
+nnoremap <silent><F11> :GrepCode <C-R>=expand("<cword>")<cr><cr>
+nnoremap <silent><F12> :GrepCode! <C-R>=expand("<cword>")<cr><cr>
+
+nnoremap <silent>g1 :GrepCode <C-R>=expand("<cword>")<cr><cr>
+nnoremap <silent>g2 :GrepCode! <C-R>=expand("<cword>")<cr><cr>
+nnoremap <silent>g3 :VimScope g <C-R>=expand("<cword>")<cr><cr>
+nnoremap <silent>g4 :VimScope s <C-R>=expand("<cword>")<cr><cr>
+nnoremap <silent>g5 :call asclib#preview_tag(expand("<cword>"))<cr>
+nnoremap <silent>g6 :call vimmake#update_tags('!', 'cs', '.cscope')<cr>
+nnoremap <silent>g7 :call vimmake#update_tags('!', 'py', '.cscopy')<cr>
+nnoremap <silent>g9 :call vimmake#update_tags('!', 'ctags', '.tags')<cr>
+
 
 
