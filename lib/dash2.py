@@ -81,6 +81,7 @@ class DashDoc (object):
 		self._info = self.plist_load(self.path_root('Contents/Info.plist'))
 		self._database = self.path_resource('docSet.dsidx')
 		self._conn = None
+		self._search_index = False
 		return 0
 
 	def close (self):
@@ -117,12 +118,42 @@ class DashDoc (object):
 
 	def connection (self):
 		if self._conn is None:
-			self._conn = sqlite3.connect(self.data)
+			self._conn = sqlite3.connect(self._database)
+			sql = "select count(*) from sqlite_master where "
+			sql+= "type='table' and name='searchIndex';"
+			c = self._conn.cursor()
+			c.execute(sql)
+			row = c.fetchone()
+			if row is not None:
+				if len(row) > 0 and row[0] > 0:
+					self._search_index = True
 		return self._conn
 	
-	def search (self, keyword):
+	def search (self, pattern, like = False):
 		conn = self.connection()
-		return 0
+		cursor = conn.cursor()
+		if self._search_index:
+			sql = "SELECT name AS name, type AS type, path AS url "
+			sql+= "FROM searchIndex"
+		else:
+			sql = "SELECT ztokenname AS name, "
+			sql+= "ztypename AS type, "
+			sql+= "zpath || ifnull('#' || nullif(zanchor, ''), '') AS url "
+			sql+= "FROM ztoken JOIN ztokenmetainformation "
+			sql+= "ON ztokenmetainformation.z_pk = ztoken.zmetainformation "
+			sql+= "JOIN zfilepath ON "
+			sql+= "zfilepath.z_pk = ztokenmetainformation.zfile "
+			sql+= "JOIN ztokentype ON ztokentype.z_pk = ztoken.ztokentype"
+		if pattern:
+			sql += " WHERE name like ? "
+			sql += "COLLATE NOCASE LIMIT 100"
+			cursor.execute(sql, ('%' + pattern + '%', ))
+		else:
+			sql += "COLLATE NOCASE LIMIT 100"
+			cursor.execute(sql)
+		rows = [ n for n in cursor ]
+		cursor = None
+		return rows
 
 
 #----------------------------------------------------------------------
@@ -132,8 +163,17 @@ if __name__ == '__main__':
 	docsets = 'd:/Program Files/zeal-portable-0.3.1-windows-x86/docsets'
 
 	def test1():
-		dash = DashDoc(os.path.join(docsets, 'C.docset'))
+		dash = DashDoc(os.path.join(docsets, 'Vim.docset'))
 		print dash._info
+		dash.connection()
+		print dash._search_index
+		return 0
+
+	def test1():
+		dash = DashDoc(os.path.join(docsets, 'C.docset'))
+		rows = dash.search('print')
+		for row in rows:
+			print row
 		return 0
 
 	test1()
