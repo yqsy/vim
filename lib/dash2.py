@@ -170,7 +170,7 @@ if __name__ == '__main__':
 		return 0
 
 	def test1():
-		dash = DashDoc(os.path.join(docsets, 'C.docset'))
+		dash = DashDoc(os.path.join(docsets, 'Python_2.docset'))
 		rows = dash.search('print')
 		for row in rows:
 			print row
