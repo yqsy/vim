@@ -164,8 +164,8 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
 	if has('python')
-		Plugin 'mgedmin/pythonhelper.vim'
-		Plugin 'mgedmin/chelper.vim'
+		"Plugin 'mgedmin/pythonhelper.vim'
+		"Plugin 'mgedmin/chelper.vim'
 	endif
 	"Plugin 'vim-scripts/svn-diff.vim'
 	"Plugin 'airblade/vim-gitguttr'
