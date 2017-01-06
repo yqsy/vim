@@ -327,6 +327,16 @@ if has('gui_running') && 0
 endif
 
 
+
+"----------------------------------------------------------------------
+" g command
+"----------------------------------------------------------------------
+nnoremap gb :YcmCompleter GoToDeclaration<CR>
+nnoremap gl :YcmCompleter GoToDefinition<CR>
+nnoremap gx :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap gy :YcmCompleter GoToReferences<CR>
+
+
 "----------------------------------------------------------------------
 " vimmake faster
 "----------------------------------------------------------------------

@@ -163,6 +163,7 @@ endif
 " 
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
+	Plugin 'thinca/vim-quickrun'
 	if has('python')
 		"Plugin 'mgedmin/pythonhelper.vim'
 		"Plugin 'mgedmin/chelper.vim'

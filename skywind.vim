@@ -44,6 +44,7 @@ augroup SkywindGroup
 	au BufNewFile,BufRead *.as setlocal filetype=actionscript
 	au BufNewFile,BufRead *.pro setlocal filetype=prolog
 	au BufNewFile,BufRead *.es setlocal filetype=erlang
+	au BufNewFile,BufRead *.asc setlocal filetype=asciidoc
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
 	au FileType lisp setlocal ts=8 sts=2 sw=2 et
 	au FileType scala setlocal sts=4 sw=4 noet
