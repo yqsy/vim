@@ -95,8 +95,8 @@ function! Tools_FileSwitch(how, filename)
 			endif
 		endfor
 	endfor
-	silent exec 'tabn '.l:tabcc
-	silent exec ''.l:wincc.'wincmd w'
+	" silent exec 'tabn '.l:tabcc
+	" silent exec ''.l:wincc.'wincmd w'
 	if (a:how == 'edit') || (a:how == 'e')
 		exec 'e '.fnameescape(a:filename)
 	elseif (a:how == 'tabedit') || (a:how == 'tabe') || (a:how == 'tabnew')

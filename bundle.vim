@@ -216,7 +216,8 @@ if index(g:bundle_group, 'special') >= 0
 	Plugin 'dracula/vim'
 
 	if s:uname != 'windows'
-		Plugin 'mhinz/vim-signify'
+		" this plugin is too slow, 3 seconds delay for open a new file
+		" Plugin 'mhinz/vim-signify'
 	endif
 
 	let g:syntastic_always_populate_loc_list = 1
