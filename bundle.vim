@@ -93,9 +93,6 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'godlygeek/tabular'
 	"Plugin 'sheerun/vim-polyglot'
 
-	if has('python') || has('python3')
-		Plugin 'SirVer/ultisnips'
-	endif
 
 	if !has('gui_running')
 		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
@@ -138,6 +135,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
+		"Plugin 'SirVer/ultisnips'
 	endif
 
 	noremap <space>bp :BlogPreview local<cr>
