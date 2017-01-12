@@ -1,6 +1,9 @@
 @ECHO OFF
 
 if "%VIM_FILENAME%" == "" GOTO ERROR_NO_FILE
+if "%VIM_RUNONCE%" == "1" GOTO ERROR_ONCE
+
+SET VIM_RUNONCE=1
 
 CD /D "%VIM_FILEDIR%"
 
@@ -38,6 +41,10 @@ GOTO END
 
 :ERROR_NO_FILE
 echo missing filename
+GOTO END
+
+:ERROR_ONCE
+echo can't run itself
 GOTO END
 
 :END
