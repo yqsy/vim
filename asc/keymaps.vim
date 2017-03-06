@@ -248,6 +248,7 @@ noremap <space>hl :FileSwitch tabe ~/.vim/agenda.otl<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
+noremap <space>hq :FileSwitch tabe ~/.vim/quicknote.txt<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
 	noremap <space>hr :FileSwitch tabe ~/_vimrc<cr>
@@ -314,7 +315,7 @@ noremap <silent><space>lg :call asclib#open_gprof('', '')<cr>
 if has('gui_running') && (has('win32') || has('win64'))
 	noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
 	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
-	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
+	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) -save=1 d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 	inoremap <S-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python35\\python.exe "$(VIM_FILENAME)"<cr>
 	"noremap <S-F12> <ESC>:VimMake -mode=5 -cwd=$(VIM_FILEDIR) d:\\dev\\swipl\\bin\\swipl-win.exe -s "$(VIM_FILENAME)"<cr>
 endif
