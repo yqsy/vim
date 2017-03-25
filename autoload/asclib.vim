@@ -1246,3 +1246,23 @@ function! asclib#open_gprof(image, profile)
 endfunc
 
 
+
+"----------------------------------------------------------------------
+" find and touch a file (usually a wsgi file)
+"----------------------------------------------------------------------
+function! asclib#touch_file(name)
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		echo 'touching is not supported on windows'
+		return
+	endif
+	let l:filename = findfile(a:name, '.;')
+	if l:filename == ''
+		echo 'not find: "'.a:name .'"'
+	else
+		call system('touch ' . shellescape(l:filename) . ' &')
+		echo 'touch: '. l:filename
+	endif
+endfunc
+
+
+
