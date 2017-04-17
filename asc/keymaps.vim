@@ -307,6 +307,7 @@ noremap <silent><space>lf :call asclib#lint_flake8('')<cr>
 noremap <silent><space>ls :call asclib#lint_splint('')<cr>
 noremap <silent><space>lc :call asclib#lint_cppcheck('')<cr>
 noremap <silent><space>lg :call asclib#open_gprof('', '')<cr>
+noremap <silent><space>lt :call asclib#html_prettify()<cr>
 
 
 "----------------------------------------------------------------------

@@ -1266,3 +1266,18 @@ endfunc
 
 
 
+"----------------------------------------------------------------------
+" prettify html
+"----------------------------------------------------------------------
+function! asclib#html_prettify()
+	if &ft != 'html'
+		echo "not a html file"
+		return
+	endif
+	silent! exec "s/<[^>]*>/\r&\r/g"
+	silent! exec "g/^$/d"
+	exec "normal ggVG="
+endfunc
+
+
+

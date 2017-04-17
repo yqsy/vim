@@ -144,6 +144,39 @@ function! <SID>snip_bundle()
 endfunc
 
 
+"----------------------------------------------------------------------
+" main test
+"----------------------------------------------------------------------
+function! <SID>snip_main()
+	let l:ext = expand('%:e')
+	let l:text = []
+	if &filetype == 'vim'
+	elseif index(['c', 'cpp', 'h', 'hpp', 'hh', 'cc', 'cxx'], l:ext) >= 0
+		let l:text += ['#include <stdio.h>']
+		let l:text += ['#include <stdlib.h>']
+		let l:text += ['']
+		let l:text += ['int main(void)']
+		let l:text += ['{']
+		let l:text += ["\tprintf(\"Hello World !!\\n\");"]
+		let l:text += ["\treturn 0;"]
+		let l:text += ['{']
+	elseif &filetype == 'python'
+		let l:text += ['#! /usr/bin/env python']
+		let l:text += ['# -*- coding: utf-8 -*-']
+		let l:text += ['import sys']
+		let l:text += ['import time']
+		let l:text += ['import os']
+		let l:text += ['import codecs']
+		let l:text += ['']
+		let l:text += ['']
+		let l:text += ['']
+		let l:text += ['if __name__ == "__main__":']
+		let l:text += ["\tprint('Hello, World !!')"]
+	endif
+	call append(line('.') - 1, l:text)
+endfunc
+
+
 "-----------------------------------------------------------------------
 " hot keys
 "-----------------------------------------------------------------------
@@ -151,6 +184,7 @@ noremap <space>e- :call <SID>snip_comment_block('-')<cr>
 noremap <space>e= :call <SID>snip_comment_block('=')<cr>
 noremap <space>ec :call <SID>snip_copyright('skywind')<cr>
 noremap <space>eb :call <SID>snip_bundle()<cr>
+noremap <space>em :call <SID>snip_main()<cr>
 noremap <space>et "=strftime("%Y/%m/%d %H:%M:%S")<CR>gp
 
 
