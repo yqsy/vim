@@ -545,7 +545,11 @@ function! s:Vimmake_Build_NeoVim(job_id, data, event)
 		let l:index = 0
 		let l:size = len(a:data)
 		while l:index < l:size
-			let s:build_output[s:build_head] = a:data[l:index]
+			let s:text = a:data[l:index]
+			if s:vimmake_windows != 0
+				let s:text = substitute(s:text, '\r$', '', 'g')
+			endif
+			let s:build_output[s:build_head] = s:text
 			let s:build_head += 1
 			let l:index += 1
 		endwhile

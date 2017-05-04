@@ -505,7 +505,11 @@ function! s:AsyncRun_Job_NeoVim(job_id, data, event)
 		let l:index = 0
 		let l:size = len(a:data)
 		while l:index < l:size
-			let s:async_output[s:async_head] = a:data[l:index]
+			let s:text = a:data[l:index]
+			if s:asyncrun_windows != 0
+				let s:text = substitute(s:text, '\r$', '', 'g')
+			endif
+			let s:async_output[s:async_head] = s:text
 			let s:async_head += 1
 			let l:index += 1
 		endwhile
