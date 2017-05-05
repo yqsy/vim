@@ -116,7 +116,7 @@ if has('gui_running')
 		set guifont=inconsolata:h11
 		"set guifont=fixedsys
 		"au QuickfixCmdPost make call QuickfixChineseConvert()
-		let g:config_vim_gui_label = 3
+		let g:config_vim_tab_style = 3
 		"color desert256
 		try
 			color seoul256
@@ -133,6 +133,15 @@ else
 	set t_Co=256 t_md=
 endif
 
+if has('nvim') && (has('win32') || has('win64'))
+	set guioptions-=L
+	set mouse=a
+	set showtabline=2
+	set laststatus=2
+	set number
+	set t_Co=256
+	let g:config_vim_tab_style = 3
+endif
 
 
 
