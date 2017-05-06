@@ -3901,10 +3901,8 @@ function! s:ExecuteCtags(ctags_cmd) abort
             endif
         endif
         if use_python == 0
-            echom "tagbar no python"
             silent let ctags_output = system(a:ctags_cmd)
         else
-            echom "tagbar python"
             py import subprocess, vim
             py x = vim.eval('a:ctags_cmd')
             py m = subprocess.PIPE
@@ -3915,7 +3913,7 @@ function! s:ExecuteCtags(ctags_cmd) abort
             py p.stdout.close()
             py p.wait()
             py t = t.replace('\\', '\\\\').replace('"', '\\"')
-            py t = t.replace('\n', '\\n').replace('\r', '\\r')
+            py t = t.replace('\n', '\\n').replace('\r', '')
             py vim.command('let l:text = "%s"'%t)
             let ctags_output = l:text
         endif
