@@ -3912,10 +3912,14 @@ function! s:ExecuteCtags(ctags_cmd) abort
             py t = p.stdout.read()
             py p.stdout.close()
             py p.wait()
-            py t = t.replace('\\', '\\\\').replace('"', '\\"')
-            py t = t.replace('\n', '\\n').replace('\r', '')
-            py vim.command('let l:text = "%s"'%t)
-            let ctags_output = l:text
+            py t = t.replace('\r', '')
+            if has('patch-7.4.145') || v:version >= 800
+                let ctags_output = pyeval('t')
+            else
+                py t = t.replace('\\', '\\\\').replace('"', '\\"') 
+                py t = t.replace('\n', '\\n')
+                py vim.command('let ctags_output = "%s"'%t)
+            endif
         endif
     endif
 
