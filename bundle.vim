@@ -213,9 +213,9 @@ if index(g:bundle_group, 'special') >= 0
 	Plugin 'mh21/errormarker.vim'
 	Plugin 'dracula/vim'
 
-	if s:uname != 'windows'
+	if s:uname != 'windows2'
 		" this plugin is too slow, 3 seconds delay for open a new file
-		" Plugin 'mhinz/vim-signify'
+		Plugin 'mhinz/vim-signify'
 	endif
 
 	let g:syntastic_always_populate_loc_list = 1
