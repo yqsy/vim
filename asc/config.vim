@@ -150,7 +150,9 @@ endfunc
 
 function! Tab_MoveRight()
 	let l:tabnr = tabpagenr() + 1
-	exec 'tabmove '.l:tabnr
+	if l:tabnr <= tabpagenr('$')
+		exec 'tabmove '.l:tabnr
+	endif
 endfunc
 
 function! s:Filter_Push(desc, wildcard)

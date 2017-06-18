@@ -1916,7 +1916,7 @@ endfun
 
 hi clear
 syntax reset
-let g:colors_name = "PaperColor"
+let g:colors_name = "papercol"
 
 call s:adapt_to_environment()
 call s:set_color_variables()
