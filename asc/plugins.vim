@@ -72,7 +72,6 @@ let g:ctrlp_custom_ignore = {
   \ }
 
 let g:ctrlp_root_markers = ['.project', '.root']
-
 let g:ctrlp_working_path = 0
 
 
