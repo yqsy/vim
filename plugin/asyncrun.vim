@@ -154,6 +154,10 @@ if !exists('g:asyncrun_shellflag')
 	let g:asyncrun_shellflag = ''
 endif
 
+if !exists('g:asyncrun_ftrun')
+	let g:asyncrun_ftrun = {}
+endif
+
 
 
 "----------------------------------------------------------------------
@@ -1280,6 +1284,7 @@ endfunc
 function! asyncrun#execute(mode, cwd, save)
 	let cd = haslocaldir()? 'lcd ' : 'cd '
 	let savecwd = getcwd()
+	let l:ext = tolower(expand("%:e"))
 	if a:save | silent! wall | endif
 	if bufname('%') == '' | return | endif
 	let l:dest = ''
@@ -1337,7 +1342,7 @@ function! asyncrun#execute(mode, cwd, save)
 			call asyncrun#run('', {'mode':4}, cmd . ' ' . fname)
 		endif
 	else
-		let cmd = get(g:vimmake_ftrun, &ft, '')
+		let cmd = get(g:asyncrun_ftrun, &ft, '')
 		if cmd != ''
 			exec '!'. cmd . ' ' . shellescape(expand("%"))
 		elseif &ft == 'python'
