@@ -2,7 +2,7 @@
 
 CLOUD_USER=""
 CLOUD_PASS=""
-CLOUD_HOME="~/document/cloud/owncloud"
+CLOUD_HOME="${HOME}/document/cloud/owncloud"
 CLOUD_HTTP="https://xxx.xxx.com/owncloud"
 CLOUD_SLEEP=60
 
