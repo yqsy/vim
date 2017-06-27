@@ -250,6 +250,7 @@ noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
 noremap <space>hq :FileSwitch tabe ~/.vim/quicknote.txt<cr>
 noremap <space>hd :FileSwitch tabe ~/Dropbox/Documents/notes.txt<cr>
+noremap <space>ho :FileSwitch tabe ~/document/cloud/airmist/Documents/notes.txt<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
 	noremap <space>hr :FileSwitch tabe ~/_vimrc<cr>
