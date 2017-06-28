@@ -1281,3 +1281,74 @@ endfunc
 
 
 
+"----------------------------------------------------------------------
+" owncloud
+"----------------------------------------------------------------------
+if !exists('g:asclib#owncloud')
+	let g:asclib#owncloud = ['', '', '']
+endif
+
+if !exists('g:asclib#owncloudcmd')
+	let g:asclib#owncloudcmd = ''
+endif
+
+
+function! asclib#owncloud_call(command)
+	let cmd = g:asclib#owncloudcmd
+	if cmd == ''
+		let cmd = asclib#path_executable('owncloudcmd')
+	endif
+	if cmd == '' && s:windows != 0
+		if filereadable('C:/Program Files (x86)/ownCloud/owncloudcmd.exe')
+			let cmd = 'C:/Program Files (x86)/ownCloud/owncloudcmd.exe'
+		elseif filereadable('C:/Program Files/ownCloud/owncloudcmd.exe')
+			let cmd = 'C:/Program Files/ownCloud/owncloudcmd.exe'
+		endif
+	endif
+	if cmd == ''
+		call asclib#errmsg("cannot find owncloudcmd")		
+		return
+	endif
+	call vimmake#run('', {}, shellescape(cmd) . ' ' . a:command)
+endfunc
+
+
+function! asclib#owncloud_sync()
+	if type(g:asclib#owncloud) != type([])
+		call asclib#errmsg("bad g:asclib#owncloud config")
+		return
+	endif
+	if len(g:asclib#owncloud) != 3
+		call asclib#errmsg("bad g:asclib#owncloud config")
+		return
+	endif
+	let url = g:asclib#owncloud[0]
+	let cloud_user = g:asclib#owncloud[1]
+	let cloud_pass = g:asclib#owncloud[2]
+	if strpart(url, 0, 5) != 'http:' && strpart(url, 0, 6) != 'https:'
+		call asclib#errmsg("bad g:asclib#owncloud[0] config")
+		return
+	endif
+	if cloud_user == ''
+		call asclib#errmsg("bad g:asclib#owncloud[1] config")
+		return
+	endif
+	let cmd = '-u ' .shellescape(cloud_user) . ' '
+	if cloud_pass
+		let cmd .= '-p ' .shellescape(cloud_pass) . ' '
+	endif
+	let cmd .= '--trust --non-interactive '
+	let cmd .= (s:windows == 0)? '--exclude /dev/null ' : ''
+	let cloud = expand('~/.vim/cloud')
+	try
+		silent call mkdir(cloud, "p", 0755)
+	catch /^Vim\%((\a\+)\)\=:E/
+	finally
+	endtry
+	let cmd .= shellescape(cloud) . ' ' . shellescape(url)
+	call asclib#owncloud_call(cmd)
+endfunc
+
+
+
+
