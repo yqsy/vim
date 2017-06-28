@@ -244,7 +244,7 @@ noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 " space + h : fast open files
 "----------------------------------------------------------------------
 noremap <space>hp :FileSwitch tabe ~/.vim/project.txt<cr>
-noremap <space>hl :FileSwitch tabe ~/.vim/cloud/Documents/cloudout.otl<cr>
+noremap <space>hl :FileSwitch tabe ~/.vim/cloud/Documents/agenda.otl<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
