@@ -1314,6 +1314,12 @@ endfunc
 
 
 function! asclib#owncloud_sync()
+	let cloud = expand('~/.vim/cloud')
+	try
+		silent call mkdir(cloud, "p", 0755)
+	catch /^Vim\%((\a\+)\)\=:E/
+	finally
+	endtry
 	if type(g:asclib#owncloud) != type([])
 		call asclib#errmsg("bad g:asclib#owncloud config")
 		return
@@ -1339,12 +1345,6 @@ function! asclib#owncloud_sync()
 	endif
 	let cmd .= '--trust --non-interactive '
 	let cmd .= (s:windows == 0)? '--exclude /dev/null ' : ''
-	let cloud = expand('~/.vim/cloud')
-	try
-		silent call mkdir(cloud, "p", 0755)
-	catch /^Vim\%((\a\+)\)\=:E/
-	finally
-	endtry
 	let cmd .= shellescape(cloud) . ' ' . shellescape(url)
 	call asclib#owncloud_call(cmd)
 endfunc

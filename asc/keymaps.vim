@@ -244,14 +244,14 @@ noremap <silent><leader>cw :call Change_DirectoryToFile()<cr>
 " space + h : fast open files
 "----------------------------------------------------------------------
 noremap <space>hp :FileSwitch tabe ~/.vim/project.txt<cr>
-noremap <space>hl :FileSwitch tabe ~/.vim/agenda.otl<cr>
+noremap <space>hl :FileSwitch tabe ~/.vim/cloud/Documents/cloudout.otl<cr>
 noremap <space>hf <c-w>gf
 noremap <space>he :call Show_Explore()<cr>
 noremap <space>hb :FileSwitch tabe ~/.vim/bundle.vim<cr>
 noremap <space>hq :FileSwitch tabe ~/.vim/quicknote.txt<cr>
 noremap <space>hd :FileSwitch tabe ~/Dropbox/Documents/notes.txt<cr>
 noremap <space>ho :FileSwitch tabe ~/.vim/cloud/Documents/cloudnote.txt<cr>
-noremap <space>hO :call asclib#owncloud_sync()<cr>
+noremap <space>h; :call asclib#owncloud_sync()<cr>
 
 if (!has('nvim')) && (has('win32') || has('win64'))
 	noremap <space>hr :FileSwitch tabe ~/_vimrc<cr>
