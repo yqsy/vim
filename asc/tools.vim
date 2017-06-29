@@ -622,7 +622,7 @@ function! Tools_ExpSwitch(cmd) abort
 		endif
 		return pattern
 	endfunc
-	if &buftype == "nofile"
+	if &buftype == "nofile" || &buftype == "quickfix"
 		return
 	elseif &filetype ==# 'netrw'
 		return
@@ -631,7 +631,7 @@ function! Tools_ExpSwitch(cmd) abort
 	elseif expand('%') =~# '^$\|^term:[\/][\/]'	
 		exec a:cmd '.'
 	else
-		exec a:cmd '%:h'
+		exec a:cmd '%:p:h'
 		call s:seek(filename)
 	endif
 endfunc
