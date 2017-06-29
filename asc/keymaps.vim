@@ -56,8 +56,8 @@ noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
 noremap <silent><space>. :vertical resize +3<cr>
 
-nnoremap <silent><c-w><c-e> :ExpSwitch Explore<cr>
-nnoremap <silent><c-w>e :ExpSwitch Explore<cr>
+nnoremap <silent><c-w><c-e> :ExpSwitch Explore 50<cr>
+nnoremap <silent><c-w>e :ExpSwitch Explore 50<cr>
 nnoremap <silent><c-w>m :ExpSwitch Vexplore! 50<cr>
 nnoremap <silent><c-w>M :ExpSwitch Texplore<cr>
 
@@ -67,7 +67,7 @@ noremap <silent><tab>. :call Tab_MoveRight()<cr>
 noremap <silent><tab>7 :ExpSwitch Vexplore! 50<cr>
 noremap <silent><tab>8 :ExpSwitch Hexplore 50<cr>
 noremap <silent><tab>9 :ExpSwitch Texplore<cr>
-noremap <silent>+ :ExpSwitch Explore<cr>
+noremap <silent>+ :ExpSwitch Explore 50<cr>
 
 noremap <silent><space>ha :GuiSignRemove 
 			\ errormarker_error errormarker_warning<cr>
