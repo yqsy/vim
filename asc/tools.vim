@@ -596,3 +596,48 @@ function! Tools_ProfileStop()
 endfunc
 
 
+
+"----------------------------------------------------------------------
+" vinegar and oil:
+" Split windows and the project drawer go together like oil and 
+" vinegar. I don't mean to say that you can combine them to create a 
+" delicious salad dressing. I mean that they don't mix well!
+"    --   Drew Neil
+"----------------------------------------------------------------------
+function! Tools_ExpSwitch(cmd) abort
+	let filename = expand('%:t')
+	function! s:seek(file) abort
+		if get(b:, 'netrw_liststyle') == 2
+			let pattern = '\%(^\|\s\+\)\zs'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
+		else
+			let pattern = '^\%(| \)*'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\t\)'
+		endif
+		if has('win32') || has('win16') || has('win95') || has('win64')
+			let savecase = &l:ignorecase
+			setlocal ignorecase
+			call search(pattern, 'wc')
+			let l:ignorecase = savecase
+		else
+			call search(pattern, 'wc')
+		endif
+		return pattern
+	endfunc
+	if &buftype == "nofile"
+		return
+	elseif &filetype ==# 'netrw'
+		return
+	elseif filename == ""
+		exec a:cmd '.'
+	elseif expand('%') =~# '^$\|^term:[\/][\/]'	
+		exec a:cmd '.'
+	else
+		exec a:cmd '%:h'
+		call s:seek(filename)
+	endif
+endfunc
+
+
+command! -nargs=1 ExpSwitch call Tools_ExpSwitch(<f-args>)
+
+
+

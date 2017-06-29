@@ -1350,5 +1350,10 @@ function! asclib#owncloud_sync()
 endfunc
 
 
+function! asclib#show_rtp()
+	for key in split(&rtp, ',')
+		echo key
+	endfor
+endfunc
 
 
