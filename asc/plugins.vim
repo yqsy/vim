@@ -16,6 +16,17 @@ let g:netrw_sort_options = 'i'
 "let g:netrw_liststyle=3      " tree view
 "let g:netrw_list_hide=netrw_gitignore#Hide()
 
+let s:ignore = ['.obj', '.so', '.a', '~', '.tmp', '.egg', '.class', '.jar']
+let s:ignore += ['.tar.gz', '.zip', '.7z', '.bz2', '.rar', '.jpg', '.png']
+let s:ignore += ['.chm', '.docx', '.xlsx', '.pptx', '.pdf', '.dll', '.pyd']
+
+for s:extname in s:ignore
+	let s:pattern = escape(s:extname, '.~') . '\($\|\t\),'
+	let g:netrw_list_hide = s:pattern . g:netrw_list_hide
+endfor
+
+let s:pattern = '#.\{-\}#\($\|\t\),'
+let g:netrw_list_hide = s:pattern . g:netrw_list_hide
 
 " fixed netrw underline bug in vim 7.3 and below
 if v:version < 704
