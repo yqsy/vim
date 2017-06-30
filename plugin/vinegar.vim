@@ -113,14 +113,14 @@ function! s:setup_vinegar()
 			let s:netrw_up = substitute(maparg('-', 'n'), '\c^:\%(<c-u>\)\=', '', '')
 			let s:netrw_up = strpart(s:netrw_up, 0, strlen(s:netrw_up)-4)
 		endif
-		nnoremap <buffer> - :VinegarOpen edit<cr>
+		nnoremap <buffer><silent> - :VinegarOpen edit<cr>
 		if key != '-'
-			exec 'nnoremap <buffer> ' . key. ' :VinegarOpen edit<cr>'
+			exec 'nnoremap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
 	elseif &ft == 'nerdtree'
 		nmap <buffer> - :VinegarOpen edit<cr>
 		if key != '-'
-			exec 'nmap <buffer> ' . key. ' :VinegarOpen edit<cr>'
+			exec 'nmap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
 	endif
 endfunc
