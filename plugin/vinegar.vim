@@ -59,9 +59,12 @@ endfunc
 "----------------------------------------------------------------------
 function! s:open(cmd) abort
 	let filename = expand('%:t')
-	if (&buftype == "nofile" || &buftype == "quickfix") && &ft != 'nerdtree'
-		return
-	elseif &filetype ==# 'netrw'
+	if &buftype == "nofile" || &buftype == "quickfix"
+		if (&ft != 'nerdtree') && (&ft != 'netrw')
+			return
+		endif
+	endif
+	if &filetype ==# 'netrw'
 		if s:netrw_up == ''
 			return
 		endif
@@ -105,7 +108,6 @@ command! -nargs=1 VinegarOpen call s:open(<f-args>)
 "----------------------------------------------------------------------
 function! s:setup_vinegar()
 	let key = g:vinegar_key
-	call s:log('setup: ' . &ft)
 	if &ft == 'netrw'
 		if s:netrw_up == ''
 			let s:netrw_up = substitute(maparg('-', 'n'), '\c^:\%(<c-u>\)\=', '', '')
