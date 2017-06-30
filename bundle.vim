@@ -73,8 +73,17 @@ Plugin 'VundleVim/Vundle.vim'
 " Group - simple
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'simple') >= 0 || s:bundle_all
-	" Plugin 'scrooloose/nerdtree'
+	" Plugin 'Shougo/vimfiler.vim'
+	" Plugin 'Shougo/unite.vim'
 	Plugin 'vim-scripts/Colour-Sampler-Pack'
+	" let g:vimfiler_as_default_explorer = 1
+	" let g:vimfiler_no_default_key_mappings = 1
+endif
+
+if index(g:bundle_group, 'nerdtree') >= 0
+	Plugin 'scrooloose/nerdtree'
+	let g:NERDTreeMinimalUI = 1
+	let g:NERDTreeDirArrows = 1
 endif
 
 

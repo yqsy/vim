@@ -56,18 +56,18 @@ noremap <silent><space>- :resize -3<cr>
 noremap <silent><space>, :vertical resize -3<cr>
 noremap <silent><space>. :vertical resize +3<cr>
 
-nnoremap <silent><c-w><c-e> :ExpSwitch Explore 50<cr>
-nnoremap <silent><c-w>e :ExpSwitch Explore 50<cr>
-nnoremap <silent><c-w>m :ExpSwitch Vexplore! 50<cr>
-nnoremap <silent><c-w>M :ExpSwitch Texplore<cr>
+nnoremap <silent><c-w><c-e> :ExpSwitch edit<cr>
+nnoremap <silent><c-w>e :ExpSwitch edit<cr>
+nnoremap <silent><c-w>m :ExpSwitch vs<cr>
+nnoremap <silent><c-w>M :ExpSwitch tabedit<cr>
 
 noremap <silent><space>hh :nohl<cr>
 noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
-noremap <silent><tab>7 :ExpSwitch Vexplore! 50<cr>
-noremap <silent><tab>8 :ExpSwitch Hexplore 50<cr>
-noremap <silent><tab>9 :ExpSwitch Texplore<cr>
-noremap <silent>+ :ExpSwitch Explore 50<cr>
+noremap <silent><tab>7 :ExpSwitch vs<cr>
+noremap <silent><tab>8 :ExpSwitch belowright sp<cr>
+noremap <silent><tab>9 :ExpSwitch tabedit<cr>
+noremap <silent>+ :ExpSwitch edit<cr>
 
 noremap <silent><space>ha :GuiSignRemove 
 			\ errormarker_error errormarker_warning<cr>
@@ -183,12 +183,18 @@ if has('autocmd')
 	function! s:setup_vinegar()
 		nnoremap <buffer> ~ :edit ~/<CR>
 		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
+		if &filetype == 'nerdtree'
+			execute 'nmap <buffer> -' g:NERDTreeMapUpdir
+			nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(vimmake#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
+		endif
 	endfunc
 	augroup AscQuickfix
 		autocmd!
 		autocmd FileType qf call s:quickfix_keymap()
 		autocmd FileType * call s:update_tags()
 		autocmd FileType netrw call s:setup_vinegar()
+		autocmd FileType filer call s:setup_vinegar()
+		autocmd FileType nerdtree call s:setup_vinegar()
 		autocmd InsertLeave * set showmode
 	augroup END
 endif
