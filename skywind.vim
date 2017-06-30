@@ -383,7 +383,7 @@ noremap <leader>ft :NERDTree<cr>:vertical resize +3<cr>
 "----------------------------------------------------------------------
 "- bufferhint
 "----------------------------------------------------------------------
-nnoremap - :call bufferhint#Popup()<CR>
+nnoremap + :call bufferhint#Popup()<CR>
 nnoremap <leader>p :call bufferhint#LoadPrevious()<CR>
 
 

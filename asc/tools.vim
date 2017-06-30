@@ -609,15 +609,23 @@ function! Tools_ExpSwitch(cmd) abort
 	function! s:seek(file) abort
 		if get(b:, 'netrw_liststyle') == 2
 			let pattern = '\%(^\|\s\+\)\zs'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
+		elseif get(b:, 'netrw_liststyle') == 1
+			let pattern = '^'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
 		else
 			let pattern = '^\%(| \)*'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\t\)'
 		endif
 		if has('win32') || has('win16') || has('win95') || has('win64')
 			let savecase = &l:ignorecase
 			setlocal ignorecase
+			if &buftype == 'nofile' && &filetype == 'nerdtree'
+				let pattern = '^ *\%(▸ \)\?'.escape(a:file, '.*[]~\').'\>'
+			endif
 			call search(pattern, 'wc')
 			let l:ignorecase = savecase
 		else
+			if &buftype == 'nofile' && &filetype == 'nerdtree'
+				let pattern = '^ *\%(▸ \)\?'.escape(a:file, '.*[]~\').'\>'
+			endif
 			call search(pattern, 'wc')
 		endif
 		return pattern
