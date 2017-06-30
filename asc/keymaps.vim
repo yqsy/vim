@@ -67,7 +67,7 @@ noremap <silent><tab>. :call Tab_MoveRight()<cr>
 noremap <silent><tab>7 :VinegarOpen vs<cr>
 noremap <silent><tab>8 :VinegarOpen belowright sp<cr>
 noremap <silent><tab>9 :VinegarOpen tabedit<cr>
-noremap <silent>- :VinegarOpen edit<cr>
+noremap <silent>+ :VinegarOpen edit<cr>
 
 noremap <silent><space>ha :GuiSignRemove 
 			\ errormarker_error errormarker_warning<cr>

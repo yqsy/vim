@@ -364,9 +364,13 @@ augroup END
 " log file
 function! s:LogAppend(filename, text)
 	let l:ts = strftime("[%Y-%m-%d %H:%M:%S] ")
-	exec "redir >> ".fnameescape(a:filename)
-	silent echon l:ts.a:text."\n"
-	silent exec "redir END"
+	if 1
+		call writefile([l:ts . a:text], a:filename, 'a')
+	else
+		exec "redir >> ".fnameescape(a:filename)
+		silent echon l:ts.a:text."\n"
+		silent exec "redir END"
+	endif
 endfunc
 
 
@@ -597,13 +601,6 @@ endfunc
 
 
 
-"----------------------------------------------------------------------
-" vinegar and oil:
-" Split windows and the project drawer go together like oil and 
-" vinegar. I don't mean to say that you can combine them to create a 
-" delicious salad dressing. I mean that they don't mix well!
-"    --   Drew Neil
-"----------------------------------------------------------------------
 function! Tools_ExpSwitch(cmd) abort
 	let filename = expand('%:t')
 	function! s:seek(file) abort

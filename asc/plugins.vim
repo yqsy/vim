@@ -26,6 +26,10 @@ for s:extname in s:ignore
 endfor
 
 let s:pattern = '#.\{-\}#\($\|\t\),'
+if has('win32') || has('win16') || has('win95') || has('win64')
+	let s:pattern .= '\$.\{-\}\($\|\t\),'
+endif
+
 let g:netrw_list_hide = s:pattern . g:netrw_list_hide
 
 " fixed netrw underline bug in vim 7.3 and below

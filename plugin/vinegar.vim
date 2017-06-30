@@ -5,9 +5,19 @@
 " Created by skywind on 2017/06/30
 " Last change: 2017/06/30 13:33:48
 "
+" Split windows and the project drawer go together like oil and 
+" vinegar. I don't mean to say that you can combine them to create a 
+" delicious salad dressing. I mean that they don't mix well!
+"    --   Drew Neil
+"
 "======================================================================
 
 let s:netrw_up = ''
+let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
+
+function! s:log(text)
+	call LogWrite(a:text)
+endfunc
 
 
 "----------------------------------------------------------------------
@@ -52,6 +62,18 @@ function! s:open(cmd) abort
 			return
 		endif
 		let currdir = fnamemodify(b:netrw_curdir, ':t')
+		let nextdir = fnamemodify(b:netrw_curdir, ':h:p')
+		if s:windows && strlen(nextdir) == 3 
+			let t = strpart(nextdir, 1, 2)
+			if t == ':/' || t == ":\\"
+				let t = nextdir . '.'
+				if tolower(nextdir) != tolower(b:netrw_curdir)
+					execute a:cmd t
+					call s:seek(currdir)
+				endif
+				return
+			endif
+		endif
 		execute s:netrw_up
 		call s:seek(currdir)
 	elseif &filetype ==# 'nerdtree'
@@ -73,12 +95,23 @@ endfunc
 
 command! -nargs=1 VinegarOpen call s:open(<f-args>)
 
-
+call s:log('haha')
 
 "----------------------------------------------------------------------
 " initialize
 "----------------------------------------------------------------------
 function! s:setup_vinegar()
+	let key = get(g:, 'g:vinegar_key', '')
+	let key = (key == '')? '+' : key
+	call s:log('setup: ' . &ft)
+	if &ft == 'netrw'
+		if s:netrw_up == ''
+			let s:netrw_up = substitute(maparg('-', 'n'), '\c^:\%(<c-u>\)\=', '', '')
+			let s:netrw_up = strpart(s:netrw_up, 0, strlen(s:netrw_up)-4)
+		endif
+		nmap <buffer> - :VinegarOpen edit<cr>
+	elseif &ft == 'nerdtree'
+	endif
 endfunc
 
 
@@ -87,7 +120,8 @@ endfunc
 "----------------------------------------------------------------------
 augroup VinegarGroup
 	autocmd!
-	autocmd FileType netrw,nerdtree call s:setup_vinegar()
+	autocmd FileType netrw call s:setup_vinegar()
+	autocmd FileType nerdtree call s:setup_vinegar()
 augroup END
 
 
