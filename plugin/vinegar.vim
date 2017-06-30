@@ -84,7 +84,7 @@ function! s:open(cmd) abort
 		let currdir = b:NERDTreeRoot.path.str()
 		exec "normal " . g:NERDTreeMapUpdir
 		call s:seek(currdir)
-	elseif &modifiable == 0
+	elseif &modifiable == 0 && &ft != 'help'
 		return 
 	elseif filename == ""
 		exec a:cmd '.'
