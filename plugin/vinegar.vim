@@ -15,6 +15,10 @@
 let s:netrw_up = ''
 let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
 
+if !exists('g:vinegar_key')
+	let g:vinegar_key = '+'
+endif
+
 function! s:log(text)
 	call LogWrite(a:text)
 endfunc
@@ -55,7 +59,7 @@ endfunc
 "----------------------------------------------------------------------
 function! s:open(cmd) abort
 	let filename = expand('%:t')
-	if &buftype == "nofile" || &buftype == "quickfix"
+	if (&buftype == "nofile" || &buftype == "quickfix") && &ft != 'nerdtree'
 		return
 	elseif &filetype ==# 'netrw'
 		if s:netrw_up == ''
@@ -74,7 +78,7 @@ function! s:open(cmd) abort
 				return
 			endif
 		endif
-		execute s:netrw_up
+		exec s:netrw_up
 		call s:seek(currdir)
 	elseif &filetype ==# 'nerdtree'
 		let currdir = b:NERDTreeRoot.path.str()
@@ -95,22 +99,27 @@ endfunc
 
 command! -nargs=1 VinegarOpen call s:open(<f-args>)
 
-call s:log('haha')
 
 "----------------------------------------------------------------------
 " initialize
 "----------------------------------------------------------------------
 function! s:setup_vinegar()
-	let key = get(g:, 'g:vinegar_key', '')
-	let key = (key == '')? '+' : key
+	let key = g:vinegar_key
 	call s:log('setup: ' . &ft)
 	if &ft == 'netrw'
 		if s:netrw_up == ''
 			let s:netrw_up = substitute(maparg('-', 'n'), '\c^:\%(<c-u>\)\=', '', '')
 			let s:netrw_up = strpart(s:netrw_up, 0, strlen(s:netrw_up)-4)
 		endif
-		nmap <buffer> - :VinegarOpen edit<cr>
+		nnoremap <buffer> - :VinegarOpen edit<cr>
+		if key != '-'
+			exec 'nnoremap <buffer> ' . key. ' :VinegarOpen edit<cr>'
+		endif
 	elseif &ft == 'nerdtree'
+		nmap <buffer> - :VinegarOpen edit<cr>
+		if key != '-'
+			exec 'nmap <buffer> ' . key. ' :VinegarOpen edit<cr>'
+		endif
 	endif
 endfunc
 
