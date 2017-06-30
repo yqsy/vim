@@ -8,6 +8,11 @@ let g:netrw_sort_sequence = '[\/]$,*,\.bak$,\.o$,\.info$,\.swp$,\.obj$'
 let g:netrw_preview = 0
 "let g:netrw_special_syntax = 1
 let g:netrw_sort_options = 'i'
+
+if isdirectory(expand('~/.vim'))
+	let g:netrw_home = expand('~/.vim')
+endif
+
 "let g:netrw_timefmt = "%Y-%m-%d %H:%M:%S"
 
 "let g:netrw_banner=0 
@@ -22,7 +27,7 @@ let s:ignore += ['.chm', '.docx', '.xlsx', '.pptx', '.pdf', '.dll', '.pyd']
 
 for s:extname in s:ignore
 	let s:pattern = escape(s:extname, '.~') . '\($\|\t\),'
-	let g:netrw_list_hide = s:pattern . g:netrw_list_hide
+	" let g:netrw_list_hide = s:pattern . g:netrw_list_hide
 endfor
 
 let s:pattern = '#.\{-\}#\($\|\t\),'
@@ -30,7 +35,7 @@ if has('win32') || has('win16') || has('win95') || has('win64')
 	let s:pattern .= '\$.\{-\}\($\|\t\),'
 endif
 
-let g:netrw_list_hide = s:pattern . g:netrw_list_hide
+" let g:netrw_list_hide = s:pattern . g:netrw_list_hide
 
 " fixed netrw underline bug in vim 7.3 and below
 if v:version < 704
