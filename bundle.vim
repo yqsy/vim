@@ -82,8 +82,12 @@ endif
 
 if index(g:bundle_group, 'nerdtree') >= 0
 	Plugin 'scrooloose/nerdtree'
+	Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 	let g:NERDTreeMinimalUI = 1
 	let g:NERDTreeDirArrows = 1
+	" let g:NERDTreeFileExtensionHighlightFullName = 1
+	" let g:NERDTreeExactMatchHighlightFullName = 1
+	" let g:NERDTreePatternMatchHighlightFullName = 1
 endif
 
 
