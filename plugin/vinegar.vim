@@ -122,16 +122,18 @@ command! -nargs=1 VinegarOpen call s:open(<f-args>)
 " nerdtree
 "----------------------------------------------------------------------
 function! <SID>nerdtree_enter()
-	let text = getline('.')
-	let head = strpart(text, 0, 2)
-	let tail = strpart(text, strlen(text) - 1, 1)
-	if (head == '+ ' || head == '~ ') && tail == '/'
-		exec "normal e"
-	elseif (head[0] != ' ' && head[0] != "\t") && tail == '/'
+	let currentNode = g:NERDTreeFileNode.GetSelected()
+	if currentNode.path.isDirectory
 		exec "normal e"
 	else
 		exec "normal o"
 	endif
+endfunc
+
+function! <SID>nerdtree_metadata()
+	let treenode = g:NERDTreeFileNode.GetSelected()
+	let nodename = treenode.path.str()
+	call nerdtree#echo("hahahah no meta info: " . string(nodename))
 endfunc
 
 
@@ -157,6 +159,8 @@ function! s:setup_vinegar()
 			exec 'nmap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
 		nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(vimmake#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
+		nnoremap <silent><buffer> % :call NERDTreeAddNode()<cr>
+		nnoremap <silent><buffer> a :call <SID>nerdtree_metadata()<cr>
 		if g:vinegar_nerdtree_as_netrw
 			nnoremap <silent><buffer> <cr> :call <SID>nerdtree_enter()<cr>
 		endif
