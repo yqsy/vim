@@ -49,6 +49,21 @@ endif
 let g:ft_man_open_mode = 'vert'
 
 
+"----------------------------------------------------------------------
+" NERDTree
+"----------------------------------------------------------------------
+let NERDTreeIgnore = ['\~$', '\$.*$', '\.swp$', '\.pyc$', '#.\{-\}#$']
+let s:ignore += ['.xls', '.mobi', '.mp4', '.mp3']
+
+for s:extname in s:ignore
+	let NERDTreeIgnore += [escape(s:extname, '.~$')]
+endfor
+
+let NERDTreeRespectWildIgnore = 1
+
+let g:vinegar_nerdtree_as_netrw = 1
+
+
 "-----------------------------------------------------
 " YouCompleteMe
 "-----------------------------------------------------

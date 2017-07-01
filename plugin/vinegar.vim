@@ -15,10 +15,24 @@
 let s:netrw_up = ''
 let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
 
+
+"----------------------------------------------------------------------
+" configure
+"----------------------------------------------------------------------
+
+" hot key to back to directory
 if !exists('g:vinegar_key')
 	let g:vinegar_key = '+'
 endif
 
+if !exists('g:vinegar_nerdtree_as_netrw')
+	let g:vinegar_nerdtree_as_netrw = 0
+endif
+
+
+"----------------------------------------------------------------------
+" write log
+"----------------------------------------------------------------------
 function! s:log(text)
 	call LogWrite(a:text)
 endfunc
@@ -103,6 +117,22 @@ endfunc
 command! -nargs=1 VinegarOpen call s:open(<f-args>)
 
 
+
+"----------------------------------------------------------------------
+" nerdtree
+"----------------------------------------------------------------------
+function! <SID>nerdtree_enter()
+	let text = getline('.')
+	let head = strpart(text, 0, 2)
+	let tail = strpart(text, strlen(text) - 1, 1)
+	if (head == '+ ' || head == '~ ') && tail == '/'
+		exec "normal e"
+	else
+		exec "normal o"
+	endif
+endfunc
+
+
 "----------------------------------------------------------------------
 " initialize
 "----------------------------------------------------------------------
@@ -124,7 +154,10 @@ function! s:setup_vinegar()
 		if key != '-'
 			exec 'nmap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
-		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
+		nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(vimmake#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
+		if g:vinegar_nerdtree_as_netrw
+			nnoremap <silent><buffer> <cr> :call <SID>nerdtree_enter()<cr>
+		endif
 	endif
 endfunc
 
@@ -140,6 +173,14 @@ augroup END
 
 
 
+"----------------------------------------------------------------------
+" initialize NERDTree
+"----------------------------------------------------------------------
+let NERDTreeCascadeSingleChildDir = 0
+let NERDTreeCascadeOpenSingleChildDir = 0
+
+if g:vinegar_nerdtree_as_netrw
+endif
 
 
 
