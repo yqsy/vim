@@ -64,6 +64,7 @@ nnoremap <silent><c-w>M :ExpSwitch tabedit<cr>
 noremap <silent><space>hh :nohl<cr>
 noremap <silent><tab>, :call Tab_MoveLeft()<cr>
 noremap <silent><tab>. :call Tab_MoveRight()<cr>
+noremap <silent><tab>6 :VinegarOpen leftabove vs<cr>
 noremap <silent><tab>7 :VinegarOpen vs<cr>
 noremap <silent><tab>8 :VinegarOpen belowright sp<cr>
 noremap <silent><tab>9 :VinegarOpen tabedit<cr>
