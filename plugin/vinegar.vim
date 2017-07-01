@@ -117,11 +117,14 @@ function! s:setup_vinegar()
 		if key != '-'
 			exec 'nnoremap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
+		nnoremap <buffer> ~ :edit ~/<CR>
+		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
 	elseif &ft == 'nerdtree'
 		nmap <buffer> - :VinegarOpen edit<cr>
 		if key != '-'
 			exec 'nmap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
+		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
 	endif
 endfunc
 
