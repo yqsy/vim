@@ -127,6 +127,8 @@ function! <SID>nerdtree_enter()
 	let tail = strpart(text, strlen(text) - 1, 1)
 	if (head == '+ ' || head == '~ ') && tail == '/'
 		exec "normal e"
+	elseif (head[0] != ' ' && head[0] != "\t') && head[1] == ' '
+		exec "normal e"
 	else
 		exec "normal o"
 	endif
