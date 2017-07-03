@@ -73,6 +73,7 @@ endfunc
 "----------------------------------------------------------------------
 function! s:open(cmd) abort
 	let filename = expand('%:t')
+	call s:log('[vinegar] ' . expand('%:p'))
 	if &buftype == "nofile" || &buftype == "quickfix"
 		if (&ft != 'nerdtree') && (&ft != 'netrw')
 			return
@@ -152,13 +153,13 @@ function! s:setup_vinegar()
 			exec 'nnoremap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
 		nnoremap <buffer> ~ :edit ~/<CR>
-		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
+		nnoremap <buffer> ` :edit <C-R>=fnameescape(asyncrun#get_root('%'))<CR><CR>
 	elseif &ft == 'nerdtree'
 		nmap <buffer> - :VinegarOpen edit<cr>
 		if key != '-'
 			exec 'nmap <buffer><silent> ' . key. ' :VinegarOpen edit<cr>'
 		endif
-		nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(vimmake#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
+		nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(asyncrun#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
 		nnoremap <silent><buffer> % :call NERDTreeAddNode()<cr>
 		nnoremap <silent><buffer> a :call <SID>nerdtree_metadata()<cr>
 		if g:vinegar_nerdtree_as_netrw
