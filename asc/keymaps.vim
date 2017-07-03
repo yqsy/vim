@@ -181,26 +181,6 @@ if has('autocmd')
 		nnoremap <silent><buffer> p :call asclib#preview_quickfix(0)<cr>
 		nnoremap <silent><buffer> u :call asclib#quickfix_switch(0, 'bottom')<cr>
 	endfunc
-	function! <SID>nerd_enter()
-		let text = getline('.')
-		if strpart(text, 0, 2) == '+ '
-			exec "normal e"
-		else
-			exec "normal o"
-		endif
-	endfunc
-	function! s:setup_vinegar()
-		nnoremap <buffer> ~ :edit ~/<CR>
-		nnoremap <buffer> ` :edit <C-R>=fnameescape(vimmake#get_root('%'))<CR><CR>
-		if &filetype == 'nerdtree'
-			execute 'nmap <buffer> -' g:NERDTreeMapUpdir
-			execute 'nmap <buffer> +' g:NERDTreeMapUpdir
-			nnoremap <silent><buffer> ` :edit <C-R>=fnameescape(vimmake#get_root(exists('b:NERDTree')?b:NERDTree.root.path.str():''))<CR><CR>
-			nnoremap <silent><buffer> <cr> :call <SID>nerd_enter()<cr>
-		elseif &filetype == 'netrw'
-			execute 'map <buffer> + -'
-		endif
-	endfunc
 	augroup AscQuickfix
 		autocmd!
 		autocmd FileType qf call s:quickfix_keymap()
