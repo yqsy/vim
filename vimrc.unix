@@ -27,7 +27,10 @@ if exists('g:vim_startup')
 		set signcolumn=yes
 	endif
 
-	exec 'so '.fnameescape(s:home).'/bundle.vim'
+
+	if filereadable(expand('~/.vim/bundle/Vundle.vim/autoload/vundle.vim'))
+		exec 'so '.fnameescape(s:home).'/bundle.vim'
+	endif
 else
 	let g:vim_startup = ''
 endif
