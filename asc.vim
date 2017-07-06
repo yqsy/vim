@@ -17,4 +17,6 @@ IncScript asc/plugins.vim
 
 IncScript asc/misc.vim
 IncScript asc/gui.vim
+IncScript asc/menu.vim
+
 

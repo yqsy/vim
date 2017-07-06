@@ -145,6 +145,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	Plugin 'vim-scripts/CRefVim'
 	Plugin 'vim-scripts/stlrefvim'
 	Plugin 'skywind3000/vimoutliner'
+	Plugin 'Raimondi/delimitMate'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
@@ -166,6 +167,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	map <silent> <leader>sw <Plug>StlRefVimAsk
 	map <silent> <leader>sc <Plug>StlRefVimInvoke
 	map <silent> <leader>se <Plug>StlRefVimExample
+
 endif
 
 
