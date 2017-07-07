@@ -9,7 +9,6 @@ set hlsearch
 set incsearch
 set wildmenu
 set cpo-=<
-set wcm=<C-Z>
 noremap <tab>/ :emenu <C-Z>
 " noremap <c-n>  :emenu <C-Z>
 set lazyredraw

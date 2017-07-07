@@ -512,7 +512,14 @@ fu! s:LoadByIndex(idx)
     if bufexists(bufnr(s:MyName))
         exe 'bwipeout ' . bufnr(s:MyName)
     endif
-    exe "b " . bid
+	try
+		exe "b " . bid
+	catch /^Vim\%((\a\+)\)\=:E37/
+		let pos = stridx(v:exception, ':E')
+		echohl ErrorMsg
+		echo (pos >= 0)? strpart(v:exception, pos + 1) : v:exception
+		echohl None
+	endtry
 endfu
 
 "--------------------------------------------

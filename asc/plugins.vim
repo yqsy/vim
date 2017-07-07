@@ -73,9 +73,7 @@ let g:ycm_server_log_level = 'info'
 let g:ycm_min_num_identifier_candidate_chars = 2
 let g:ycm_collect_identifiers_from_comments_and_strings = 1
 let g:ycm_complete_in_strings=1
-if has('gui_running')
-	let g:ycm_key_invoke_completion = '<s-space>'
-endif
+let g:ycm_key_invoke_completion = '<c-z>'
 set completeopt=menu
 
 
@@ -144,6 +142,7 @@ let g:vimmake_cwd = 1
 let g:asyncrun_timer = 50
 let g:vimmake_build_timer = 50
 let g:vimmake_build_name = 'make'
+let g:vimmake_save = 1
 let s:python = executable('python2')? 'python2' : 'python'
 let s:script = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
 let s:launch = s:script . '/lib/launch.py'

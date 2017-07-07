@@ -4,8 +4,9 @@ let g:status_var = ""
 set statusline=\ %<%F[%1*%M%*%n%R%H]\ %{''.g:status_var}%=\ %y\ %0(%{&fileformat}\ [%{(&fenc==\"\"?&enc:&fenc).(&bomb?\",BOM\":\"\")}]\ %v:%l/%L%)
 set splitright
 set switchbuf=useopen,usetab,newtab
+set wildmenu
+set wcm=<C-Z>
 "set splitbelow
-let g:vimmake_save = 1
 
 
 " open quickfix
