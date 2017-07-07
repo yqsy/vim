@@ -139,7 +139,7 @@ endif
 " Group - inter
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
-	Plugin 'vim-scripts/DrawIt'
+	" Plugin 'vim-scripts/DrawIt'
 	Plugin 'mbbill/VimExplorer'
 	Plugin 'rust-lang/rust.vim'
 	Plugin 'vim-scripts/CRefVim'

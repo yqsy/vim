@@ -148,23 +148,23 @@ endif
 "----------------------------------------------------------------------
 "- Menu Setting
 "----------------------------------------------------------------------
-amenu B&uild.&Run<TAB>F5 :VimExecute run<cr>
-amenu B&uild.E&xecute<TAB>F6 :VimExecute filename<cr>
-amenu B&uild.-s1- :
-amenu B&uild.&Gcc<TAB>F9 :VimMake gcc<cr>
-amenu B&uild.&Emake<Tab>F7 :VimMake emake<cr>
-amenu B&uild.GNU\ &Make :VimMake make<cr>
-amenu B&uild.-s2- :
-amenu B&uild.User\ Tool\ 1 :VimTool 1<cr>
-amenu B&uild.User\ Tool\ 2 :VimTool 2<cr>
-amenu B&uild.User\ Tool\ 3 :VimTool 3<cr>
-amenu B&uild.User\ Tool\ 4 :VimTool 4<cr>
-amenu B&uild.User\ Tool\ 5 :VimTool 5<cr>
-amenu B&uild.User\ Tool\ 6 :VimTool 6<cr>
-amenu B&uild.User\ Tool\ 7 :VimTool 7<cr>
-amenu B&uild.User\ Tool\ 8 :VimTool 8<cr>
-amenu B&uild.User\ Tool\ 9 :VimTool 9<cr>
-amenu B&uild.User\ Tool\ 0 :VimTool 0<cr>
+amenu 60.10 B&uild.&Run<TAB>F5 :VimExecute run<cr>
+amenu 60.20 B&uild.E&xecute<TAB>F6 :VimExecute filename<cr>
+amenu 60.25 B&uild.-s1- :
+amenu 60.30 B&uild.&Gcc<TAB>F9 :VimMake gcc<cr>
+amenu 60.35 B&uild.&Emake<Tab>F7 :VimMake emake<cr>
+amenu 60.40 B&uild.GNU\ &Make :VimMake make<cr>
+amenu 60.42 B&uild.-s2- :
+amenu 60.45 B&uild.User\ Tool\ 1 :VimTool 1<cr>
+amenu 60.50 B&uild.User\ Tool\ 2 :VimTool 2<cr>
+amenu 60.55 B&uild.User\ Tool\ 3 :VimTool 3<cr>
+amenu 60.60 B&uild.User\ Tool\ 4 :VimTool 4<cr>
+amenu 60.65 B&uild.User\ Tool\ 5 :VimTool 5<cr>
+amenu 60.70 B&uild.User\ Tool\ 6 :VimTool 6<cr>
+amenu 60.75 B&uild.User\ Tool\ 7 :VimTool 7<cr>
+amenu 60.80 B&uild.User\ Tool\ 8 :VimTool 8<cr>
+amenu 60.85 B&uild.User\ Tool\ 9 :VimTool 9<cr>
+amenu 60.90 B&uild.User\ Tool\ 0 :VimTool 0<cr>
 
 amenu PopUp.-s9- :
 amenu PopUp.Open\ &Header :call Open_HeaderFile(2)<cr>

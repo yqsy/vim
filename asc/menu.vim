@@ -7,3 +7,8 @@
 "
 "======================================================================
 
+function! Menu_Grep()
+	let t = input('grep what: ')
+	echo "==".type(t). ' '
+endfunc
+
