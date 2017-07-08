@@ -106,14 +106,16 @@ fu! bufferhint#Popup()
         sy clear
         sy match KeyHint /^../
         sy match AtHint /@/
-        hi clear KeyHint
-        hi def AtHint ctermfg=red
-        let mode = g:bufferhint_SortMode
-        if mode == 0
-            hi def KeyHint ctermfg=yellow
-        elseif mode == 1
-            hi def KeyHint ctermfg=green
-        endif
+		if !get(g:, 'bufferhint_CustomHighlight', '')
+			hi clear KeyHint
+			hi def AtHint ctermfg=red
+			let mode = g:bufferhint_SortMode
+			if mode == 0
+				hi def KeyHint ctermfg=yellow
+			elseif mode == 1
+				hi def KeyHint ctermfg=green
+			endif
+		endif
     endif
 
     " set content
