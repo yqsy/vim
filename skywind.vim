@@ -385,6 +385,8 @@ noremap <leader>ft :NERDTree<cr>:vertical resize +3<cr>
 nnoremap - :call bufferhint#Popup()<CR>
 nnoremap <leader>p :call bufferhint#LoadPrevious()<CR>
 
+hi! default link KeyHint Keyword
+
 
 
 "----------------------------------------------------------------------
