@@ -28,7 +28,7 @@ if !exists('g:quickmenu_padding_left')
 endif
 
 if !exists('g:quickmenu_header')
-	let g:quickmenu_header = 'QuickMenu 1.0.19'
+	let g:quickmenu_header = 'QuickMenu 1.1.12'
 endif
 
 
