@@ -60,7 +60,7 @@ function! s:window_close()
 		return 0
 	endif
 	if t:quickmenu_bid > 0 && bufexists(t:quickmenu_bid)
-		exec 'bwipeout ' . t:quickmenu_bid
+		silent exec 'bwipeout ' . t:quickmenu_bid
 		let t:quickmenu_bid = -1
 	endif
 endfunc
@@ -240,7 +240,6 @@ function! s:setup_keymaps(items)
 	endfor
 	noremap <silent> <buffer> 0 :close<cr>
 	noremap <silent> <buffer> q :close<cr>
-	noremap <silent> <buffer> <ESC> :close<cr>
 	noremap <silent> <buffer> <CR> :call <SID>quickmenu_enter()<cr>
 	" let s:quickmenu_line = 0
 	if s:quickmenu_line > 0
