@@ -351,6 +351,8 @@ function! s:select_by_ft(ft) abort
 		let ni = {'mode':3, 'text':'', 'event':''}
 		let ni.text = g:quickmenu_header
 		let items += [ni]
+		let ni = {'mode':1, 'text':'', 'event':''}
+		let items += [ni]
 	endif
 	let lastmode = len(items)? 0 : 2
 	for item in s:quickmenu_items

@@ -48,3 +48,6 @@ call quickmenu#reset()
 
 call quickmenu#append('Find in project', 'call menu#FindInProject()')
 
+call quickmenu#append('Code static check', 'call menu#CodeCheck()')
+
+
