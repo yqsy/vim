@@ -101,9 +101,9 @@ function! quickmenu#append(text, event, ...)
 	let item.key = ''
 	let item.ft = []
 	let item.weight = weight
-	if a:event
+	if a:event != ''
 		let item.mode = 0
-	if a:text[0] != '#'
+	elseif a:text[0] != '#'
 		let item.mode = 1
 	else
 		let item.mode = 2
@@ -163,7 +163,7 @@ function! quickmenu#toggle(bang) abort
 	let lastmode = 2
 
 	" calculate max width
-	for item in s:items
+	for item in items
 		let hr = s:menu_expand(item)
 		for outline in hr
 			let text = outline['text']
@@ -171,13 +171,18 @@ function! quickmenu#toggle(bang) abort
 				let maxsize = strlen(text)
 			endif
 		endfor
-		let conent += hr
+		let content += hr
 	endfor
 
-	let maxsize += strlen(g:quickmenu_padding_left)
-
-	call s:window_open(maxsize)
-	call s:window_render(content)
+	if 0
+		call s:window_open(maxsize)
+		call s:window_render(content)
+	else
+		for item in content
+			echo item
+		endfor
+		return 0
+	endif
 
 	return 1
 endfunc
@@ -185,7 +190,7 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" select items by &filetype, and add some default items
+" select items by &ft, generate keymap and add some default items
 "----------------------------------------------------------------------
 function! s:select_by_ft(ft)
 	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
@@ -193,12 +198,12 @@ function! s:select_by_ft(ft)
 	let index = 0
 	let lastmode = 2
 	for item in s:quickmenu_items
-		if item.ft && index(item.ft, a:ft) >= 0
+		if len(item.ft) && index(item.ft, a:ft) >= 0
 			continue
 		endif
 		if item.mode == 2 && lastmode != 2 
 			" insert empty line
-			let ni = {'mode':1, 'text':'', 'event:''}
+			let ni = {'mode':1, 'text':'', 'event':''}
 			let items += [ni]
 		endif
 		let lastmode = item.mode
@@ -212,13 +217,17 @@ function! s:select_by_ft(ft)
 		let items += [item]
 		if item.mode == 2 
 			" insert empty line
-			let ni = {'mode':1, 'text':'', 'event:''}
+			let ni = {'mode':1, 'text':'', 'event':''}
 			let items += [ni]
 		endif
 	endfor
+	if len(items)
+		let item = {'mode':1, 'text':'', 'event':''}
+		let items += [item]
+	endif
 	let item = {}
 	let item.mode = 0
-	let item.text = 'exit quickmenu'
+	let item.text = 'close menu'
 	let item.event = 'close'
 	let item.key = '0'
 	let items += [item]
@@ -232,7 +241,27 @@ endfunc
 function! s:menu_expand(item) abort
 	let items = []
 	let text = s:expand_text(a:item.text)
-	for curline in split(text, "\n")
+	let index = 0
+	for curline in split(text, "\n", 1)
+		let item = {}
+		let item.mode = a:item.mode
+		let item.text = curline
+		let item.event = ''
+		let item.key = ''
+		if item.mode == 0
+			if index == 0
+				let item.text = '[' . a:item.key.']  '.curline
+				let index += 1
+				let item.key = a:item.key
+				let item.event = a:item.event
+			else
+				let item.text = '     '.curline
+			endif
+		endif
+		if item.text
+			let item.text = g:quickmenu_padding_left . item.text
+		endif
+		let items += [item]
 	endfor
 	return items
 endfunc
@@ -277,7 +306,10 @@ endfunc
 "----------------------------------------------------------------------
 
 if 1
-
+	call quickmenu#append('# start', '')
+	call quickmenu#append('test1', 'echo 1')
+	call quickmenu#append('test2', 'echo 2')
+	call quickmenu#toggle(0)
 endif
 
 
