@@ -332,6 +332,7 @@ function! <SID>quickmenu_execute(index) abort
 	endif
 	let s:quickmenu_line = a:index + 2
 	close!
+	redraw
 	if item.key != '0'
 		exec item.event
 	endif

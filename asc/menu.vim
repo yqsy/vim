@@ -40,3 +40,11 @@ endfunc
 
 
 
+"----------------------------------------------------------------------
+" menu initialize
+"----------------------------------------------------------------------
+
+call quickmenu#reset()
+
+call quickmenu#append('Find in project', 'call menu#FindInProject()')
+
