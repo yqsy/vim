@@ -24,7 +24,7 @@ if !exists('g:quickmenu_disable_nofile')
 endif
 
 if !exists('g:quickmenu_ft_blacklist')
-	let g:quickmenu_ft_blacklist = ['netrw', 'nerdtree']
+	let g:quickmenu_ft_blacklist = ['netrw', 'nerdtree', 'startify']
 endif
 
 if !exists('g:quickmenu_padding_left')
