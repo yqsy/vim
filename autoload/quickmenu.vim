@@ -144,7 +144,7 @@ endfunc
 "----------------------------------------------------------------------
 function! quickmenu#toggle() abort
 	if &buftype == 'nofile' && &ft == 'quickmenu'
-		if bufname('%') == s:quickname_name
+		if bufname('%') == s:quickmenu_name
 			silent close!
 			return 0
 		endif
