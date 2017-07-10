@@ -91,29 +91,38 @@ function! quickmenu#reset()
 	let s:quickmenu_last = 0
 endfunc
 
-function! quickmenu#append(event, text, filetype)
+function! quickmenu#append(event, text, ...)
+	let filetype = (a:0 >= 1)? a:1 : ''
+	let weight = (a:0 >= 2)? a:2 : 0
 	let item = {}
-	let item.mode = 0
+	let item.mode = (item.event)? 0 : 1
 	let item.event = a:event
 	let item.text = a:text
-	let item.script = a:script
 	let item.key = ''
-	if item.event
-		item.mode = 0
-	else
-		item.mode = 1
+	let item.ft = []
+	let item.weight = weight
+	for ft in split(filetype, ',')
+		let item.ft += [substitute(ft, '^\s*\(.\{-}\)\s*$', '\1', '')]
+	endfor
+	let index = -1
+	let total = len(s:quickmenu_items)
+	for i in range(0, total - 1)
+		if weight < s:quickmenu_items[i].weight
+			let index = i
+			break
+		endif
+	endfor
+	if index < 0
+		let index = total
 	endif
-	let s:quickmenu_items + = [item]
+	call insert(s:quickmenu_items, item, index)
+	return index
 endfunc
 
-function! quickmenu#new_section(filetype, text)
-	let item = {'mode':1, 'ft':a:filetype, 'text':a:text}
-	let s:quickmenu_items += [item]
-endfunc
-
-function! quickmenu#new_text(filetype, text)
-	let item = {'mode':2, 'ft':a:filetype, 'text':a:text}
-	let s:quickmenu_items += [item]
+function! quickmenu#list()
+	for item in s:quickmenu_items
+		echo item
+	endfor
 endfunc
 
 
