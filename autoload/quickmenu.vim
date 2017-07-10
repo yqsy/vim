@@ -247,7 +247,9 @@ function! s:setup_keymaps(items)
 		call cursor(s:quickmenu_line, 1)
 	endif
 	call s:set_cursor()
-	autocmd startify CursorMoved <buffer> call s:set_cursor()
+	augroup quickmenu
+		autocmd CursorMoved <buffer> call s:set_cursor()
+	augroup END
 endfunc
 
 
@@ -334,7 +336,7 @@ endfunc
 "----------------------------------------------------------------------
 function! s:select_by_ft(ft) abort
 	let hint = '123456789abcdefhlmnoprstuvwxyz*'
-	let hint = '12abcdefhlmnoprstuvwxyz*'
+	" let hint = '12abcdefhlmnoprstuvwxyz*'
 	let items = []
 	let index = 0
 	if g:quickmenu_header != ''
@@ -448,11 +450,9 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" 
+" testing case
 "----------------------------------------------------------------------
-
-if 1
-	let g:quickmenu_header = "QuickMenu 1.0"
+if 0
 	call quickmenu#reset()
 	call quickmenu#append('# Start', '')
 	call quickmenu#append('test1', 'echo 1')
@@ -467,5 +467,6 @@ if 1
 
 	nnoremap <F12> :call quickmenu#toggle(0)<cr>
 endif
+
 
 
