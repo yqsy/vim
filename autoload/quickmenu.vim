@@ -95,12 +95,20 @@ function! quickmenu#append(event, text, ...)
 	let filetype = (a:0 >= 1)? a:1 : ''
 	let weight = (a:0 >= 2)? a:2 : 0
 	let item = {}
-	let item.mode = (item.event)? 0 : 1
+	let item.mode = 0
 	let item.event = a:event
 	let item.text = a:text
 	let item.key = ''
 	let item.ft = []
 	let item.weight = weight
+	if a:event
+		let item.mode = 0
+	if a:text =~ '^#\+\s*'
+		let item.mode = 1
+		let item.text = matchstr(a:text, '^#\+\s*\zs.*')
+	else
+		let item.mode = 2
+	endif
 	for ft in split(filetype, ',')
 		let item.ft += [substitute(ft, '^\s*\(.\{-}\)\s*$', '\1', '')]
 	endfor
@@ -126,6 +134,8 @@ function! quickmenu#list()
 endfunc
 
 
+
+
 "----------------------------------------------------------------------
 " quickmenu interface
 "----------------------------------------------------------------------
@@ -147,12 +157,13 @@ function! quickmenu#toggle(bang) abort
 	endif
 
 	" expand menu
+	let items = s:select_by_ft(&ft)
 	let content = []
 	let maxsize = 8
 	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
 	let index = 0
 
-	for item in s:quickmenu_items
+	for item in s:items
 		if item['mode'] == 0
 			let item.key = hint[index]
 			let index += 1
@@ -183,12 +194,61 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" menu_expand
+" internals
 "----------------------------------------------------------------------
+
+function! s:select_by_ft(ft)
+	let items = []
+	for item in s:quickmenu_items
+		if !item.ft
+			let items += [item]
+		elseif index(item.ft, a:ft) >= 0
+			let items += [item]
+		endif
+	endfor
+	return items
+endfunc
+
+
+
 function! s:menu_expand(item)
 	let content = []
 	return content
 endfunc
+
+
+"----------------------------------------------------------------------
+" eval & expand: '%{script}' in string
+"----------------------------------------------------------------------
+function! s:expand_text(string) abort
+	let partial = []
+	let index = 0
+	while 1
+		let pos = stridx(a:string, '%{', index)
+		if pos < 0
+			let partial += [a:string[index:]]
+			break
+		endif
+		let head = ''
+		if pos > index
+			let partial += [a:string[index:pos - 1]]
+		endif
+		let endup = stridx(a:string, '}', pos + 2)
+		if endup < 0
+			let partial += [a:string[index:]]
+			break
+		endif
+		let index = endup + 1
+		if endup > pos + 2
+			let script = a:string[pos + 2:endup - 1]
+			let script = substitute(script, '^\s*\(.\{-}\)\s*$', '\1', '')
+			let result = eval(script)
+			let partial += [result]
+		endif
+	endwhile
+	return join(partial, '')
+endfunc
+
 
 
 "----------------------------------------------------------------------

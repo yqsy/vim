@@ -1233,18 +1233,45 @@ function! asclib#open_gprof(image, profile)
 	let @0 = text
 	normal! "0P
 	let @0 = l:save
-    setlocal noshowcmd
-    setlocal noswapfile
-    setlocal buftype=nofile
-    setlocal bufhidden=delete
-    setlocal nobuflisted
-    setlocal nomodifiable
-    setlocal nowrap
-    setlocal nonumber
-	setlocal readonly
+	setlocal buftype=nofile bufhidden=wipe nobuflisted nomodifiable
+	setlocal noshowcmd noswapfile nowrap nonumber signcolumn=no nospell
+	setlocal fdc=0 nolist colorcolumn= nocursorline nocursorcolumn
+	setlocal noswapfile norelativenumber
 	setlocal filetype=gprof
 endfunc
 
+
+"----------------------------------------------------------------------
+" execute scripts in string
+"----------------------------------------------------------------------
+function! asclib#eval_text(string) abort
+	let partial = []
+	let index = 0
+	while 1
+		let pos = stridx(a:string, '%{', index)
+		if pos < 0
+			let partial += [a:string[index:]]
+			break
+		endif
+		let head = ''
+		if pos > index
+			let partial += [a:string[index:pos - 1]]
+		endif
+		let endup = stridx(a:string, '}', pos + 2)
+		if endup < 0
+			let partial += [a:string[index:]]
+			break
+		endif
+		let index = endup + 1
+		if endup > pos + 2
+			let script = a:string[pos + 2:endup - 1]
+			let script = substitute(script, '^\s*\(.\{-}\)\s*$', '\1', '')
+			let result = eval(script)
+			let partial += [result]
+		endif
+	endwhile
+	return join(partial, '')
+endfunc
 
 
 "----------------------------------------------------------------------
