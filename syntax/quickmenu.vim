@@ -55,15 +55,15 @@ function! s:hllink(name, dest, alternative)
 	endif
 endfunc
 
-command! -nargs=* HiLink call s:hllink(<f-args>)
+command! -nargs=* HighLink call s:hllink(<f-args>)
 
 
-HiLink	QuickmenuBracket		Delimiter	StartifyBracket
-HiLink	QuickmenuSection		Statement	StartifySection
-HiLink	QuickmenuSelect			Title		StartifySelect
-HiLink	QuickmenuNumber			Number		StartifyNumber
-HiLink	QuickmenuSpecial		Comment		StartifySpecial
-HiLink	QuickmenuHeader			Title		StartifyHeader
-HiLink  QuickmenuOption			Identifier  StartifyFile
+HighLink	QuickmenuBracket		Delimiter	StartifyBracket
+HighLink	QuickmenuSection		Statement	StartifySection
+HighLink	QuickmenuSelect			Title		StartifySelect
+HighLink	QuickmenuNumber			Number		StartifyNumber
+HighLink	QuickmenuSpecial		Comment		StartifySpecial
+HighLink	QuickmenuHeader			Title		StartifyHeader
+HighLink	QuickmenuOption			Identifier  StartifyFile
 
 

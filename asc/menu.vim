@@ -38,6 +38,13 @@ function! menu#DelimitSwitch(on)
 	endif
 endfunc
 
+function! menu#TogglePaste()
+	if &paste
+		set nopaste
+	else
+		set paste
+	endif
+endfunc
 
 
 "----------------------------------------------------------------------
@@ -46,10 +53,14 @@ endfunc
 
 call quickmenu#reset()
 
-call quickmenu#append('# Search', '')
+call quickmenu#append('# Find', '')
 
 call quickmenu#append('Find in project', 'call menu#FindInProject()')
 
 call quickmenu#append('Code static check', 'call menu#CodeCheck()')
+
+call quickmenu#append('# Settings', '')
+
+call quickmenu#append('Set paste %{&paste? "off" :"on"}', 'call menu#TogglePaste()')
 
 
