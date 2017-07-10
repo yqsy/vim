@@ -44,20 +44,20 @@ let s:quickmenu_line = 0
 " popup window management
 "----------------------------------------------------------------------
 function! s:window_exist()
-	if !exists('t:quickmenu_bid')
-		let t:quickmenu_bid = -1
+	if !exists('s:quickmenu_bid')
+		let s:quickmenu_bid = -1
 		return 0
 	endif
-	return t:quickmenu_bid > 0 && bufexists(t:quickmenu_bid)
+	return s:quickmenu_bid > 0 && bufexists(s:quickmenu_bid)
 endfunc
 
 function! s:window_close()
-	if !exists('t:quickmenu_bid')
+	if !exists('s:quickmenu_bid')
 		return 0
 	endif
-	if t:quickmenu_bid > 0 && bufexists(t:quickmenu_bid)
-		silent exec 'bwipeout ' . t:quickmenu_bid
-		let t:quickmenu_bid = -1
+	if s:quickmenu_bid > 0 && bufexists(s:quickmenu_bid)
+		silent exec 'bwipeout ' . s:quickmenu_bid
+		let s:quickmenu_bid = -1
 	endif
 endfunc
 
@@ -83,7 +83,7 @@ function! s:window_open(size)
 	setlocal noshowcmd noswapfile nowrap nonumber signcolumn=no nospell
 	setlocal fdc=0 nolist colorcolumn= nocursorline nocursorcolumn
 	setlocal noswapfile norelativenumber
-	let t:quickmenu_bid = bufnr('%')
+	let s:quickmenu_bid = bufnr('%')
 	return 1
 endfunc
 
