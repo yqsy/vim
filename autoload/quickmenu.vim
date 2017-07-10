@@ -66,7 +66,7 @@ function! s:window_open(size)
 		call s:window_close()
 	endif
 	let size = a:size
-	let size = (size < 4)? 4 :quickmenu_min_width : size
+	let size = (size < 4)? 4 : size
 	let size = (size > g:quickmenu_max_width)? g:quickmenu_max_width : size
 	if size > winwidth(0)
 		let size = winwidth(0) - 1
