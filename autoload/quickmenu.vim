@@ -28,11 +28,11 @@ if !exists('g:quickmenu_ft_blacklist')
 endif
 
 if !exists('g:quickmenu_padding_left')
-	let g:quickmenu_padding_left = '  '
+	let g:quickmenu_padding_left = '   '
 endif
 
 if !exists('g:quickmenu_header')
-	let g:quickmenu_header = 'Quickmenu 1.0'
+	let g:quickmenu_header = 'QuickMenu 1.0'
 endif
 
 
@@ -142,7 +142,6 @@ endfunc
 "----------------------------------------------------------------------
 " quickmenu interface
 "----------------------------------------------------------------------
-
 function! quickmenu#toggle(bang) abort
 	if s:window_exist()
 		call s:window_close()
@@ -177,7 +176,7 @@ function! quickmenu#toggle(bang) abort
 		let content += hr
 	endfor
 	
-	let maxsize += len(g:quickmenu_padding_left) + 2
+	let maxsize += len(g:quickmenu_padding_left) + 1
 
 	if 1
 		call s:window_open(maxsize)
@@ -248,7 +247,7 @@ function! s:setup_keymaps(items)
 		call cursor(s:quickmenu_line, 1)
 	endif
 	call s:set_cursor()
-	autocmd startify CursorMoved <buffer> call s:set_cursor()
+	" autocmd startify CursorMoved <buffer> call s:set_cursor()
 endfunc
 
 
@@ -310,10 +309,10 @@ endfunc
 " execute item
 "----------------------------------------------------------------------
 function! <SID>quickmenu_execute(index) abort
-	if a:index < 0 || a:index >= len(b:quickmenu_items)
+	if a:index < 0 || a:index >= len(b:quickmenu.items)
 		return
 	endif
-	let item = b:quickmenu_items[a:index]
+	let item = b:quickmenu.items[a:index]
 	if item.mode != 0 || item.event == ''
 		return
 	endif
@@ -322,6 +321,7 @@ function! <SID>quickmenu_execute(index) abort
 		close!
 		return
 	endif
+	let s:quickmenu_line = a:index + 2
 	close!
 	if item.key != '0'
 		exec item.event
@@ -332,15 +332,16 @@ endfunc
 "----------------------------------------------------------------------
 " select items by &ft, generate keymap and add some default items
 "----------------------------------------------------------------------
-function! s:select_by_ft(ft)
+function! s:select_by_ft(ft) abort
 	let hint = '123456789abcdefhlmnoprstuvwxyz*'
+	let hint = '12abcdefhlmnoprstuvwxyz*'
 	let items = []
 	let index = 0
-	for header in split(g:quickmenu_header, "\n")
+	if g:quickmenu_header != ''
 		let ni = {'mode':3, 'text':'', 'event':''}
-		let ni.text = header
+		let ni.text = g:quickmenu_header
 		let items += [ni]
-	endfor
+	endif
 	let lastmode = len(items)? 0 : 2
 	for item in s:quickmenu_items
 		if len(item.ft) && index(item.ft, a:ft) >= 0
@@ -451,12 +452,18 @@ endfunc
 "----------------------------------------------------------------------
 
 if 1
+	let g:quickmenu_header = "QuickMenu 1.0"
+	call quickmenu#reset()
 	call quickmenu#append('# Start', '')
 	call quickmenu#append('test1', 'echo 1')
 	call quickmenu#append('test2', 'echo 2')
 
 	call quickmenu#append('# Misc', '')
-	call quickmenu#append('test2', '')
+	call quickmenu#append('test3', 'echo 3')
+	call quickmenu#append('test4', 'echo 4')
+	call quickmenu#append("test5\nasdfafffff\njkjkj", 'echo 5')
+	call quickmenu#append('text1', '')
+	call quickmenu#append('text2', '')
 
 	nnoremap <F12> :call quickmenu#toggle(0)<cr>
 endif
