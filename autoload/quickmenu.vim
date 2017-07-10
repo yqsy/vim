@@ -173,10 +173,13 @@ function! quickmenu#toggle(bang) abort
 		endfor
 		let content += hr
 	endfor
+	
+	let maxsize += len(g:quickmenu_padding_left)
 
-	if 0
+	if 1
 		call s:window_open(maxsize)
 		call s:window_render(content)
+		call s:setup_keymaps(content)
 	else
 		for item in content
 			echo item
@@ -187,6 +190,28 @@ function! quickmenu#toggle(bang) abort
 	return 1
 endfunc
 
+
+
+"----------------------------------------------------------------------
+" render text
+"----------------------------------------------------------------------
+function! s:window_render(items)
+	setlocal modifiable
+	let ln = 2
+	for item in a:items
+		let item.ln = ln
+		let ln += 1
+		call append('$', item.text)
+	endfor
+	setlocal nomodifiable readonly
+endfunc
+
+
+"----------------------------------------------------------------------
+" all keys 
+"----------------------------------------------------------------------
+function! s:setup_keymaps(items)
+endfunc
 
 
 "----------------------------------------------------------------------
@@ -227,7 +252,7 @@ function! s:select_by_ft(ft)
 	endif
 	let item = {}
 	let item.mode = 0
-	let item.text = 'close menu'
+	let item.text = '<close>'
 	let item.event = 'close'
 	let item.key = '0'
 	let items += [item]
@@ -258,7 +283,7 @@ function! s:menu_expand(item) abort
 				let item.text = '     '.curline
 			endif
 		endif
-		if item.text
+		if len(item.text)
 			let item.text = g:quickmenu_padding_left . item.text
 		endif
 		let items += [item]
@@ -306,9 +331,12 @@ endfunc
 "----------------------------------------------------------------------
 
 if 1
-	call quickmenu#append('# start', '')
+	call quickmenu#append('# Start', '')
 	call quickmenu#append('test1', 'echo 1')
 	call quickmenu#append('test2', 'echo 2')
+
+	call quickmenu#append('# Misc', '')
+	call quickmenu#append('test2', '')
 	call quickmenu#toggle(0)
 endif
 
