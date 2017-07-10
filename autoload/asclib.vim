@@ -1233,7 +1233,7 @@ function! asclib#open_gprof(image, profile)
 	let @0 = text
 	normal! "0P
 	let @0 = l:save
-	setlocal buftype=nofile bufhidden=wipe nobuflisted nomodifiable
+	setlocal buftype=nofile bufhidden=delete nobuflisted nomodifiable
 	setlocal noshowcmd noswapfile nowrap nonumber signcolumn=no nospell
 	setlocal fdc=0 nolist colorcolumn= nocursorline nocursorcolumn
 	setlocal noswapfile norelativenumber

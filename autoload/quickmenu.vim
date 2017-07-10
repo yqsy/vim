@@ -91,7 +91,7 @@ function! quickmenu#reset()
 	let s:quickmenu_last = 0
 endfunc
 
-function! quickmenu#append(event, text, ...)
+function! quickmenu#append(text, event, ...)
 	let filetype = (a:0 >= 1)? a:1 : ''
 	let weight = (a:0 >= 2)? a:2 : 0
 	let item = {}
@@ -103,11 +103,11 @@ function! quickmenu#append(event, text, ...)
 	let item.weight = weight
 	if a:event
 		let item.mode = 0
-	if a:text =~ '^#\+\s*'
+	if a:text[0] != '#'
 		let item.mode = 1
-		let item.text = matchstr(a:text, '^#\+\s*\zs.*')
 	else
 		let item.mode = 2
+		let item.text = matchstr(a:text, '^#\+\s*\zs.*')
 	endif
 	for ft in split(filetype, ',')
 		let item.ft += [substitute(ft, '^\s*\(.\{-}\)\s*$', '\1', '')]
@@ -156,21 +156,14 @@ function! quickmenu#toggle(bang) abort
 		endif
 	endif
 
-	" expand menu
+	" arrange menu
 	let items = s:select_by_ft(&ft)
 	let content = []
 	let maxsize = 8
-	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
-	let index = 0
+	let lastmode = 2
 
+	" calculate max width
 	for item in s:items
-		if item['mode'] == 0
-			let item.key = hint[index]
-			let index += 1
-			if index >= strlen(hint)
-				let index = strlen(hint) - 1
-			endif
-		endif
 		let hr = s:menu_expand(item)
 		for outline in hr
 			let text = outline['text']
@@ -178,9 +171,7 @@ function! quickmenu#toggle(bang) abort
 				let maxsize = strlen(text)
 			endif
 		endfor
-		if len(hr) > 0
-			let conent += hr
-		endif
+		let conent += hr
 	endfor
 
 	let maxsize += strlen(g:quickmenu_padding_left)
@@ -194,26 +185,56 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" internals
+" select items by &filetype, and add some default items
 "----------------------------------------------------------------------
-
 function! s:select_by_ft(ft)
+	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
 	let items = []
+	let index = 0
+	let lastmode = 2
 	for item in s:quickmenu_items
-		if !item.ft
-			let items += [item]
-		elseif index(item.ft, a:ft) >= 0
-			let items += [item]
+		if item.ft && index(item.ft, a:ft) >= 0
+			continue
+		endif
+		if item.mode == 2 && lastmode != 2 
+			" insert empty line
+			let ni = {'mode':1, 'text':'', 'event:''}
+			let items += [ni]
+		endif
+		let lastmode = item.mode
+		if item.mode == 0
+			let item.key = hint[index]
+			let index += 1
+			if index >= strlen(hint)
+				let index = strlen(hint) - 1
+			endif
+		endif
+		let items += [item]
+		if item.mode == 2 
+			" insert empty line
+			let ni = {'mode':1, 'text':'', 'event:''}
+			let items += [ni]
 		endif
 	endfor
+	let item = {}
+	let item.mode = 0
+	let item.text = 'exit quickmenu'
+	let item.event = 'close'
+	let item.key = '0'
+	let items += [item]
 	return items
 endfunc
 
 
-
-function! s:menu_expand(item)
-	let content = []
-	return content
+"----------------------------------------------------------------------
+" expand menu items
+"----------------------------------------------------------------------
+function! s:menu_expand(item) abort
+	let items = []
+	let text = s:expand_text(a:item.text)
+	for curline in split(text, "\n")
+	endfor
+	return items
 endfunc
 
 
