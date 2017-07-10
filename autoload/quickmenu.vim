@@ -91,8 +91,18 @@ function! quickmenu#reset()
 	let s:quickmenu_last = 0
 endfunc
 
-function! quickmenu#new_item(filetype, text)
-	let item = {'mode':0, 'ft':a:filetype, 'text':a:text, 'key':''}
+function! quickmenu#append(event, text, filetype)
+	let item = {}
+	let item.mode = 0
+	let item.event = a:event
+	let item.text = a:text
+	let item.script = a:script
+	let item.key = ''
+	if item.event
+		item.mode = 0
+	else
+		item.mode = 1
+	endif
 	let s:quickmenu_items + = [item]
 endfunc
 
@@ -135,7 +145,7 @@ function! quickmenu#toggle(bang) abort
 
 	for item in s:quickmenu_items
 		if item['mode'] == 0
-			let item['key'] = hint[index]
+			let item.key = hint[index]
 			let index += 1
 			if index >= strlen(hint)
 				let index = strlen(hint) - 1
