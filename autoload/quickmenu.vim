@@ -142,7 +142,7 @@ endfunc
 "----------------------------------------------------------------------
 " quickmenu interface
 "----------------------------------------------------------------------
-function! quickmenu#toggle(bang) abort
+function! quickmenu#toggle() abort
 	if s:window_exist()
 		call s:window_close()
 		return 0

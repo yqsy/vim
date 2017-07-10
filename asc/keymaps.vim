@@ -349,9 +349,8 @@ nnoremap gy :YcmCompleter GoToReferences<CR>
 "----------------------------------------------------------------------
 " vimmake faster
 "----------------------------------------------------------------------
-nnoremap <F11> :emenu Assist.<C-Z>
-cnoremap <F11> <C-Z>
-nnoremap <silent><F12> :GrepCode! <C-R>=expand("<cword>")<cr><cr>
+noremap <silent><F12> :call quickmenu#toggle()<cr>
+inoremap <silent><F12> <ESC>:call quickmenu#toggle()<cr>
 
 nnoremap <silent>g1 :GrepCode <C-R>=expand("<cword>")<cr><cr>
 nnoremap <silent>g2 :GrepCode! <C-R>=expand("<cword>")<cr><cr>

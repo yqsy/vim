@@ -7,7 +7,7 @@
 "
 "======================================================================
 
-function! <SID>FindInProject()
+function! menu#FindInProject()
 	let p = vimmake#get_root('%')
 	let t = expand('<cword>')
 	echohl Type
@@ -20,7 +20,7 @@ function! <SID>FindInProject()
 	endif
 endfunc
 
-function! <SID>CodeCheck()
+function! menu#CodeCheck()
 	if &ft == 'python'
 		call asclib#lint_pylint('')
 	elseif &ft == 'c' || &ft == 'cpp'
@@ -30,22 +30,13 @@ function! <SID>CodeCheck()
 	endif
 endfunc
 
-function! <SID>DelimitSwitch(on)
+function! menu#DelimitSwitch(on)
 	if a:on
 		exec "DelimitMateOn"
-		aunmenu &Assist.Enable\ &Sign\ Help
-		amenu <silent> 90.85 &Assist.Disable\ &Sign\ Help :call <SID>DelimitSwitch(0)<cr>
 	else
 		exec "DelimitMateOff"
-		aunmenu &Assist.Disable\ &Sign\ Help
-		amenu <silent> 90.85 &Assist.Enable\ &Sign\ Help :call <SID>DelimitSwitch(1)<cr>
 	endif
 endfunc
 
-
-amenu <silent> 90.10 &Assist.&Find\ In\ Project :call <SID>FindInProject()<cr>
-amenu <silent> 90.15 &Assist.Edit\ &QuickNote :FileSwitch tabe ~/.vim/quicknote.txt<cr>
-amenu <silent> 90.85 &Assist.Enable\ &Sign\ Help :call <SID>DelimitSwitch(1)<cr>
-amenu <silent> 90.90 &Assist.Static\ Code\ &Check :call <SID>CodeCheck()<cr>
 
 
