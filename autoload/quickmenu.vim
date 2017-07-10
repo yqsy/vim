@@ -354,7 +354,7 @@ function! s:select_by_ft(ft) abort
 		let ni = {'mode':1, 'text':'', 'event':''}
 		let items += [ni]
 	endif
-	let lastmode = len(items)? 0 : 2
+	let lastmode = 2
 	for item in s:quickmenu_items
 		if len(item.ft) && index(item.ft, a:ft) >= 0
 			continue
