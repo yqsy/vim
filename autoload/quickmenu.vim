@@ -31,6 +31,10 @@ if !exists('g:quickmenu_padding_left')
 	let g:quickmenu_padding_left = '  '
 endif
 
+if !exists('g:quickmenu_header')
+	let g:quickmenu_header = 'Quickmenu 1.0'
+endif
+
 
 "----------------------------------------------------------------------
 " Internal State
@@ -135,7 +139,6 @@ endfunc
 
 
 
-
 "----------------------------------------------------------------------
 " quickmenu interface
 "----------------------------------------------------------------------
@@ -174,7 +177,7 @@ function! quickmenu#toggle(bang) abort
 		let content += hr
 	endfor
 	
-	let maxsize += len(g:quickmenu_padding_left)
+	let maxsize += len(g:quickmenu_padding_left) + 2
 
 	if 1
 		call s:window_open(maxsize)
@@ -198,12 +201,28 @@ endfunc
 function! s:window_render(items)
 	setlocal modifiable
 	let ln = 2
+	let b:quickmenu_padding_size = strlen(g:quickmenu_padding_left)
+	let b:quickmenu_section_lines = []
+	let b:quickmenu_option_lines = []
+	let b:quickmenu_text_lines = []
+	let b:quickmenu_header_lines = []
 	for item in a:items
 		let item.ln = ln
-		let ln += 1
 		call append('$', item.text)
+		if item.mode == 0
+			let b:quickmenu_option_lines += [ln]
+		elseif item.mode == 1
+			let b:quickmenu_text_lines += [ln]
+		elseif item.mode == 2
+			let b:quickmenu_section_lines += [ln]
+		else
+			let b:quickmenu_header_lines += [ln]
+		endif
+		let ln += 1
 	endfor
 	setlocal nomodifiable readonly
+	setlocal ft=quickmenu
+	let b:quickmenu_items = a:items
 endfunc
 
 
@@ -211,6 +230,49 @@ endfunc
 " all keys 
 "----------------------------------------------------------------------
 function! s:setup_keymaps(items)
+	let ln = 0
+	for item in a:items
+		if item.key != ''
+			let cmd = ' :call <SID>quickmenu_execute('.ln.')<cr>'
+			exec "noremap <silent> <buffer> ".item.key. cmd
+		endif
+		let ln += 1
+	endfor
+	noremap <silent> <buffer> 0 :close<cr>
+	noremap <silent> <buffer> <ESC> :close<cr>
+	noremap <silent> <buffer> <CR> :call <SID>quickmenu_enter()<cr>
+endfunc
+
+
+"----------------------------------------------------------------------
+" execute selected
+"----------------------------------------------------------------------
+function! <SID>quickmenu_enter() abort
+	let ln = line('.')
+	call <SID>quickmenu_execute(ln - 2)
+endfunc
+
+
+"----------------------------------------------------------------------
+" execute item
+"----------------------------------------------------------------------
+function! <SID>quickmenu_execute(index) abort
+	if a:index < 0 || a:index >= len(b:quickmenu_items)
+		return
+	endif
+	let item = b:quickmenu_items[a:index]
+	if item.mode != 0 || item.event == ''
+		return
+	endif
+	" this is the last window
+	if winnr('$') == 1
+		close!
+		return
+	endif
+	close!
+	if item.key != '0'
+		exec item.event
+	endif
 endfunc
 
 
@@ -221,7 +283,12 @@ function! s:select_by_ft(ft)
 	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
 	let items = []
 	let index = 0
-	let lastmode = 2
+	for header in split(g:quickmenu_header, "\n")
+		let ni = {'mode':3, 'text':'', 'event':''}
+		let ni.text = header
+		let items += [ni]
+	endfor
+	let lastmode = len(items)? 0 : 2
 	for item in s:quickmenu_items
 		if len(item.ft) && index(item.ft, a:ft) >= 0
 			continue
@@ -337,7 +404,8 @@ if 1
 
 	call quickmenu#append('# Misc', '')
 	call quickmenu#append('test2', '')
-	call quickmenu#toggle(0)
+
+	nnoremap <F12> :call quickmenu#toggle(0)<cr>
 endif
 
 
