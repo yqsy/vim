@@ -15,10 +15,6 @@ if !exists('g:quickmenu_max_width')
 	let g:quickmenu_max_width = 40
 endif
 
-if !exists('g:quickmenu_min_width')
-	let g:quickmenu_min_width = 15
-endif
-
 if !exists('g:quickmenu_disable_nofile')
 	let g:quickmenu_disable_nofile = 1
 endif
@@ -70,8 +66,14 @@ function! s:window_open(size)
 		call s:window_close()
 	endif
 	let size = a:size
-	let size = (size < g:quickmenu_min_width)? g:quickmenu_min_width : size
+	let size = (size < 4)? 4 :quickmenu_min_width : size
 	let size = (size > g:quickmenu_max_width)? g:quickmenu_max_width : size
+	if size > winwidth(0)
+		let size = winwidth(0) - 1
+		if size < 4
+			let size = 4
+		endif
+	endif
 	let savebid = bufnr('%')
 	exec "silent! ".size.'vne '.s:quickmenu_name
 	if savebid == bufnr('%')
