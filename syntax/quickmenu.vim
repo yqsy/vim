@@ -13,7 +13,7 @@ if exists('b:quickmenu.option_lines')
 	endfor
 endif
 
-execute 'syntax match QuickmenuBracket /.*\%'. (len(s:padding_left) + 6) .'c/ contains=
+execute 'syntax match QuickmenuBracket /.*\%'. (len(s:padding_left) + 5) .'c/ contains=
       \ QuickmenuNumber,
       \ QuickmenuSelect'
 
@@ -49,9 +49,9 @@ function! s:hllink(name, dest, alternative)
 		let tohl = a:alternative
 	endif
 	if v:version < 508
-		exec "hi! link ".a:name.' '.tohl
+		exec "hi link ".a:name.' '.tohl
 	else
-		exec "hi! def link ".a:name.' '.tohl
+		exec "hi def link ".a:name.' '.tohl
 	endif
 endfunc
 
@@ -64,5 +64,6 @@ HiLink	QuickmenuSelect			Title		StartifySelect
 HiLink	QuickmenuNumber			Number		StartifyNumber
 HiLink	QuickmenuSpecial		Comment		StartifySpecial
 HiLink	QuickmenuHeader			Title		StartifyHeader
+HiLink  QuickmenuOption			Identifier  StartifyFile
 
 

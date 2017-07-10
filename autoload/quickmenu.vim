@@ -247,7 +247,7 @@ function! s:setup_keymaps(items)
 		call cursor(s:quickmenu_line, 1)
 	endif
 	call s:set_cursor()
-	" autocmd startify CursorMoved <buffer> call s:set_cursor()
+	autocmd startify CursorMoved <buffer> call s:set_cursor()
 endfunc
 
 
