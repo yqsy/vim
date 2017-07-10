@@ -41,7 +41,7 @@ endif
 "----------------------------------------------------------------------
 let s:quickmenu_items = []
 let s:quickmenu_name = '[quickmenu]'
-let s:quickmenu_last = 0
+let s:quickmenu_line = 0
 
 
 "----------------------------------------------------------------------
@@ -87,12 +87,12 @@ endfunc
 
 
 "----------------------------------------------------------------------
-" 
+" menu operation
 "----------------------------------------------------------------------
 
 function! quickmenu#reset()
 	let s:quickmenu_items = []
-	let s:quickmenu_last = 0
+	let s:quickmenu_line = 0
 endfunc
 
 function! quickmenu#append(text, event, ...)
@@ -198,31 +198,32 @@ endfunc
 "----------------------------------------------------------------------
 " render text
 "----------------------------------------------------------------------
-function! s:window_render(items)
+function! s:window_render(items) abort
 	setlocal modifiable
 	let ln = 2
-	let b:quickmenu_padding_size = strlen(g:quickmenu_padding_left)
-	let b:quickmenu_section_lines = []
-	let b:quickmenu_option_lines = []
-	let b:quickmenu_text_lines = []
-	let b:quickmenu_header_lines = []
+	let b:quickmenu = {}
+	let b:quickmenu.padding_size = strlen(g:quickmenu_padding_left)
+	let b:quickmenu.option_lines = []
+	let b:quickmenu.section_lines = []
+	let b:quickmenu.text_lines = []
+	let b:quickmenu.header_lines = []
 	for item in a:items
 		let item.ln = ln
 		call append('$', item.text)
 		if item.mode == 0
-			let b:quickmenu_option_lines += [ln]
+			let b:quickmenu.option_lines += [ln]
 		elseif item.mode == 1
-			let b:quickmenu_text_lines += [ln]
+			let b:quickmenu.text_lines += [ln]
 		elseif item.mode == 2
-			let b:quickmenu_section_lines += [ln]
+			let b:quickmenu.section_lines += [ln]
 		else
-			let b:quickmenu_header_lines += [ln]
+			let b:quickmenu.header_lines += [ln]
 		endif
 		let ln += 1
 	endfor
 	setlocal nomodifiable readonly
 	setlocal ft=quickmenu
-	let b:quickmenu_items = a:items
+	let b:quickmenu.items = a:items
 endfunc
 
 
@@ -239,8 +240,60 @@ function! s:setup_keymaps(items)
 		let ln += 1
 	endfor
 	noremap <silent> <buffer> 0 :close<cr>
+	noremap <silent> <buffer> q :close<cr>
 	noremap <silent> <buffer> <ESC> :close<cr>
 	noremap <silent> <buffer> <CR> :call <SID>quickmenu_enter()<cr>
+	" let s:quickmenu_line = 0
+	if s:quickmenu_line > 0
+		call cursor(s:quickmenu_line, 1)
+	endif
+	call s:set_cursor()
+	autocmd startify CursorMoved <buffer> call s:set_cursor()
+endfunc
+
+
+"----------------------------------------------------------------------
+" reset cursor
+"----------------------------------------------------------------------
+function! s:set_cursor() abort
+	let curline = line('.')
+	let lastline = s:quickmenu_line
+	let movement = (curline < lastline)? -1 : 1
+	let find = -1
+	let size = len(b:quickmenu.items)
+	while 1
+		let index = curline - 2
+		if index < 0 || index >= size
+			break
+		endif
+		let item = b:quickmenu.items[index]
+		if item.mode == 0 && item.event != ''
+			let find = index
+			break
+		endif
+		let curline += movement
+	endwhile
+	if find < 0
+		let curline = line('.')
+		let curdiff = abs(curline - b:quickmenu.option_lines[0])
+		let select = b:quickmenu.option_lines[0]
+		for line in b:quickmenu.option_lines
+			let newdiff = abs(curline - line)
+			if newdiff < curdiff
+				let curdiff = newdiff
+				let select = line
+			endif
+		endfor
+		let find = select - 2
+	endif
+	if find < 0
+		echohl ErrorMsg
+		echo "fatal error in set_cursor() ".find
+		echohl None
+		return 
+	endif
+	let s:quickmenu_line = find + 2
+	call cursor(s:quickmenu_line, len(g:quickmenu_padding_left) + 2)
 endfunc
 
 
@@ -280,7 +333,7 @@ endfunc
 " select items by &ft, generate keymap and add some default items
 "----------------------------------------------------------------------
 function! s:select_by_ft(ft)
-	let hint = '123456789abcdefhlmnopqrstuvwxyz*'
+	let hint = '123456789abcdefhlmnoprstuvwxyz*'
 	let items = []
 	let index = 0
 	for header in split(g:quickmenu_header, "\n")
