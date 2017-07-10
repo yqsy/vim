@@ -5,6 +5,14 @@ let s:padding_left = get(g:, 'quickmenu_padding_left', '   ')
 
 syntax sync fromstart
 
+if exists('b:quickmenu.option_lines')
+	let s:col = len(s:padding_left) + 4
+	for line in b:quickmenu.option_lines
+		exec 'syntax region QuickmenuOption start=/\%'. line .
+				\ 'l'.''. '/ end=/$/'
+	endfor
+endif
+
 execute 'syntax match QuickmenuBracket /.*\%'. (len(s:padding_left) + 6) .'c/ contains=
       \ QuickmenuNumber,
       \ QuickmenuSelect'
@@ -32,22 +40,29 @@ if exists('b:quickmenu.header_lines')
 	endfor
 endif
 
-if v:version < 508
-	command! -nargs=+ HiLink hi! link <args>
-else
-	command! -nargs=+ HiLink hi! def link <args>
-endif
 
 
-HiLink  QuickMenuSelection	ErrorMsg
-" HiLink  QuickMenuBracketL   String
-" HiLink  QuickMenuBracketR   String
 
-HiLink	QuickmenuBracket		Delimiter
-HiLink	QuickmenuSection		Statement
-HiLink	QuickmenuSelect			Title
-HiLink	QuickmenuNumber			Number
-HiLink	QuickmenuSpecial		Comment
-HiLink	QuickmenuHeader			Title
+function! s:hllink(name, dest, alternative)
+	let tohl = a:dest
+	if hlexists(a:alternative)
+		let tohl = a:alternative
+	endif
+	if v:version < 508
+		exec "hi! link ".a:name.' '.tohl
+	else
+		exec "hi! def link ".a:name.' '.tohl
+	endif
+endfunc
+
+command! -nargs=* HiLink call s:hllink(<f-args>)
+
+
+HiLink	QuickmenuBracket		Delimiter	StartifyBracket
+HiLink	QuickmenuSection		Statement	StartifySection
+HiLink	QuickmenuSelect			Title		StartifySelect
+HiLink	QuickmenuNumber			Number		StartifyNumber
+HiLink	QuickmenuSpecial		Comment		StartifySpecial
+HiLink	QuickmenuHeader			Title		StartifyHeader
 
 
