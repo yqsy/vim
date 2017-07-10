@@ -143,6 +143,12 @@ endfunc
 " quickmenu interface
 "----------------------------------------------------------------------
 function! quickmenu#toggle() abort
+	if &buftype == 'nofile' && &ft == 'quickmenu'
+		if bufname('%') == s:quickname_name
+			silent close!
+			return 0
+		endif
+	endif
 	if s:window_exist()
 		call s:window_close()
 		return 0
