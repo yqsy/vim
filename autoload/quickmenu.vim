@@ -31,6 +31,10 @@ if !exists('g:quickmenu_header')
 	let g:quickmenu_header = 'QuickMenu 1.1.12'
 endif
 
+if !exists('g:quickmenu_options')
+	let g:quickmenu_options = 'L'
+endif
+
 
 "----------------------------------------------------------------------
 " Internal State
@@ -231,6 +235,11 @@ function! s:window_render(items) abort
 	setlocal nomodifiable readonly
 	setlocal ft=quickmenu
 	let b:quickmenu.items = a:items
+	let opt = g:quickmenu_options
+
+	if stridx(opt, 'L') >= 0
+		setlocal cursorline
+	endif
 endfunc
 
 

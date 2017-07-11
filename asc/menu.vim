@@ -46,6 +46,14 @@ function! menu#TogglePaste()
 	endif
 endfunc
 
+function! menu#CurrentWord(limit)
+	let text = expand('<cword>')
+	if len(text) < a:limit
+		return text
+	endif
+	return text[:a:limit] . '..'
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -53,13 +61,21 @@ endfunc
 
 call quickmenu#reset()
 
-call quickmenu#append('# Find', '')
 
-call quickmenu#append('Find in project', 'call menu#FindInProject()')
+call quickmenu#append('# 查找', '')
 
-call quickmenu#append('Code static check', 'call menu#CodeCheck()')
+call quickmenu#append('Grep: "%{menu#CurrentWord(10)}"', 'call menu#FindInProject()')
 
-call quickmenu#append('# Settings', '')
+call quickmenu#append('停止搜索', 'VimStop')
+
+
+call quickmenu#append('# 调试', '')
+
+call quickmenu#append('运行', 'VimExecute run')
+
+call quickmenu#append('代码静态检查', 'call menu#CodeCheck()')
+
+call quickmenu#append('# 设置', '')
 
 call quickmenu#append('Set paste %{&paste? "off" :"on"}', 'call menu#TogglePaste()')
 
