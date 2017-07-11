@@ -54,6 +54,14 @@ function! menu#CurrentWord(limit)
 	return text[:a:limit] . '..'
 endfunc
 
+function! menu#CurrentFile(limit)
+	let text = expand('%:t')
+	if len(text) < a:limit
+		return text
+	endif
+	return text[:a:limit] . '..'
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -64,20 +72,24 @@ let g:quickmenu_options = 'L'
 call quickmenu#reset()
 
 
-call quickmenu#append('# 查找', '')
+call quickmenu#append('# Find', '')
 
-call quickmenu#append('Grep: "%{menu#CurrentWord(10)}"', 'call menu#FindInProject()')
+call quickmenu#append('Grep "%{menu#CurrentWord(12)}"', 'call menu#FindInProject()')
 
-call quickmenu#append('停止搜索', 'VimStop')
+call quickmenu#append('Stop Searching', 'VimStop')
+
+call quickmenu#append('Tag View "%{menu#CurrentWord(10)}"', 'call asclib#preview_tag(expand("<cword>"))')
 
 
-call quickmenu#append('# 调试', '')
+call quickmenu#append('# Debug', '')
 
-call quickmenu#append('运行', 'VimExecute run')
+call quickmenu#append('Run "%{menu#CurrentFile(12)}"', 'VimExecute run')
 
-call quickmenu#append('代码静态检查', 'call menu#CodeCheck()')
+call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc')
 
-call quickmenu#append('# 设置', '')
+call quickmenu#append('Code Static Check', 'call menu#CodeCheck()')
+
+call quickmenu#append('# Settings', '')
 
 call quickmenu#append('Set paste %{&paste? "off" :"on"}', 'call menu#TogglePaste()')
 
