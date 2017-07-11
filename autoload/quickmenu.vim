@@ -28,7 +28,6 @@ if !exists('g:quickmenu_padding_left')
 endif
 
 if !exists('g:quickmenu_header')
-	let g:quickmenu_header = 'QuickMenu 1.1.12'
 endif
 
 if !exists('g:quickmenu_options')
@@ -39,7 +38,10 @@ endif
 "----------------------------------------------------------------------
 " Internal State
 "----------------------------------------------------------------------
-let s:quickmenu_items = []
+let s:quickmenu_items = {}
+let s:quickmenu_mid = 0
+let s:quickmenu_header = {}
+let s:quickmenu_version = 'QuickMenu 1.1.12'
 let s:quickmenu_name = '[quickmenu]'
 let s:quickmenu_line = 0
 
@@ -58,6 +60,13 @@ endfunc
 function! s:window_close()
 	if !exists('s:quickmenu_bid')
 		return 0
+	endif
+	if &buftype == 'nofile' && &ft == 'quickmenu'
+		if bufname('%') == s:quickmenu_name
+			silent close!
+			let s:quickmenu_bid = -1
+			return 0
+		endif
 	endif
 	if s:quickmenu_bid > 0 && bufexists(s:quickmenu_bid)
 		silent exec 'bwipeout ' . s:quickmenu_bid
@@ -97,7 +106,7 @@ endfunc
 "----------------------------------------------------------------------
 
 function! quickmenu#reset()
-	let s:quickmenu_items = []
+	let s:quickmenu_items[s:quickmenu_mid] = []
 	let s:quickmenu_line = 0
 endfunc
 
@@ -123,9 +132,13 @@ function! quickmenu#append(text, event, ...)
 		let item.ft += [substitute(ft, '^\s*\(.\{-}\)\s*$', '\1', '')]
 	endfor
 	let index = -1
-	let total = len(s:quickmenu_items)
+	if !has_key(s:quickmenu_items, s:quickmenu_mid)
+		let s:quickmenu_items[s:quickmenu_mid] = []
+	endif
+	let items = s:quickmenu_items[s:quickmenu_mid]
+	let total = len(items)
 	for i in range(0, total - 1)
-		if weight < s:quickmenu_items[i].weight
+		if weight < items[i].weight
 			let index = i
 			break
 		endif
@@ -133,12 +146,23 @@ function! quickmenu#append(text, event, ...)
 	if index < 0
 		let index = total
 	endif
-	call insert(s:quickmenu_items, item, index)
+	call insert(items, item, index)
 	return index
 endfunc
 
+
+function! quickmenu#current(mid)
+	let s:quickmenu_mid = a:mid
+endfunc
+
+
+function! quickmenu#header(header)
+	let s:quickmenu_header[s:quickmenu_mid] = a:header
+endfunc
+
+
 function! quickmenu#list()
-	for item in s:quickmenu_items
+	for item in s:quickmenu_items[s:quickmenu_mid]
 		echo item
 	endfor
 endfunc
@@ -148,13 +172,7 @@ endfunc
 "----------------------------------------------------------------------
 " quickmenu interface
 "----------------------------------------------------------------------
-function! quickmenu#toggle() abort
-	if &buftype == 'nofile' && &ft == 'quickmenu'
-		if bufname('%') == s:quickmenu_name
-			silent close!
-			return 0
-		endif
-	endif
+function! quickmenu#toggle(mid) abort
 	if s:window_exist()
 		call s:window_close()
 		return 0
@@ -170,8 +188,8 @@ function! quickmenu#toggle() abort
 		endif
 	endif
 
-	" arrange menu
-	let items = s:select_by_ft(&ft)
+	" select and arrange menu
+	let items = s:select_by_ft(a:mid, &ft)
 	let content = []
 	let maxsize = 8
 	let lastmode = 2
@@ -351,20 +369,21 @@ endfunc
 "----------------------------------------------------------------------
 " select items by &ft, generate keymap and add some default items
 "----------------------------------------------------------------------
-function! s:select_by_ft(ft) abort
+function! s:select_by_ft(mid, ft) abort
 	let hint = '123456789abcdefhlmnoprstuvwxyz*'
 	" let hint = '12abcdefhlmnoprstuvwxyz*'
 	let items = []
 	let index = 0
-	if g:quickmenu_header != ''
+	let header = get(s:quickmenu_header, a:mid, s:quickmenu_version)
+	if header != ''
 		let ni = {'mode':3, 'text':'', 'event':''}
-		let ni.text = g:quickmenu_header
+		let ni.text = header
 		let items += [ni]
 		let ni = {'mode':1, 'text':'', 'event':''}
 		let items += [ni]
 	endif
 	let lastmode = 2
-	for item in s:quickmenu_items
+	for item in get(s:quickmenu_items, a:mid, [])
 		if len(item.ft) && index(item.ft, a:ft) >= 0
 			continue
 		endif

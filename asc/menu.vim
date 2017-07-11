@@ -71,7 +71,6 @@ let g:quickmenu_options = 'L'
 
 call quickmenu#reset()
 
-
 call quickmenu#append('# Find', '')
 
 call quickmenu#append('Grep "%{menu#CurrentWord(12)}"', 'call menu#FindInProject()')
