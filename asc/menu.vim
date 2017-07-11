@@ -59,6 +59,8 @@ endfunc
 " menu initialize
 "----------------------------------------------------------------------
 
+let g:quickmenu_options = 'L'
+
 call quickmenu#reset()
 
 

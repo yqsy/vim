@@ -32,7 +32,7 @@ if !exists('g:quickmenu_header')
 endif
 
 if !exists('g:quickmenu_options')
-	let g:quickmenu_options = 'L'
+	let g:quickmenu_options = ''
 endif
 
 
