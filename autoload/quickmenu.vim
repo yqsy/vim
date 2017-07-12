@@ -385,7 +385,7 @@ endfunc
 " select items by &ft, generate keymap and add some default items
 "----------------------------------------------------------------------
 function! s:select_by_ft(mid, ft) abort
-	let hint = '123456789abcdefhlmnoprstuvwxyz*'
+	let hint = '123456789abcdefhlmnoprstuvwxyzACDIOPQRSUX*'
 	" let hint = '12abcdefhlmnoprstuvwxyz*'
 	let items = []
 	let index = 0
