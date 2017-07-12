@@ -101,6 +101,8 @@ call quickmenu#append("svn diff", 'call asclib#svn_diff("%")')
 call quickmenu#append('     - next change: ]c', '')
 call quickmenu#append('     - prev change: [c', '')
 
+call quickmenu#append("svn log", 'VimMake! svn log %')
+
 call quickmenu#append('# Settings', '')
 
 call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()')
