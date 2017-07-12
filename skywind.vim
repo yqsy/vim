@@ -13,7 +13,6 @@ noremap <tab>/ :emenu <C-Z>
 " noremap <c-n>  :emenu <C-Z>
 set lazyredraw
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
-set errorformat-=%f\|%l\|\ %m
 command! -nargs=1 VimImport exec 'so '.s:home.'/'.'<args>'
 command! -nargs=1 VimLoad exec 'set rtp+='.s:home.'/'.'<args>'
 
