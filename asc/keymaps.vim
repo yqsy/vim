@@ -159,8 +159,8 @@ noremap <silent><space>tb :TagbarToggle<cr>
 
 "noremap <silent><C-F10> :call Toggle_Taglist()<cr>
 "inoremap <silent><C-F10> <c-\><c-o>:call Toggle_Taglist()<cr>
-noremap <silent><S-F10> :call Toggle_Tagbar()<cr>
-inoremap <silent><S-F10> <c-\><c-o>:call Toggle_Tagbar()<cr>
+noremap <silent><S-F10> :call quickmenu#toggle(0)<cr>
+inoremap <silent><S-F10> <ESC>:call quickmenu#toggle(0)<cr>
 noremap <silent><M-;> :call asclib#preview_tag(expand("<cword>"))<cr>
 noremap <silent><M-:> :call asclib#preview_close()<cr>
 noremap <silent><tab>; :call asclib#preview_goto('')<cr>
