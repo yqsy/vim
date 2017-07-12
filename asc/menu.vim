@@ -93,7 +93,7 @@ call quickmenu#append('# Debug', '')
 
 call quickmenu#append('Run "%{menu#CurrentFile(12)}"', 'VimExecute run', '按扩展名运行当前文件')
 
-call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc', '使用 gcc 编译当前文件')
+call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc', '使用 gcc 编译当前文件', 'c,cpp,objc,objcpp')
 
 endif
 
