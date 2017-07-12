@@ -106,4 +106,7 @@ call quickmenu#append('# Settings', '')
 
 call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', '切换粘贴模式')
 
+call quickmenu#append('Set DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', '在当前文档打开或者关闭符号补全插件')
+
+
 
