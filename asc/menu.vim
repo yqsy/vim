@@ -101,7 +101,7 @@ call quickmenu#append("svn diff", 'call asclib#svn_diff("%")')
 call quickmenu#append('     - next change: ]c', '')
 call quickmenu#append('     - prev change: [c', '')
 
-call quickmenu#append("svn log", 'VimMake! svn log %')
+call quickmenu#append("svn log", 'VimMake! -raw svn log %')
 
 call quickmenu#append('# Settings', '')
 
