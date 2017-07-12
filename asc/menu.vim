@@ -77,6 +77,7 @@ let g:quickmenu_options = 'LH'
 
 call quickmenu#reset()
 
+if 1
 call quickmenu#append('# Find', '')
 
 call quickmenu#append('Find "%{menu#CurrentWord(12)}"', 'call menu#FindInProject()', '当前工程目录中（离当前文档最近的包含 .svn/.git/.root的上级目录）搜索光标下的单词')
@@ -94,8 +95,14 @@ call quickmenu#append('Run "%{menu#CurrentFile(12)}"', 'VimExecute run', '按扩
 
 call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc', '使用 gcc 编译当前文件')
 
-call quickmenu#append('Code static check', 'call menu#CodeCheck()', '使用 pycheck, flake, cppcheck 等工具进行源代码静态检查')
+endif
 
+call quickmenu#append('Check: flake8', 'call asclib#lint_flake8("")', '使用 Google 的 Flake8 标准进行代码静态检查', 'python')
+call quickmenu#append('Check: pylint', 'call asclib#lint_pylint("")', '使用 pylint 进行代码静态检查', 'python')
+call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', '使用 cppcheck 进行代码静态检查', 'c,cpp,objc,objcpp')
+call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error errormarker_warning', '清除错误标记', 'python,c,cpp,objc,objcpp')
+
+if 1
 call quickmenu#append('# SVN', '')
 
 call quickmenu#append("svn diff", 'call asclib#svn_diff("%")', '提交前的修改版本对比，使用 "]c" 和 "[c" 查找下一处和上一处改动，二次运行关闭对比')
@@ -110,5 +117,6 @@ call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePast
 
 call quickmenu#append('Set DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', '在当前文档打开或者关闭符号补全插件')
 
+endif
 
 
