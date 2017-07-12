@@ -104,6 +104,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'KabbAmine/zeavim.vim'
 	Plugin 'lifepillar/vim-solarized8'
 	Plugin 'godlygeek/tabular'
+	Plugin 'Raimondi/delimitMate'
 	"Plugin 'sheerun/vim-polyglot'
 
 
@@ -145,7 +146,6 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	" Plugin 'vim-scripts/CRefVim'
 	" Plugin 'vim-scripts/stlrefvim'
 	Plugin 'skywind3000/vimoutliner'
-	Plugin 'Raimondi/delimitMate'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
