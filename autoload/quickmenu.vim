@@ -338,7 +338,7 @@ function! s:set_cursor() abort
 		let key = b:quickmenu.items[find].key
 		echohl QuickmenuHelp
 		if help != ''
-			call s:cmdmsg('menu['.key.']: '.help, 'QuickmenuHelp')
+			call s:cmdmsg('['.key.']: '.help, 'QuickmenuHelp')
 		else
 			echo ''
 		endif
