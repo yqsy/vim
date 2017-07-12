@@ -97,9 +97,9 @@ call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc', '使�
 
 endif
 
-call quickmenu#append('Check: flake8', 'call asclib#lint_flake8("")', '使用 Google 的 Flake8 标准进行代码静态检查', 'python')
-call quickmenu#append('Check: pylint', 'call asclib#lint_pylint("")', '使用 pylint 进行代码静态检查', 'python')
-call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', '使用 cppcheck 进行代码静态检查', 'c,cpp,objc,objcpp')
+call quickmenu#append('Check: flake8', 'call asclib#lint_flake8("")', '使用 Google 的 Flake8 标准进行代码静态检查，光标处 ]e 查看错误', 'python')
+call quickmenu#append('Check: pylint', 'call asclib#lint_pylint("")', '使用 pylint 进行代码静态检查，光标处 ]e 查看错误', 'python')
+call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', '使用 cppcheck 进行代码静态检查，光标处 ]e 查看错误', 'c,cpp,objc,objcpp')
 call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error errormarker_warning', '清除错误标记', 'python,c,cpp,objc,objcpp')
 
 if 1

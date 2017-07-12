@@ -245,6 +245,7 @@ if index(g:bundle_group, 'special') >= 0
 
 	let g:errormarker_disablemappings = 1
 	nnoremap <silent> <leader>cm :ErrorAtCursor<CR>
+	nnoremap <silent> ]e :ErrorAtCursor<CR>
 	nnoremap <silent> <leader>cM :RemoveErrorMarkers<cr>
 
 	"let &errorformat="%f:%l:%c: %t%*[^:]:%m,%f:%l: %t%*[^:]:%m," . &errorformat
