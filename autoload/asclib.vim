@@ -1375,6 +1375,7 @@ function! asclib#svn_diff(filename)
 	let w:asclib_bid = bid
 	setlocal foldlevel=20
 	exec "normal gg]c"
+	call LogWrite('[svn] diff: '.expand('%'))
 endfunc
 
 

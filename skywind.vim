@@ -395,6 +395,9 @@ function! EnableEnhancedDiff()
 	let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 endfunc
 
+if executable('git')
+	let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
+endif
 
 
 command! -bang -nargs=* -complete=file Make VimMake -program=make @ <args>

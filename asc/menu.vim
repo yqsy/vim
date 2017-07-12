@@ -102,7 +102,9 @@ call quickmenu#append("svn diff", 'call asclib#svn_diff("%")', '提交前的修�
 
 call quickmenu#append("svn log", 'VimMake! -raw svn log %', '查看当前文件的修改日志，在 Quickfix窗口中显示结果，按F10可以隐藏/切换 Quickfix')
 
-call quickmenu#append('# Settings', '')
+call quickmenu#append('# Misc', '')
+
+call quickmenu#append('Function List', 'call Toggle_Tagbar()', '显示或隐藏 Tagbar 查看函数列表')
 
 call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', '切换粘贴模式')
 
