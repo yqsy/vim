@@ -142,8 +142,8 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	" Plugin 'vim-scripts/DrawIt'
 	Plugin 'mbbill/VimExplorer'
 	Plugin 'rust-lang/rust.vim'
-	Plugin 'vim-scripts/CRefVim'
-	Plugin 'vim-scripts/stlrefvim'
+	" Plugin 'vim-scripts/CRefVim'
+	" Plugin 'vim-scripts/stlrefvim'
 	Plugin 'skywind3000/vimoutliner'
 	Plugin 'Raimondi/delimitMate'
 				

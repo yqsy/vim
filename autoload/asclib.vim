@@ -1328,13 +1328,53 @@ function! asclib#write_cfg(filename, item) abort
 endfunc
 
 
-
 "----------------------------------------------------------------------
 " svn main
 "----------------------------------------------------------------------
 function! asclib#svn(command)
 	let hr = vimmake#python_system('svn '. a:command)
 	let s:shell_error = g:vimmake_shell_error
+endfunc
+
+function! asclib#svn_cat(target, revision)
+	let cmd = 'cat '.shellescape(a:target)
+	if a:revision != '' && a:revision != '0' && a:revision != 'HEAD'
+		let cmd .= '@'.a:revision
+	endif
+	let name = tempname()
+	let cmd .= ' > '.shellescape(name)
+	call asclib#svn(cmd)
+	if s:shell_error == 0
+		return name
+	endif
+	if filereadable(name)
+		silent! call delete(name)
+	endif
+	return ''
+endfunc
+
+
+function! asclib#svn_diff(filename)
+	if &cursorbind && exists('w:asclib_bid')
+		let bid = w:asclib_bid
+		exec "bdelete ".bid
+		unlet w:asclib_bid
+		setlocal nocursorbind
+		return
+	endif
+	let filename = expand(a:filename)
+	let hr = asclib#svn_cat(filename, '')
+	if hr == ''
+		call asclib#errmsg('can not proceed svn diff')
+		return 
+	endif
+	exec 'leftabove vert diffsplit '.fnameescape(hr)
+	setlocal foldlevel=20
+	let bid = bufnr('%')
+	wincmd p
+	let w:asclib_bid = bid
+	setlocal foldlevel=20
+	exec "normal gg]c"
 endfunc
 
 

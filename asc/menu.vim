@@ -94,6 +94,13 @@ call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc')
 
 call quickmenu#append('Code Static Check', 'call menu#CodeCheck()')
 
+call quickmenu#append('# SVN', '')
+
+call quickmenu#append("svn diff", 'call asclib#svn_diff("%")')
+
+call quickmenu#append('     - next change: ]c', '')
+call quickmenu#append('     - prev change: [c', '')
+
 call quickmenu#append('# Settings', '')
 
 call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()')
