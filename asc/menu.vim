@@ -7,6 +7,12 @@
 "
 "======================================================================
 
+
+
+"----------------------------------------------------------------------
+" internal help
+"----------------------------------------------------------------------
+
 function! menu#FindInProject()
 	let p = vimmake#get_root('%')
 	let t = expand('<cword>')
@@ -90,6 +96,6 @@ call quickmenu#append('Code Static Check', 'call menu#CodeCheck()')
 
 call quickmenu#append('# Settings', '')
 
-call quickmenu#append('Set paste %{&paste? "off" :"on"}', 'call menu#TogglePaste()')
+call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()')
 
 
