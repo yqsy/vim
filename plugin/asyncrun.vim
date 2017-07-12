@@ -51,6 +51,7 @@
 "     -cwd=?       - initial directory, (use current directory if unset)
 "     -save=0/1/2  - non-zero to save current/1 or all/2 modified buffer(s)
 "     -program=?   - set to 'make' to use '&makeprg'
+"     -raw=1       - use raw output (will not match the errorformat)
 "
 "     All options must start with a minus and position **before** `[cmd]`.
 "     Since no shell command starts with a minus. So they can be 
