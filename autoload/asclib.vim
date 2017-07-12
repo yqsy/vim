@@ -1275,6 +1275,107 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" string & config
+"----------------------------------------------------------------------
+
+function! asclib#string_strip(text)
+	return substitute(a:text, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunc
+
+function! asclib#decode_cfg(string) abort
+	let item = {}
+	if type(a:string) == type('')
+		let data = split(a:string, "\n")
+	else
+		let data = a:string
+	endif
+	for curline in data
+		let pos = stridx(curline, ':')
+		if pos <= 0
+			continue
+		endif
+		let name = asclib#string_strip(curline[0:pos-1])
+		let data = asclib#string_strip(curline[pos+1:])
+		let item[name] = data
+	endfor
+	return item
+endfunc
+
+function! asclib#encode_cfg(item) 
+	let output = []
+	for name in keys(a:item)
+		let output += [name . ': ' . a:item[name]]
+	endfor
+	return join(output, "\n")
+endfunc
+
+function! asclib#read_cfg(filename)
+	let filename = a:filename
+	if stridx(filename, '~') >= 0
+		let filename = expand(filename)
+	endif
+	let data = readfile(filename)
+	return asclib#decode_cfg(data)
+endfunc
+
+function! asclib#write_cfg(filename, item) abort
+	let filename = a:filename
+	if stridx(filename, '~') >= 0
+		let filename = expand(filename)
+	endif
+	let data = asclib#encode_cfg(a:item)
+	call writefile(split(data, "\n"), filename)
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" svn main
+"----------------------------------------------------------------------
+function! asclib#svn(command)
+	let hr = vimmake#python_system('svn '. a:command)
+	let s:shell_error = g:vimmake_shell_error
+endfunc
+
+
+"----------------------------------------------------------------------
+" find and touch a file (usually a wsgi file)
+"----------------------------------------------------------------------
+function! asclib#touch_file(name)
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		echo 'touching is not supported on windows'
+		return
+	endif
+	let l:filename = findfile(a:name, '.;')
+	if l:filename == ''
+		echo 'not find: "'.a:name .'"'
+	else
+		call system('touch ' . shellescape(l:filename) . ' &')
+		echo 'touch: '. l:filename
+	endif
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" prettify html
+"----------------------------------------------------------------------
+function! asclib#html_prettify()
+	if &ft != 'html'
+		echo "not a html file"
+endfunc
+
+
+"----------------------------------------------------------------------
+" svn main
+"----------------------------------------------------------------------
+function! asclib#svn(command)
+	let hr = vimmake#python_system('svn '. a:command)
+	let s:shell_error = g:vimmake_shell_error
+endfunc
+
+
+"----------------------------------------------------------------------
 " find and touch a file (usually a wsgi file)
 "----------------------------------------------------------------------
 function! asclib#touch_file(name)
