@@ -1019,13 +1019,15 @@ function! s:run(opts)
 			py p = subprocess.Popen(**argv)
 			py text = p.stdout.read()
 			py p.stdout.close()
-			py p.wait()
+			py c = p.wait()
 			if has('patch-7.4.145') || v:version >= 800
 				let l:retval = pyeval('text')
+				let g:vimmake_shell_error = pyeval('c')
 			else
 				py text = text.replace('\\', '\\\\').replace('"', '\\"')
 				py text = text.replace('\n', '\\n').replace('\r', '\\r')
 				py vim.command('let l:retval = "%s"'%text)
+				py vim.command('let g:vimmake_shell_error = %d'%c)
 			endif
 		elseif s:vimmake_windows != 0 && has('python3')
 			let l:script = s:ScriptWrite(l:command, 0)
@@ -1036,16 +1038,19 @@ function! s:run(opts)
 			py3 p = subprocess.Popen(**argv)
 			py3 text = p.stdout.read()
 			py3 p.stdout.close()
-			py3 p.wait()
+			py3 c = p.wait()
 			if has('patch-7.4.145') || v:version >= 800
 				let l:retval = py3eval('text')
+				let g:vimmake_shell_error = py3eval('c')
 			else
 				py3 text = text.replace('\\', '\\\\').replace('"', '\\"')
 				py3 text = text.replace('\n', '\\n').replace('\r', '\\r')
 				py3 vim.command('let l:retval = "%s"'%text)
+				py3 vim.command('let g:vimmake_shell_error = %d'%c)
 			endif
 		else
 			let l:retval = system(l:command)
+			let g:vimmake_shell_error = v:shell_error
 		endif
 		let g:vimmake_text = opts.text
 		if opts.post != '' 
