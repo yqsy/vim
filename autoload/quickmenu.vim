@@ -31,9 +31,6 @@ if !exists('g:quickmenu_padding_right')
 	let g:quickmenu_padding_right = 3
 endif
 
-if !exists('g:quickmenu_header')
-endif
-
 if !exists('g:quickmenu_options')
 	let g:quickmenu_options = ''
 endif
