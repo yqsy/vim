@@ -522,8 +522,6 @@ endfunc
 " show cmd message
 "----------------------------------------------------------------------
 function! s:cmdmsg(content, highlight)
-	let saveshow = &showmode
-	set noshowmode
     let wincols = &columns
     let allowedheight = &lines/5
     let statusline = (&laststatus==1 && winnr('$')>1) || (&laststatus==2)
@@ -542,9 +540,6 @@ function! s:cmdmsg(content, highlight)
 		echohl NONE
 	else
 		echo l:content
-	endif
-	if saveshow != 0
-		set showmode
 	endif
 endfunc
 
