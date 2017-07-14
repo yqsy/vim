@@ -90,7 +90,7 @@ function! s:window_open(size)
 	endif
 	let savebid = bufnr('%')
 	if stridx(g:quickmenu_options, 'T') < 0
-		exec "silent! ".size.'vne '.s:quickmenu_name
+		exec "silent! rightbelow ".size.'vne '.s:quickmenu_name
 	else
 		exec "silent! leftabove ".size.'vne '.s:quickmenu_name
 	endif
