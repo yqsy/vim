@@ -1250,21 +1250,21 @@ function! asclib#eval_text(string) abort
 	while 1
 		let pos = stridx(a:string, '%{', index)
 		if pos < 0
-			let partial += [a:string[index:]]
+			let partial += [strpart(a:string, index)]
 			break
 		endif
 		let head = ''
 		if pos > index
-			let partial += [a:string[index:pos - 1]]
+			let partial += [strpart(a:string, index, pos - index)]
 		endif
 		let endup = stridx(a:string, '}', pos + 2)
 		if endup < 0
-			let partial += [a:string[index:]]
+			let partial += [strpart(a:stirng, index)]
 			break
 		endif
 		let index = endup + 1
 		if endup > pos + 2
-			let script = a:string[pos + 2:endup - 1]
+			let script = strpart(a:string, pos + 2, endup - (pos + 2))
 			let script = substitute(script, '^\s*\(.\{-}\)\s*$', '\1', '')
 			let result = eval(script)
 			let partial += [result]
