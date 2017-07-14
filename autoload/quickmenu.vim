@@ -97,7 +97,7 @@ function! s:window_open(size)
 	setlocal noshowcmd noswapfile nowrap nonumber
 	setlocal nolist colorcolumn= nocursorline nocursorcolumn
 	setlocal noswapfile norelativenumber
-	if has('signs')
+	if has('signs') && has('patch-7.4.2210')
 		setlocal signcolumn=no 
 	endif
 	if has('spell')
