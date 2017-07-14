@@ -94,9 +94,18 @@ function! s:window_open(size)
 		return 0
 	endif
 	setlocal buftype=nofile bufhidden=wipe nobuflisted nomodifiable
-	setlocal noshowcmd noswapfile nowrap nonumber signcolumn=no nospell
-	setlocal fdc=0 nolist colorcolumn= nocursorline nocursorcolumn
+	setlocal noshowcmd noswapfile nowrap nonumber
+	setlocal nolist colorcolumn= nocursorline nocursorcolumn
 	setlocal noswapfile norelativenumber
+	if has('signs')
+		setlocal signcolumn=no 
+	endif
+	if has('spell')
+		setlocal nospell
+	endif
+	if has('folding')
+		setlocal fdc=0
+	endif
 	let s:quickmenu_bid = bufnr('%')
 	return 1
 endfunc
