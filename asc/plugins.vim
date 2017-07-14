@@ -116,7 +116,7 @@ let g:ctrlp_working_path = 0
 " UltiSnips
 "----------------------------------------------------------------------
 let s:home = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-let g:UltiSnipsExpandTrigger="<m-i>"
+let g:UltiSnipsExpandTrigger="<m-h>"
 let g:UltiSnipsJumpForwardTrigger="<m-j>"
 let g:UltiSnipsJumpBackwardTrigger="<m-k>"
 let g:UltiSnipsListSnippets="<m-l>"
