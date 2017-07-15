@@ -545,7 +545,7 @@ function! s:slimit(text, limit, col)
 	if size < a:limit
 		return a:text
 	endif
-	if strlen(a:text) == size
+	if strlen(a:text) == size || has('patch-7.4.2000') == 0
 		return strpart(a:text, 0, a:limit - 1)
 	endif
 	let text = strcharpart(a:text, 0, a:limit)
