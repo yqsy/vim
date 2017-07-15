@@ -42,7 +42,7 @@ endif
 let s:quickmenu_items = {}
 let s:quickmenu_mid = 0
 let s:quickmenu_header = {}
-let s:quickmenu_version = 'QuickMenu 1.1.15'
+let s:quickmenu_version = 'QuickMenu 1.1.16'
 let s:quickmenu_name = '[quickmenu]'
 let s:quickmenu_line = 0
 

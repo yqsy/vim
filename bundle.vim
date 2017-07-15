@@ -177,7 +177,7 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
 	Plugin 'thinca/vim-quickrun'
-	Plugin 'luzhlon/popup.vim'
+	" Plugin 'luzhlon/popup.vim'
 	if has('python')
 		"Plugin 'mgedmin/pythonhelper.vim'
 		"Plugin 'mgedmin/chelper.vim'
