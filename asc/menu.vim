@@ -117,6 +117,10 @@ call quickmenu#append('Set paste %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePast
 
 call quickmenu#append('Set DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', '在当前文档打开或者关闭符号补全插件')
 
+call quickmenu#append('Open quicknote', 'FileSwitch tabe ~/.vim/quicknote.txt', '打开本地快速日志')
+
+call quickmenu#append('Open test.vim', 'FileSwitch tabe ~/.vim/test.vim', '打开测试 vim文件')
+
 endif
 
 
