@@ -75,6 +75,7 @@ endfunc
 
 let g:quickmenu_options = 'LH'
 
+call quickmenu#current(0)
 call quickmenu#reset()
 
 if 1
