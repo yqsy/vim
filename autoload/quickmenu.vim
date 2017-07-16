@@ -42,7 +42,7 @@ endif
 let s:quickmenu_items = {}
 let s:quickmenu_mid = 0
 let s:quickmenu_header = {}
-let s:quickmenu_version = 'QuickMenu 1.2.0'
+let s:quickmenu_version = 'QuickMenu 1.2.1'
 let s:quickmenu_name = '[quickmenu]'
 let s:quickmenu_line = 0
 
@@ -739,7 +739,7 @@ function! s:bottom_render(items, header)
 		echon "\n"
 	endfor
 	call s:highlight('Comment', 'StartifySelect')
-	echon padding. "press (space to quit): "
+	echon padding. "press (space to exit): "
 	echohl None
 endfunc
 
