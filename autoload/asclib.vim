@@ -304,6 +304,7 @@ function! asclib#cmdmsg(content, highlight)
 		let l:content = strpart(l:content, 0, limit - 1)
 		let width = len(l:content)
 	endif
+	redraw
 	if a:highlight != 0
 		echohl Type
 		echo l:content
