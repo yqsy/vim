@@ -293,18 +293,17 @@ function! asclib#cmdmsg(content, highlight)
 	let saveshow = &showmode
 	set noshowmode
     let wincols = &columns
-    let allowedheight = &lines/5
     let statusline = (&laststatus==1 && winnr('$')>1) || (&laststatus==2)
     let reqspaces_lastline = (statusline || !&ruler) ? 12 : 29
     let width = len(a:content)
     let limit = wincols - reqspaces_lastline
-	let allowedheight = &cmdheight
 	let l:content = a:content
 	if width + 1 > limit
 		let l:content = strpart(l:content, 0, limit - 1)
 		let width = len(l:content)
 	endif
-	redraw
+	" prevent scrolling caused by multiple echo
+	redraw 
 	if a:highlight != 0
 		echohl Type
 		echo l:content
