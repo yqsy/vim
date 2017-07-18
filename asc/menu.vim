@@ -21,8 +21,10 @@ function! menu#FindInProject()
 	let t = input('find word ('. p.'): ', t)
 	call inputrestore()
 	echohl None
+	redraw | echo "" | redraw
 	if strlen(t) > 0
 		silent exec "GrepCode! ".fnameescape(t)
+		call asclib#quickfix_title('- searching "'. t. '"')
 	endif
 endfunc
 
@@ -90,11 +92,13 @@ call quickmenu#append('Tag view "%{menu#CurrentWord(10)}"', 'call asclib#preview
 call quickmenu#append('Tag update', 'call vimmake#update_tags("!", "ctags", ".tags")', '扫描更新当前工程目录的 ctags 符号索引')
 
 
-call quickmenu#append('# Debug', '')
+call quickmenu#append('# Development', '')
 
 call quickmenu#append('Run "%{menu#CurrentFile(12)}"', 'VimExecute run', '按扩展名运行当前文件')
 
 call quickmenu#append('Compile "%{menu#CurrentFile(12)}"', 'VimBuild gcc', '使用 gcc 编译当前文件', 'c,cpp,objc,objcpp')
+
+call quickmenu#append('Switch Header', 'call Open_HeaderFile(1)', '切换头文件', 'c,cpp,objc,objcpp')
 
 endif
 

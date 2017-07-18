@@ -546,7 +546,7 @@ function! asclib#preview_quickfix(linenr)
 	let qflist = getqflist()
 	if linenr < 1 || linenr > len(qflist)
 		exec "norm! \<esc>"
-		return
+		return ""
 	endif
 	let entry = qflist[linenr - 1]
 	unlet qflist
@@ -562,6 +562,7 @@ function! asclib#preview_quickfix(linenr)
 	else
 		exec "norm! \<esc>"
 	endif
+	return ""
 endfunc
 
 
@@ -1486,5 +1487,21 @@ function! asclib#show_rtp()
 		echo key
 	endfor
 endfunc
+
+
+function! asclib#quickfix_title(title)
+	if !has('nvim')
+		if v:version >= 800 || has('patch-7.4.2210')
+			call setqflist([], 'a', {'title': a:title})
+			redrawstatus!
+		else
+			call setqflist([], 'a')
+		endif
+	else
+		call setqflist([], 'a', a:title)
+		redrawstatus!
+	endif
+endfunc
+
 
 

@@ -128,7 +128,8 @@ endfor
 "----------------------------------------------------------------------
 "- OptImport
 "----------------------------------------------------------------------
-VimImport site/echofunc.vim
+" VimImport site/echofunc.vim
+VimImport site/argtextobj.vim
 VimImport site/calendar.vim
 "VimImport site/hilinks.vim
 
