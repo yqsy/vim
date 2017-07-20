@@ -76,6 +76,7 @@ if index(g:bundle_group, 'simple') >= 0 || s:bundle_all
 	" Plugin 'Shougo/vimfiler.vim'
 	" Plugin 'Shougo/unite.vim'
 	Plugin 'vim-scripts/Colour-Sampler-Pack'
+	" Plugin 'vim-jp/vim-cpp'
 	" let g:vimfiler_as_default_explorer = 1
 	" let g:vimfiler_no_default_key_mappings = 1
 endif

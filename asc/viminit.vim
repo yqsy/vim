@@ -60,6 +60,7 @@ noremap <silent>\bm :bm<cr>
 noremap <silent>\bv :vs<cr>
 noremap <silent>\bd :bdelete<cr>
 noremap <silent>\bl :ls<cr>
+noremap <silent>\bb :ls<cr>:b
 noremap <silent>\nh :nohl<cr>
 
 " use hotkey to operate tab
