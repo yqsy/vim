@@ -1276,6 +1276,57 @@ endfunc
 
 
 "----------------------------------------------------------------------
+" ask text
+"----------------------------------------------------------------------
+function! asclib#input_text(string) abort
+	let partial = []
+	let index = 0
+	while 1
+		let pos = stridx(a:string, '%{', index)
+		if pos < 0
+			let partial += [strpart(a:string, index)]
+			break
+		endif
+		let head = ''
+		if pos > index
+			let partial += [strpart(a:string, index, pos - index)]
+		endif
+		let endup = stridx(a:string, '}', pos + 2)
+		if endup < 0
+			let partial += [strpart(a:stirng, index)]
+			break
+		endif
+		let index = endup + 1
+		if endup > pos + 2
+			let script = strpart(a:string, pos + 2, endup - (pos + 2))
+			let script = substitute(script, '^\s*\(.\{-}\)\s*$', '\1', '')
+			let varname = script
+			let default = ""
+			let pos = stridx(script, '=')
+			if pos >= 0
+				let varname = strpart(script, 0, pos)
+				let default = strpart(script, pos + 1)
+			endif
+			if varname == ''
+				if default != ''
+					let result = eval(devault)
+				endif
+			else
+				redraw
+				let result = input('input ('.varname.'): ', default)
+				redraw
+				if result == ''
+					return ''
+				endif
+			endif
+			let partial += [result]
+		endif
+	endwhile
+	return join(partial, '')
+endfunc
+
+
+"----------------------------------------------------------------------
 " string & config
 "----------------------------------------------------------------------
 
@@ -1327,6 +1378,33 @@ function! asclib#write_cfg(filename, item) abort
 	let data = asclib#encode_cfg(a:item)
 	call writefile(split(data, "\n"), filename)
 endfunc
+
+
+"----------------------------------------------------------------------
+" snips
+"----------------------------------------------------------------------
+
+function! asclib#snip_insert(text, mode)
+	let text = asclib#input_text(a:text)
+	if text == ''
+		return ""
+	endif
+	if stridx(text, '@') < 0
+		let text .= '@'
+	endif
+	let save = @z
+	let @z = text
+	silent exec 'normal! "z]p'
+	let @z = save
+	call search('@')
+	if a:mode == 0
+		call feedkeys('s', 'i')
+	else
+		call feedkeys("\<del>", "i")
+	endif
+	return ""
+endfunc
+
 
 
 "----------------------------------------------------------------------

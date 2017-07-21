@@ -147,10 +147,12 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 	" Plugin 'vim-scripts/CRefVim'
 	" Plugin 'vim-scripts/stlrefvim'
 	Plugin 'skywind3000/vimoutliner'
+	Plugin 'vim-scripts/FuzzyFinder'
+	Plugin 'vim-scripts/L9'
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
-		Plugin 'SirVer/ultisnips'
+		" Plugin 'SirVer/ultisnips'
 	endif
 
 	noremap <space>bp :BlogPreview local<cr>
