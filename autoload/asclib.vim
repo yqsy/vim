@@ -1398,9 +1398,9 @@ function! asclib#snip_insert(text, mode)
 	let @z = save
 	call search('@')
 	if a:mode == 0
-		call feedkeys('s', 'i')
+		call feedkeys('s', 'm')
 	else
-		call feedkeys("\<del>", "i")
+		call feedkeys("\<del>", "m")
 	endif
 	return ""
 endfunc
