@@ -1540,6 +1540,20 @@ function! asclib#svn_diff(filename)
 endfunc
 
 
+function! asclib#svn_log(filename)
+	let mode = asclib#svn_or_git(a:filename)
+	let name = fnamemodify(expand(a:filename), ':p')
+	if mode == 0
+		call asclib#errmsg('not a svn/git repository')
+		return
+	elseif mode == 1
+		exec 'VimMake! -raw svn log '.shellescape(name)
+	else
+		exec 'VimMake! -raw git log '.shellescape(name)
+	endif
+endfunc
+
+
 
 "----------------------------------------------------------------------
 " diff current file on the left
