@@ -89,11 +89,11 @@ call quickmenu#append('Execute', 'VimExecute run', 'run %{expand("%")}')
 call quickmenu#append('GCC', 'VimBuild gcc', 'compile %{expand("%")}')
 call quickmenu#append('Make', 'VimBuild make', 'make current project')
 call quickmenu#append('Emake', 'VimBuild emake', 'emake current project')
+call quickmenu#append('Stop', 'VimStop', 'stop making or searching')
 
 if 1
 call quickmenu#append('# Find', '')
 call quickmenu#append('Find word', 'call menu#FindInProject()', 'Find (%{expand("<cword>")}) in current project')
-call quickmenu#append('Stop searching', 'VimStop', 'Stop searching')
 call quickmenu#append('Tag view', 'call asclib#preview_tag(expand("<cword>"))', 'Find (%{expand("<cword>")}) in ctags database')
 call quickmenu#append('Tag update', 'call vimmake#update_tags("!", "ctags", ".tags")', 'reindex ctags database')
 call quickmenu#append('Switch Header', 'call Open_HeaderFile(1)', 'switch header/source', 'c,cpp,objc,objcpp')
