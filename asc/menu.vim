@@ -106,15 +106,15 @@ call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error erro
 
 if 1
 call quickmenu#append('# SVN / GIT', '')
-call quickmenu#append("diff", 'call asclib#svn_diff("%")', 'show svn/git diff in a split window, ]e, [e to jump between changes')
-call quickmenu#append("log", 'call asclib#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
+call quickmenu#append("view diff", 'call asclib#svn_diff("%")', 'show svn/git diff side by side, ]e, [e to jump between changes')
+call quickmenu#append("show log", 'call asclib#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
 
 call quickmenu#append('# Utility', '')
-call quickmenu#append('Function list', 'call Toggle_Tagbar()', '显示或隐藏 Tagbar 查看函数列表')
-call quickmenu#append('Compare file', 'call asclib#compare_ask_file()', 'use vertical diffsplit')
-call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit')
-call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', '切换粘贴模式')
-call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', '在当前文档打开或者关闭符号补全插件')
+call quickmenu#append('Function list', 'call Toggle_Tagbar()', 'show/hide tagbar')
+call quickmenu#append('Compare file', 'call asclib#compare_ask_file()', 'use vertical diffsplit, compare current file to another (use filename)')
+call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
+call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
+call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
 
 endif
 

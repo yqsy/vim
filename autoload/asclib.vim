@@ -1543,13 +1543,15 @@ endfunc
 function! asclib#svn_log(filename)
 	let mode = asclib#svn_or_git(a:filename)
 	let name = fnamemodify(expand(a:filename), ':p')
+	let home = fnameescape(fnamemodify(name, ':h'))
+	let name = shellescape(name)
 	if mode == 0
 		call asclib#errmsg('not a svn/git repository')
 		return
 	elseif mode == 1
-		exec 'VimMake! -raw svn log '.shellescape(name)
+		exec 'VimMake! -raw svn log '.name
 	else
-		exec 'VimMake! -raw git log '.shellescape(name)
+		exec 'VimMake! -raw -cwd='.home.' git log '.name
 	endif
 endfunc
 
