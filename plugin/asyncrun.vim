@@ -928,10 +928,13 @@ function! s:find_root(path, markers)
 endfunc
 
 " get project root
-function! asyncrun#get_root(path)
+function! asyncrun#get_root(path, ...)
 	let markers = ['.project', '.git', '.hg', '.svn', '.root']
 	if exists('g:asyncrun_rootmarks')
 		let markers = g:asyncrun_rootmarks
+	endif
+	if a:0 > 0
+		let markers = a:1
 	endif
 	let l:hr = s:find_root(a:path, markers)
 	if s:asyncrun_windows
@@ -939,6 +942,11 @@ function! asyncrun#get_root(path)
 	endif
 	return l:hr
 endfunc
+
+function! asyncrun#path_join(home, name)
+	return s:path_join(a:home, a:name)
+endfunc
+
 
 
 "----------------------------------------------------------------------

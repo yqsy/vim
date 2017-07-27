@@ -1413,6 +1413,27 @@ endfunc
 function! asclib#svn(command)
 	let hr = vimmake#python_system('svn '. a:command)
 	let s:shell_error = g:vimmake_shell_error
+	return hr
+endfunc
+
+function! asclib#git(command)
+	let hr = vimmake#python_system('git '. a:command)
+	let s:shell_error = g:vimmake_shell_error
+	return hr
+endfunc
+
+" returns none(0), svn(1), git(2)
+function! asclib#svn_or_git(target)
+	let root = vimmake#get_root(a:target, ['.svn', '.git'])
+	if root == ''
+		return 0
+	endif
+	if isdirectory(vimmake#path_join(root, '.svn'))
+		return 1
+	elseif isdirectory(vimmake#path_join(root, '.git'))
+		return 2
+	endif
+	return 0
 endfunc
 
 function! asclib#svn_cat(target, revision)
@@ -1432,19 +1453,80 @@ function! asclib#svn_cat(target, revision)
 	return ''
 endfunc
 
+function! asclib#git_name(target, revision)
+	let filename = fnamemodify(expand(a:target), ':p')
+	let filedir = fnamemodify(filename, ':h')
+	let cd = haslocaldir()? 'lcd ' : 'cd '
+	let cmd = 'ls-tree --full-name --name-only '.a:revision
+	let savedir = getcwd()
+	let cmd.= ' '.shellescape(filename)
+	exec cd . fnameescape(filedir)
+	let hr = asclib#git(cmd)
+	exec cd . savedir
+	if s:shell_error
+		return ''
+	endif
+	return split(hr, "\n", 1)[0]
+endfunc
 
-function! asclib#svn_diff(filename)
+function! asclib#git_cat(target, revision)
+	let revision = (a:revision == '')? 'HEAD' : a:revision
+	let name = asclib#git_name(a:target, revision)
+	if name == ''
+		return ''
+	endif
+	let tmp = tempname()
+	let cmd = 'show '.revision.':'.shellescape(name) 
+	let cmd.= ' > '. shellescape(tmp)
+	let filename = fnamemodify(expand(a:target), ':p')
+	let filedir = fnamemodify(filename, ':h')
+	let savedir = getcwd()
+	let cd = haslocaldir()? 'lcd ' : 'cd '
+	exec cd. fnameescape(filedir)
+	call asclib#git(cmd)
+	exec cd. savedir
+	if s:shell_error == 0
+		return tmp
+	endif
+	if filereadable(tmp)
+		silent! call delete(tmp)
+	endif
+	return ''
+endfunc
+
+function! asclib#diff_exit()
 	if &cursorbind && exists('w:asclib_bid')
 		let bid = w:asclib_bid
-		exec "bdelete ".bid
 		unlet w:asclib_bid
 		setlocal nocursorbind
+		exec "bdelete ".bid
+		diffoff!
+		return 1
+	endif
+	return 0
+endfunc
+
+function! asclib#svn_diff(filename)
+	if asclib#diff_exit()
 		return
 	endif
 	let filename = expand(a:filename)
-	let hr = asclib#svn_cat(filename, '')
+	let mode = asclib#svn_or_git(a:filename)
+	if mode == 0
+		call asclib#errmsg('not a svn/git working copy')
+		return
+	endif
+	if mode == 1
+		let hr = asclib#svn_cat(filename, '')
+	else
+		let hr = asclib#git_cat(filename, '')
+	endif
 	if hr == ''
-		call asclib#errmsg('can not proceed svn diff')
+		if mode == 1
+			call asclib#errmsg('can not proceed svn diff')
+		else
+			call asclib#errmsg('can not proceed git show')
+		endif
 		return 
 	endif
 	exec 'leftabove vert diffsplit '.fnameescape(hr)
@@ -1455,6 +1537,72 @@ function! asclib#svn_diff(filename)
 	setlocal foldlevel=20
 	exec "normal gg]c"
 	call LogWrite('[svn] diff: '.expand('%'))
+endfunc
+
+
+
+"----------------------------------------------------------------------
+" diff current file on the left
+"----------------------------------------------------------------------
+function! asclib#compare_current(filename)
+	if asclib#diff_exit()
+		return
+	endif
+	let hr = expand(a:filename)
+	exec 'leftabove vert diffsplit '.fnameescape(hr)
+	setlocal foldlevel=20
+	let bid = bufnr('%')
+	wincmd p
+	let w:asclib_bid = bid
+	setlocal foldlevel=20
+	exec "normal gg]c"
+endfunc
+
+function! asclib#compare_ask_file()
+	if asclib#diff_exit()
+		return
+	endif
+	let filename = input('Enter filename to compare: ', '', 'file')
+	if filename == ''
+		redraw
+		return
+	endif
+	if !filereadable(filename)
+		redraw
+		call asclib#errmsg('can not open: '. filename)
+		return
+	endif
+	call asclib#compare_current(filename)
+endfunc
+
+
+function! asclib#compare_ask_buffer() abort
+	if asclib#diff_exit()
+		return
+	endif
+	let bid = input('Enter buffer id to compare: ', '', 'buffer')
+	let nid = str2nr(bid)
+	let filename = ''
+	if bid == ''
+		return
+	endif
+	if nid > 0
+		let filename = bufname(nid)
+	endif
+	if filename == ''
+		let filename = bufname(bid)
+	endif
+	if filename == ''
+		redraw
+		call asclib#errmsg('invalid buffer name: '.bid)
+		return
+	endif
+	if !filereadable(filename)
+		redraw
+		call asclib#errmsg('invalid file name: '.filename)
+		return
+	endif
+	call asclib#compare_current(filename)
 endfunc
 
 

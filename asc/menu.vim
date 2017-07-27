@@ -71,11 +71,7 @@ function! menu#CurrentFile(limit)
 endfunc
 
 function! menu#DiffSplit()
-	let filename = input('Enter filename to compare: ')
-	if filename == ''
-		return
-	endif
-	exec "vertical diffsplit ".fnameescape(filename)
+	call asclib#ask_diff()
 endfunc
 
 
@@ -110,13 +106,14 @@ call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error erro
 
 if 1
 call quickmenu#append('# SVN / GIT', '')
-call quickmenu#append("svn diff", 'call asclib#svn_diff("%")', '提交前的修改版本对比，使用 "]c" 和 "[c" 查找下一处和上一处改动，二次运行关闭对比')
+call quickmenu#append("svn/git diff", 'call asclib#svn_diff("%")', '提交前的修改版本对比，使用 "]c" 和 "[c" 查找下一处和上一处改动，二次运行关闭对比')
 call quickmenu#append("svn log", 'VimMake! -raw svn log %', '查看当前文件的修改日志，在 Quickfix窗口中显示结果，按F10可以隐藏/切换 Quickfix')
 
 call quickmenu#append('# Utility', '')
-call quickmenu#append('Paste Mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', '切换粘贴模式')
-call quickmenu#append('File Compare', 'call menu#DiffSplit()', 'use vertical diffsplit')
-call quickmenu#append('Function List', 'call Toggle_Tagbar()', '显示或隐藏 Tagbar 查看函数列表')
+call quickmenu#append('Function list', 'call Toggle_Tagbar()', '显示或隐藏 Tagbar 查看函数列表')
+call quickmenu#append('File compare', 'call asclib#compare_ask_file()', 'use vertical diffsplit')
+call quickmenu#append('Buffer compare', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit')
+call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', '切换粘贴模式')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', '在当前文档打开或者关闭符号补全插件')
 
 endif
