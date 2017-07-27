@@ -646,4 +646,18 @@ endfunc
 command! -nargs=1 ExpSwitch call Tools_ExpSwitch(<f-args>)
 
 
+function! s:run_python(redraw, script)
+	let script = expand(a:script)
+	" echo 'running:'. script
+	py import vim
+	" py execfile(vim.eval('script'), {'__builtins__':__builtins__}, {})
+	py execfile(vim.eval('script'))
+	if a:redraw
+		call input("press enter to continue")
+		redraw!
+	endif
+endfunc
+
+command! -bang -nargs=1 PythonRun call s:run_python(<bang>0, <f-args>)
+
 
