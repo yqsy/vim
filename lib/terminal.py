@@ -642,15 +642,12 @@ class configure (object):
 				t.write('%s\n'%line)
 			t.close()
 			tmpname = t.name
-			if sys.stdout.isatty():
+			if sys.stdout.isatty() and 0:
 				command = '%s '%bash
 				command += '--login -i "' + self.win2wsl(t.name) + '"'
 				os.system(command)
 			else:
 				args = [bash, '--login', self.win2wsl(t.name)]
-				code, stdout, stderr = self.call(args)
-				sys.stdout.write(stdout)
-				sys.stdout.flush()
 				p = subprocess.Popen(
 						args,
 						shell = False, 
