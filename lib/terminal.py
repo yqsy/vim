@@ -642,7 +642,7 @@ class configure (object):
 				t.write('%s\n'%line)
 			t.close()
 			tmpname = t.name
-			if sys.stdout.isatty() and 0:
+			if sys.stdout.isatty():
 				command = '%s '%bash
 				command += '--login -i "' + self.win2wsl(t.name) + '"'
 				os.system(command)
