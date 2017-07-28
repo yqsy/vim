@@ -35,6 +35,7 @@ class configure (object):
 		self.GetShortPathName = None
 		self.GetFullPathName = None
 		self.GetLongPathName = None
+		self.ShellExecute = None
 		self.kernel32 = None
 		self.textdata = None
 	
@@ -275,6 +276,28 @@ class configure (object):
 			return ''
 		return longpath
 
+	def win32_shell_execute (self, op, filename, parameters, cwd = None):
+		if self.unix:
+			return False
+		if not cwd:
+			cwd = os.getcwd()
+		self._win32_load_kernel()
+		if not self.ShellExecute:
+			try:
+				import ctypes
+				self.shell32 = ctypes.windll.LoadLibrary('shell32.dll')
+				self.ShellExecute = self.shell32.ShellExecuteA
+				args = [ ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p ]
+				args+= [ ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int32 ]
+				self.ShellExecute.argtypes = args
+				self.ShellExecute.restype = ctypes.wintypes.HINSTANCE
+			except: pass
+		if not self.ShellExecute:
+			return False
+		nShowCmd = 5
+		self.ShellExecute(None, op, filename, parameters, cwd, nShowCmd)
+		return True
+	
 	# win32 correct casing path: c:/windows -> C:\Windows
 	def win32_path_casing (self, path):
 		if not path:
@@ -344,7 +367,7 @@ class configure (object):
 		if version[1] >= 10:
 			return True
 		return False
-	
+
 	def darwin_open_xterm (self, title, script, profile = None):
 		command = []
 		for line in script:
@@ -617,12 +640,28 @@ class configure (object):
 			t.close()
 			tmpname = t.name
 			command = '%s '%bash
-			command += '--login -i ' + self.win2wsl(t.name)
+			command += '--login -i "' + self.win2wsl(t.name) + '"'
 			os.system(command)
 			try:
 				os.remove(t.name)
 			except:
 				pass
+		return 0
+
+	# open bash for windows in a new terminal window
+	def win32_wsl_open_bash (self, title, script, profile = None):
+		bash = self.win32_wsl_locate()
+		if not bash:
+			return -1, None
+		fp = open(self.temp, 'wb')
+		fp.write('#! /bin/bash\n')
+		path = self.win2wsl(os.getcwd())
+		fp.write('cd %s\n'%self.unix_escape(path))
+		for line in script:
+			fp.write('%s\n'%line)
+		fp.close()
+		command = '--login -i "' + self.win2wsl(self.temp) + '"'
+		self.win32_shell_execute('open', bash, command, os.getcwd())
 		return 0
 
 
@@ -667,6 +706,17 @@ class Terminal (object):
 				self.config.win32_cygwin_now(script, True)
 			else:
 				self.config.win32_cygwin_open_mintty(title, script, profile)
+		elif terminal in ('wsl', 'wslx', 'ubuntu', 'ubuntux'):
+			if not self.config.win32_detect_win10():
+				die('only supported on windows 10')
+				return -1
+			if not self.config.win32_wsl_locate():
+				die('can not find bash.exe, please install WSL')
+				return -2
+			if terminal in ('wsl', 'ubuntu'):
+				self.config.win32_wsl_open_bash(title, script, profile)
+			else:
+				self.config.win32_wsl_now(title, script, profile)
 		else:
 			die('bad terminal name: %s'%terminal)
 			return -4
@@ -718,7 +768,9 @@ class Terminal (object):
 			terminal = ''
 		if sys.platform[:3] == 'win':
 			if script == None:
-				return ('cmd (default)', 'cygwin', 'mintty', 'cygwinx')
+				names = ['cmd (default)', 'cygwin', 'mintty', 'cygwinx']
+				names += ['wsl (windows subsystem for linux)', 'wslx']
+				return names
 			return self.__win32_open_terminal(terminal, title, script, profile)
 		elif sys.platform == 'cygwin':
 			if script == None:
@@ -757,8 +809,11 @@ class Terminal (object):
 			if terminal in ('', 'system', 'dos', 'win', 'windows', 'command', 'cmd'):
 				script.append(cwd[:2])
 				script.append('cd "%s"'%cwd)
-			else:
+			elif terminal in ('cygwin', 'bash', 'mintty', 'cygwin-mintty', 'cygwinx'):
 				script.append('cd "%s"'%self.config.win2cyg(cwd))
+			else:
+				path = self.config.win2wsl(cwd)
+				script.append('cd "%s"'%path)
 		elif sys.platform == 'cygwin':
 			if terminal in ('dos', 'win', 'cmd', 'command', 'system', 'windows'):
 				path = self.config.cyg2win(os.path.abspath(cwd))
@@ -956,10 +1011,12 @@ if __name__ == '__main__':
 
 	def test4():
 		cfg = configure()
-		cfg.win32_wsl_now('', ['echo 1234'])
+		# cfg.win32_wsl_now('', ['echo 1234', 'ls -la'])
+		cfg.win32_wsl_open_bash('', ['echo 1234', 'ls -la', 'sleep 3'])
+		# cfg.win32_shell_execute('open', cfg.win32_wsl_locate(), '--login -i -c "sleep 5"')
 	
-	test4()
-	# main()
+	# test4()
+	main()
 
 
 
