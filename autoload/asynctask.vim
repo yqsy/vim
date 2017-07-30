@@ -31,6 +31,8 @@ elseif has('nvim')
 	let s:support = 1
 endif
 
+" let s:support = 0
+
 function! s:errmsg(text)
 	echohl ErrorMsg
 	echom a:text
@@ -194,8 +196,8 @@ function! s:task_start(task, cmd, opts) abort
 		return -2
 	endif
 	let task.__private.opts = copy(a:opts)
-	let task.__private.err2out = get(a:opts, 'err2out', 0)
-	let task.__private.in_null = get(a:opts, 'in_null', 0)
+	let task.__private.err2out = get(a:opts, 'err2out', 0)? 1 : 0
+	let task.__private.in_null = get(a:opts, 'in_null', 0)? 1 : 0
 	let task.__private.cwd = get(a:opts, 'cwd', '')
 	let l:shell = &shell
 	let l:shellcmdflag = &shellcmdflag
@@ -469,7 +471,9 @@ if 1
 	let t1 = asynctask#new(function('s:my_cb'), "test task 1")
 	let t2 = asynctask#new(function('s:my_cb'), "test task 2")
 	cexpr ""
-	call t1.start('python e:/lab/timer.py', {})
+	" call t1.start('dir', {})
+	call t1.start('python e:/lab/timer.py', {'err2out':0})
+	" call t1.start('python e:/lab/timer.py', {'err2out':0})
 	" call t2.start('python e:/lab/timer.py', {})
 endif
 
