@@ -126,7 +126,7 @@ function! s:init_cbs(task) abort
 		if has_key(s:tasks, self.task.__private.id)
 			unlet s:tasks[self.task.__private.id]
 		endif
-		let self.task.__private.id
+		let self.task.__private.id = 0
 		let self.task.__private.state = 0
 		let self.task.state = self.task.__private.state
 		let self.task.id = self.task.__private.id
@@ -220,7 +220,8 @@ function! s:task_start(task, cmd, opts) abort
 	let success = 0
 	if s:support != 0
 		if s:nvim == 0
-			let opts = s:init_cbs(task)
+			let callback = s:init_cbs(task)
+			let opts = {}
 			let opts['out_io'] = 'pipe'
 			let opts['err_io'] = task.__private.err2out? 'out' : 'pipe'
 			let opts['in_io'] = task.__private.in_null? 'pipe' : 'null'
@@ -232,7 +233,6 @@ function! s:task_start(task, cmd, opts) abort
 			let opts['err_cb'] = callback.err_cb
 			let opts['close_cb'] = callback.close_cb
 			let opts['exit_cb'] = callback.exit_cb
-			let opts['task'] = task
 			let task.__private.job = job_start(task.__private.args, opts)
 			let success = (job_status(task.__private.job) != 'fail')? 1 : 0
 		else
