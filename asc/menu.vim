@@ -115,6 +115,7 @@ call quickmenu#append('Compare file', 'call asclib#compare_ask_file()', 'use ver
 call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
 call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
+call quickmenu#append('Calendar', 'Calendar', 'Show Calendar')
 
 endif
 

@@ -11,12 +11,11 @@
 " VimTools
 "----------------------------------------------------------------------
 for s:index in range(10)
+	let s:button = (s:index > 0)? 'F'.s:index : 'F10'
 	exec 'noremap <space>'.s:index.' :VimTool ' . s:index . '<cr>'
-	if has('gui_running') == 0 && s:index >= 1 && s:index <= 9
-		exec "noremap <S-F".s:index."> :VimTool ".s:index . '<cr>'
-		exec "inoremap <S-F".s:index."> <ESC>:VimTool ".s:index . '<cr>'
-		exec "noremap <C-F".s:index."> :VimTool c".s:index . '<cr>'
-		exec "inoremap <C-F".s:index."> <ESC>:VimTool c".s:index . '<cr>'
+	if has('gui_running')
+		exec "noremap <C-".s:button."> :VimTool c".s:index . '<cr>'
+		exec "inoremap <C-".s:button."> <ESC>:VimTool c".s:index . '<cr>'
 	endif
 endfor
 
