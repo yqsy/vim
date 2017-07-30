@@ -139,11 +139,13 @@ function! s:init_cbs(task) abort
 	function! obj.neovim_dispatch(event, data)
 		if has_key(self.task, 'cb')
 			let task = self.task
-			for text in a:data
+			let size = len(a:data)
+			for index in range(size)
+				let text = a:data[index]
+				if text == '' && index == size - 1
+					continue
+				endif
 				if s:windows
-					if text == ''
-						continue
-					endif
 					let text = substitute(text, '\r$', '', 'g')
 				endif
 				call task.cb(task, a:event, text)
@@ -151,7 +153,6 @@ function! s:init_cbs(task) abort
 		endif
 	endfunc
 	function! obj.neovim_cb(job_id, data, event) abort
-		echo keys(self)
 		let task = self.task
 		if a:event == 'stdout'
 			if has_key(self.task, 'cb')
@@ -243,7 +244,7 @@ function! s:task_start(task, cmd, opts) abort
 			let opts['on_stderr'] = opts.neovim_cb
 			let opts['on_exit'] = opts.neovim_cb
 			let opts['task'] = task
-			echo keys(opts.task)
+			" echo keys(opts.task)
 			let task.__private.job = jobstart(task.__private.args, opts)
 			let success = (task.__private.job > 0)? 1 : 0
 		endif
@@ -461,8 +462,10 @@ endfunc
 "----------------------------------------------------------------------
 if 1
 	function! s:my_cb(task, event, data) abort
-		if a:event == 'stdout' || a:event == 'stderr'
-			caddexpr '['. (a:task.name) .'/'. (a:task.id) .'] '. a:data
+		if a:event == 'stdout' 
+			caddexpr '['. (a:task.name) .'/'. (a:task.id) .' stdout] '. a:data
+		elseif a:event == 'stderr'
+			caddexpr '['. (a:task.name) .'/'. (a:task.id) .' stderr] '. a:data
 		elseif a:event == 'exit'
 			caddexpr '['. (a:task.name) .'/'. (a:task.id) .'] '. '[end]'
 		endif
@@ -472,7 +475,7 @@ if 1
 	let t2 = asynctask#new(function('s:my_cb'), "test task 2")
 	cexpr ""
 	" call t1.start('dir', {})
-	call t1.start('python e:/lab/timer.py', {'err2out':0})
+	call t1.start('python ~/tmp/timer.py', {'err2out':0})
 	" call t1.start('python e:/lab/timer.py', {'err2out':0})
 	" call t2.start('python e:/lab/timer.py', {})
 endif
