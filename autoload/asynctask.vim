@@ -416,6 +416,8 @@ function! asynctask#new(callback, name)
 	let newobj = deepcopy(s:task)
 	let newobj.__private.name = a:name
 	let newobj.name = a:name
+	let newobj.state = 0
+	let newobj.id = 0
 	if type(a:callback) == 1:
 		let newobj.cb = function(a:callback)
 	else
