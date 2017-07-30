@@ -460,7 +460,7 @@ endfunc
 "----------------------------------------------------------------------
 " testing case
 "----------------------------------------------------------------------
-if 1
+if 0
 	function! s:my_cb(task, event, data) abort
 		if a:event == 'stdout' 
 			caddexpr '['. (a:task.name) .'/'. (a:task.id) .' stdout] '. a:data
