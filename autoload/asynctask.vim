@@ -9,8 +9,8 @@
 
 let s:task = {}
 
-let asynctask#shell = ''
-let asynctask#shellcmdflag = ''
+let g:asynctask#shell = ''
+let g:asynctask#shellcmdflag = ''
 
 
 "----------------------------------------------------------------------
@@ -66,8 +66,8 @@ let s:task.__private.name = ''
 function! s:init_cbs(task) abort
 	let obj = {}
 	let obj.task = a:task
-	let self.__private.is_closed = 0
-	let self.__private.is_exited = 0
+	let a:task.__private.is_closed = 0
+	let a:task.__private.is_exited = 0
 	function! obj.out_cb(channel, text) abort
 		if has_key(self.task, 'cb')
 			call self.task.cb(self.task, 'stdout', a:text)
@@ -113,7 +113,7 @@ function! s:init_cbs(task) abort
 		let self.task.__private.code = a:message
 		call self.check_finish()
 	endfunc
-	function! obj.check_finish()
+	function! obj.check_finish() abort
 		if self.task.__private.is_closed == 0
 			return
 		endif
@@ -134,17 +134,33 @@ function! s:init_cbs(task) abort
 			call self.task.cb(self.task, 'exit', self.task.__private.code)
 		endif
 	endfunc
-	function! obj.neovim_cb(job_id, data, event)
+	function! obj.neovim_dispatch(event, data)
+		if has_key(self.task, 'cb')
+			let task = self.task
+			for text in a:data
+				if s:windows
+					if text == ''
+						continue
+					endif
+					let text = substitute(text, '\r$', '', 'g')
+				endif
+				call task.cb(task, a:event, text)
+			endfor
+		endif
+	endfunc
+	function! obj.neovim_cb(job_id, data, event) abort
+		echo keys(self)
+		let task = self.task
 		if a:event == 'stdout'
-			if has_key(self.task.cb)
-				call self.task.cb(self.task, 'stdout', a:data)
+			if has_key(self.task, 'cb')
+				call self.neovim_dispatch('stdout', a:data)
 			endif
 		elseif a:event == 'stderr'
-			if has_key(self.task.cb)
+			if has_key(self.task, 'cb')
 				if self.task.__private.err2out == 0
-					call self.task.cb(self.task, 'stderr', a:data)
+					call self.neovim_dispatch('stderr', a:data)
 				else
-					call self.task.cb(self.task, 'stdout', a:data)
+					call self.neovim_dispatch('stdout', a:data)
 				endif
 			endif
 		elseif a:event == 'exit'
@@ -164,7 +180,7 @@ endfunc
 function! s:task_start(task, cmd, opts) abort
 	let task = a:task
 	let running = 0
-	if has_key(task.__private.job)
+	if has_key(task.__private, 'job')
 		if s:nvim == 0
 			let running = (job_status(task.__private.job) == 'run')? 1 : 0
 		else
@@ -183,9 +199,9 @@ function! s:task_start(task, cmd, opts) abort
 	let task.__private.cwd = get(a:opts, 'cwd', '')
 	let l:shell = &shell
 	let l:shellcmdflag = &shellcmdflag
-	if asynctask#shell != ''
-		let l:shell = asynctask#shell
-		let l:shellcmdflag = asynctask#shellcmdflag
+	if g:asynctask#shell != ''
+		let l:shell = g:asynctask#shell
+		let l:shellcmdflag = g:asynctask#shellcmdflag
 	endif
 	if get(a:opts, 'shell', '') != ''
 		let l:shell = get(a:opts, 'shell', '')
@@ -204,11 +220,10 @@ function! s:task_start(task, cmd, opts) abort
 	let success = 0
 	if s:support != 0
 		if s:nvim == 0
-			let callback = s:init_cbs(task)
-			let opts = {}
+			let opts = s:init_cbs(task)
 			let opts['out_io'] = 'pipe'
 			let opts['err_io'] = task.__private.err2out? 'out' : 'pipe'
-			let opts['in_io'] = task.__private.in_null? 'pipe' : 'none'
+			let opts['in_io'] = task.__private.in_null? 'pipe' : 'null'
 			let opts['in_mode'] = 'nl'
 			let opts['out_mode'] = 'nl'
 			let opts['err_mode'] = 'nl'
@@ -217,15 +232,17 @@ function! s:task_start(task, cmd, opts) abort
 			let opts['err_cb'] = callback.err_cb
 			let opts['close_cb'] = callback.close_cb
 			let opts['exit_cb'] = callback.exit_cb
+			let opts['task'] = task
 			let task.__private.job = job_start(task.__private.args, opts)
-			let success = job_status(task.__private.job)
+			let success = (job_status(task.__private.job) != 'fail')? 1 : 0
 		else
-			let callback = s:init_cbs(task)
-			let opts = {}
-			let opts['on_stdout'] = callback.neovim_cb
-			let opts['on_stderr'] = callback.neovim_cb
-			let opts['on_exit'] = callback.neovim_cb
-			let task.__private.job = jobstart(talk.__private.args, opts)
+			let opts = s:init_cbs(task)
+			let opts['on_stdout'] = opts.neovim_cb
+			let opts['on_stderr'] = opts.neovim_cb
+			let opts['on_exit'] = opts.neovim_cb
+			let opts['task'] = task
+			echo keys(opts.task)
+			let task.__private.job = jobstart(task.__private.args, opts)
 			let success = (task.__private.job > 0)? 1 : 0
 		endif
 		if success
@@ -265,7 +282,7 @@ function! s:task_start(task, cmd, opts) abort
 		endif
 	endif
 	if success == 0
-		if has_key(task.__private.job)
+		if has_key(task.__private, 'job')
 			unlet task.__private.job
 		endif
 		return -4
@@ -277,7 +294,7 @@ endfunc
 "----------------------------------------------------------------------
 " start job
 "----------------------------------------------------------------------
-function! s:task.start(args, opts) abort
+function! s:task.start(command, opts) abort
 	let macros = {}
 	let macros['VIM_FILEPATH'] = expand("%:p")
 	let macros['VIM_FILENAME'] = expand("%:t")
@@ -291,7 +308,6 @@ function! s:task.start(args, opts) abort
 	let macros['VIM_COLUMNS'] = ''.&columns
 	let macros['VIM_LINES'] = ''.&lines
 	let macros['VIM_GUI'] = has('gui_running')? 1 : 0
-	let macros['<cwd>'] = l:macros['VIM_CWD']
 	let cd = haslocaldir()? 'lcd ' : 'cd '
 	let ss = getcwd()
 	let sn = get(a:opts, 'cwd', ss)
@@ -299,11 +315,13 @@ function! s:task.start(args, opts) abort
 		exec 'let $'.l:key.' = l:val'
 	endfor
 	silent! exec cd . sn
-	let $VIM_CWD = getcwd()
+	let self.__private.cwd = getcwd()
+	let self.cwd = self.__private.cwd
+	let $VIM_CWD = self.__private.cwd
 	let $VIM_RELDIR = expand("%:h:.")
 	let $VIM_RELNAME = expand("%:p:.")
 	let $VIM_CFILE = expand("<cfile>")
-	let hr = s:task_start(self, args, opts)
+	let hr = s:task_start(self, a:command, a:opts)
 	silent! exec cd . ss
 	let self.state = self.__private.state
 	let self.id = self.__private.id
@@ -418,7 +436,7 @@ function! asynctask#new(callback, name)
 	let newobj.name = a:name
 	let newobj.state = 0
 	let newobj.id = 0
-	if type(a:callback) == 1:
+	if type(a:callback) == 1
 		let newobj.cb = function(a:callback)
 	else
 		let newobj.cb = a:callback
@@ -434,5 +452,25 @@ function! asynctask#list()
 	return copy(s:tasks)
 endfunc
 
+
+
+"----------------------------------------------------------------------
+" testing case
+"----------------------------------------------------------------------
+if 1
+	function! s:my_cb(task, event, data) abort
+		if a:event == 'stdout' || a:event == 'stderr'
+			caddexpr '['. (a:task.name) .'/'. (a:task.id) .'] '. a:data
+		elseif a:event == 'exit'
+			caddexpr '['. (a:task.name) .'/'. (a:task.id) .'] '. '[end]'
+		endif
+		cbottom
+	endfunc
+	let t1 = asynctask#new(function('s:my_cb'), "test task 1")
+	let t2 = asynctask#new(function('s:my_cb'), "test task 2")
+	cexpr ""
+	call t1.start('python e:/lab/timer.py', {})
+	" call t2.start('python e:/lab/timer.py', {})
+endif
 
 
