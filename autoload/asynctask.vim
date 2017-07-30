@@ -475,8 +475,11 @@ if 1
 	let t2 = asynctask#new(function('s:my_cb'), "test task 2")
 	cexpr ""
 	" call t1.start('dir', {})
-	call t1.start('python ~/tmp/timer.py', {'err2out':0})
-	" call t1.start('python e:/lab/timer.py', {'err2out':0})
+	if s:windows == 0
+		call t1.start('python ~/tmp/timer.py', {'err2out':0})
+	else
+		call t1.start('python e:/lab/timer.py', {'err2out':0})
+	endif
 	" call t2.start('python e:/lab/timer.py', {})
 endif
 
