@@ -74,6 +74,15 @@ function! menu#DiffSplit()
 	call asclib#ask_diff()
 endfunc
 
+function! menu#EditTool()
+	let text = input('Enter tool name: ')
+	redraw | echo '' | redraw
+	if text == ''
+		return
+	endif
+	exec 'EditTool '.fnameescape(text)
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -116,6 +125,7 @@ call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use
 call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
 call quickmenu#append('Calendar', 'Calendar', 'Show Calendar')
+call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools in '. g:vimmake_path)
 
 endif
 

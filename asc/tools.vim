@@ -661,3 +661,20 @@ endfunc
 command! -bang -nargs=1 PythonRun call s:run_python(<bang>0, <f-args>)
 
 
+function! s:edit_tool(name)
+	let name = 'vimmake.'. a:name
+	if has('win32') || has('win64') || has('win16') || has('win95')
+		let name = vimmake#path_join(g:vimmake_path, name . '.cmd')
+	else
+		let name = vimmake#path_join(g:vimmake_path, name)
+		call system('touch '.shellescape(name))
+		call setfperm(name, 'rwxr-xr-x')
+	endif
+	exec 'FileSwitch tabe '.fnameescape(name)
+endfunc
+
+
+command! -bang -nargs=1 EditTool call s:edit_tool(<f-args>)
+
+
+
