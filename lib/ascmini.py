@@ -235,51 +235,32 @@ class PosixKit (object):
 
 	def __init__ (self):
 		self.unix = (sys.platform[:3] != 'win')
-		self._win32_kernel32 = None
-		self._win32_shell32 = None
-		self._win32_textdata = None
-		self._GetShortPathName = None
-
-	def _win32_dll_init (self):
-		if self.unix:
-			return False
-		import ctypes
-		if not self._win32_kernel32:
-			self._win32_kernel32 = ctypes.windll.LoadLibrary('kernel32.dll')
-		if not self._win32_shell32:
-			self._win32_shell32 = ctypes.windll.LoadLibrary('shell32.dll')
-		if not self._win32_textdata:
-			self._win32_textdata = ctypes.create_string_buffer('0' * 2048)
-		ctypes.memset(self._win32_textdata, 0, 2048)
-		return True
 
 	# get short path name on windows
-	def win32_path_short (self, path):
-		if not path:
-			return ''
+	def pathshort (self, path):
+		if path is None:
+			return None
 		path = os.path.abspath(path)
 		if sys.platform[:3] != 'win':
 			return path
 		kernel32 = None
 		textdata = None
 		GetShortPathName = None
-		self._win32_dll_init()
-		if not self._GetShortPathName:
-			try:
-				import ctypes
-				kernel32 = self._win32_kernel32
-				textdata = self._win32_textdata
-				self._GetShortPathName = kernel32.GetShortPathNameA
-				args = [ ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int ]
-				self._GetShortPathName.argtypes = args
-				self._GetShortPathName.restype = ctypes.c_uint32
-			except: 
-				pass
-			if not self._GetShortPathName:
-				return path
+		try:
+			import ctypes
+			kernel32 = ctypes.windll.LoadLibrary("kernel32.dll")
+			textdata = ctypes.create_string_buffer(b'\000' * 1034)
+			GetShortPathName = kernel32.GetShortPathNameA
+			args = [ ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int ]
+			GetShortPathName.argtypes = args
+			GetShortPathName.restype = ctypes.c_uint32
+		except: 
+			pass
+		if not GetShortPathName:
+			return path
 		if not isinstance(path, bytes):
 			path = path.encode(sys.stdout.encoding, 'ignore')
-		retval = self._GetShortPathName(path, textdata, 2048)
+		retval = GetShortPathName(path, textdata, 1034)
 		shortpath = textdata.value
 		if retval <= 0:
 			return ''
@@ -360,7 +341,7 @@ class PosixKit (object):
 		path = which(exename)
 		if path is None:
 			return None
-		return self.win32_path_short(path)
+		return self.pathshort(path)
 
 	# load content
 	def load_file_content (self, filename, mode = 'r'):
