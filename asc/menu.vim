@@ -97,14 +97,14 @@ call quickmenu#append('# Development', '')
 call quickmenu#append('Execute', 'VimExecute run', 'run %{expand("%")}')
 call quickmenu#append('GCC', 'VimBuild gcc', 'compile %{expand("%")}')
 call quickmenu#append('Make', 'VimBuild make', 'make current project')
-call quickmenu#append('Emake', 'VimBuild auto', 'emake current project')
-call quickmenu#append('Make run', 'VimExecute auto', 'emake current project')
+call quickmenu#append('Emake', 'VimBuild auto', 'emake build current project')
+call quickmenu#append('Run', 'VimExecute auto', 'emake run project')
 call quickmenu#append('Stop', 'VimStop', 'stop making or searching')
 
 if 1
 call quickmenu#append('# Find', '')
-call quickmenu#append('Find word', 'call menu#FindInProject()', 'Find (%{expand("<cword>")}) in current project')
-call quickmenu#append('Tag view', 'call asclib#preview_tag(expand("<cword>"))', 'Find (%{expand("<cword>")}) in ctags database')
+call quickmenu#append('Find word', 'call menu#FindInProject()', 'find (%{expand("<cword>")}) in current project')
+call quickmenu#append('Tag view', 'call asclib#preview_tag(expand("<cword>"))', 'find (%{expand("<cword>")}) in ctags database')
 call quickmenu#append('Tag update', 'call vimmake#update_tags("!", "ctags", ".tags")', 'reindex ctags database')
 call quickmenu#append('Switch Header', 'call Open_HeaderFile(1)', 'switch header/source', 'c,cpp,objc,objcpp')
 endif
@@ -125,7 +125,7 @@ call quickmenu#append('Compare file', 'call asclib#compare_ask_file()', 'use ver
 call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
 call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
-call quickmenu#append('Calendar', 'Calendar', 'Show Calendar')
+call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools in '. g:vimmake_path)
 
 endif
