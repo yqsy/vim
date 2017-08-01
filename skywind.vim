@@ -73,6 +73,9 @@ autocmd BufReadPost *
 "- Vimmake
 "----------------------------------------------------------------------
 let g:vimmake_run_guess = ['go']
+let g:vimmake_ftrun = {}
+let g:vimmake_ftrun['make'] = 'make -f'
+
 let g:vimmake_extrun = {'hs': 'runghc', 'lisp': 'sbcl --script'}
 
 let g:vimmake_extrun['scala'] = 'scala'
@@ -123,6 +126,8 @@ for s:i in range(10)
 	let g:vimmake_mode[s:i] = 'async'
 	let g:vimmake_mode['c'.s:i] = 'async'
 endfor
+
+
 
 
 "----------------------------------------------------------------------
