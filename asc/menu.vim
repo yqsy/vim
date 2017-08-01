@@ -97,7 +97,8 @@ call quickmenu#append('# Development', '')
 call quickmenu#append('Execute', 'VimExecute run', 'run %{expand("%")}')
 call quickmenu#append('GCC', 'VimBuild gcc', 'compile %{expand("%")}')
 call quickmenu#append('Make', 'VimBuild make', 'make current project')
-call quickmenu#append('Emake', 'VimBuild emake', 'emake current project')
+call quickmenu#append('Emake', 'VimBuild auto', 'emake current project')
+call quickmenu#append('Make run', 'VimExecute auto', 'emake current project')
 call quickmenu#append('Stop', 'VimStop', 'stop making or searching')
 
 if 1
