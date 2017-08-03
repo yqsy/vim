@@ -30,6 +30,10 @@ if has('patch-7.4.500') || v:version >= 800
 	endif
 endif
 
+if has('nvim')
+	set guicursor=
+endif
+
 
 "----------------------------------------------------------------------
 "- Autocmds
