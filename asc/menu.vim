@@ -116,18 +116,29 @@ call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error erro
 
 if 1
 call quickmenu#append('# SVN / GIT', '')
-call quickmenu#append("view diff", 'call asclib#svn_diff("%")', 'show svn/git diff side by side, ]e, [e to jump between changes')
-call quickmenu#append("show log", 'call asclib#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
+call quickmenu#append("view diff", 'call svnhelp#svn_diff("%")', 'show svn/git diff side by side, ]e, [e to jump between changes')
+call quickmenu#append("show log", 'call svnhelp#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
 
 call quickmenu#append('# Utility', '')
 call quickmenu#append('Function list', 'call Toggle_Tagbar()', 'show/hide tagbar')
-call quickmenu#append('Compare file', 'call asclib#compare_ask_file()', 'use vertical diffsplit, compare current file to another (use filename)')
-call quickmenu#append('Compare buffer', 'call asclib#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
+call quickmenu#append('Compare file', 'call svnhelp#compare_ask_file()', 'use vertical diffsplit, compare current file to another (use filename)')
+call quickmenu#append('Compare buffer', 'call svnhelp#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
 call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
 call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools in '. g:vimmake_path)
 
 endif
+
+
+"----------------------------------------------------------------------
+" another menu
+"----------------------------------------------------------------------
+
+call quickmenu#current(1)
+call quickmenu#reset()
+
+" call quickmenu#append('GNU Global')
+
 
 
