@@ -177,6 +177,22 @@ function! <SID>snip_main()
 endfunc
 
 
+"----------------------------------------------------------------------
+" insert mode line
+"----------------------------------------------------------------------
+function! <SID>snip_modeline()
+	let text = '" vim: set '
+	let text .= (&l:et)? 'et ' : 'noet '
+	let text .= 'fenc='. (&l:fenc) . ' '
+	let text .= 'ff='. (&l:ff) . ' '
+	let text .= 'sts='. (&l:sts). ' '
+	let text .= 'sw='. (&l:sw). ' '
+	let text .= 'ts='. (&l:ts). ' '
+	let text .= ':'
+	call append(line('.') - 1, text)
+endfunc
+
+
 "-----------------------------------------------------------------------
 " hot keys
 "-----------------------------------------------------------------------
@@ -185,6 +201,7 @@ noremap <space>e= :call <SID>snip_comment_block('=')<cr>
 noremap <space>ec :call <SID>snip_copyright('skywind')<cr>
 noremap <space>eb :call <SID>snip_bundle()<cr>
 noremap <space>em :call <SID>snip_main()<cr>
+noremap <space>el :call <SID>snip_modeline()<cr>
 noremap <space>et "=strftime("%Y/%m/%d %H:%M:%S")<CR>gp
 
 

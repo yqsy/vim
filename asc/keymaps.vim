@@ -82,7 +82,6 @@ noremap <space>y yiw
 "----------------------------------------------------------------------
 noremap <silent><space>eh :call Tools_SwitchSigns()<cr>
 noremap <silent><space>en :call Tools_SwitchNumber()<cr>
-noremap <silent><space>el :nohl<cr>
 
 
 "----------------------------------------------------------------------

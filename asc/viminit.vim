@@ -5,6 +5,7 @@
 "
 " Tiny script which makes vim become neat and handy, supports vim.tiny
 "
+" vim: set et fenc=utf-8 ff=unix sts=8 sw=4 ts=4 :
 
 " initialize basic settings
 set nocompatible
