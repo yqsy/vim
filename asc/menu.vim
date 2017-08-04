@@ -101,20 +101,17 @@ call quickmenu#append('Emake', 'VimBuild auto', 'emake build current project')
 call quickmenu#append('Run', 'VimExecute auto', 'emake run project')
 call quickmenu#append('Stop', 'VimStop', 'stop making or searching')
 
-if 1
 call quickmenu#append('# Find', '')
 call quickmenu#append('Find word', 'call menu#FindInProject()', 'find (%{expand("<cword>")}) in current project')
 call quickmenu#append('Tag view', 'call asclib#preview_tag(expand("<cword>"))', 'find (%{expand("<cword>")}) in ctags database')
 call quickmenu#append('Tag update', 'call vimmake#update_tags("!", "ctags", ".tags")', 'reindex ctags database')
 call quickmenu#append('Switch Header', 'call Open_HeaderFile(1)', 'switch header/source', 'c,cpp,objc,objcpp')
-endif
 
 call quickmenu#append('Check: flake8', 'call asclib#lint_flake8("")', 'run flake8 in current document, [e to display error', 'python')
 call quickmenu#append('Check: pylint', 'call asclib#lint_pylint("")', 'run pylint in current document, [e to display error', 'python')
 call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', 'run cppcheck, [e to display error', 'c,cpp,objc,objcpp')
 call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error errormarker_warning', 'clear error marks', 'python,c,cpp,objc,objcpp')
 
-if 1
 call quickmenu#append('# SVN / GIT', '')
 call quickmenu#append("view diff", 'call svnhelp#svn_diff("%")', 'show svn/git diff side by side, ]e, [e to jump between changes')
 call quickmenu#append("show log", 'call svnhelp#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
@@ -128,7 +125,12 @@ call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[
 call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools in '. g:vimmake_path)
 
+
+if has('win32') || has('win64') || has('win16') || has('win95')
+	let s:cmd = '!start cmd.exe /C start https://wakatime.com/dashboard'
+	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 endif
+
 
 
 "----------------------------------------------------------------------

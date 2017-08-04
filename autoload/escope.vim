@@ -24,7 +24,6 @@ endif
 
 if !exists('g:escope_rootmarks')
     let g:escope_rootmarks = ['.project', '.git', '.hg', '.svn', '.root']
-    let g:escope_rootmarks += ['_darcs', 'build.xml', '.bzr']
 endif
 
 
