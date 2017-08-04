@@ -165,7 +165,7 @@ endfunc
 " build cross reference database
 "----------------------------------------------------------------------
 function! escope#build(backend, root, update)
-	let options = {'cwd': a:root}
+	let options = {'cwd': a:root, 'raw':1}
 	let command = 'python '.shellescape(s:escope_script).' -B -k '.a:backend.' '
 	if g:escope_cscope_system != 0 && a:backend == 'cscope'
 		let command .= '-s '

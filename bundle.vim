@@ -280,9 +280,6 @@ endif
 " Group - windows
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'windows') >= 0
-	if has('python')
-		Plugin 'wakatime/vim-wakatime'
-	endif
 endif
 
 
@@ -297,6 +294,17 @@ endif
 " Group - posix
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'posix') >= 0
+endif
+
+
+
+"----------------------------------------------------------------------
+" Other plugins
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'wakatime') >= 0
+	if has('python')
+		Plugin 'wakatime/vim-wakatime'
+	endif
 endif
 
 
