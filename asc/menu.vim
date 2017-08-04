@@ -138,6 +138,22 @@ endif
 call quickmenu#current(1)
 call quickmenu#reset()
 
+
+if has('win32') || has('win64') || has('win16') || has('win95')
+
+	call quickmenu#append('# Tortoise SVN / GIT', '')
+	call quickmenu#append('Project update', 'call svnhelp#tp_update()', 'update current repository')
+	call quickmenu#append('Project commit', 'call svnhelp#tp_commit()', 'commit this project')
+	call quickmenu#append('Project log', 'call svnhelp#tp_log()', 'display project log')
+	call quickmenu#append('Project diff', 'call svnhelp#tp_diff()', 'project diff')
+	call quickmenu#append('File diff', 'call svnhelp#tf_diff()', 'file diff')
+	call quickmenu#append('File log', 'call svnhelp#tf_log()', 'file log')
+	call quickmenu#append('File commit', 'call svnhelp#tf_commit()', 'file commit')
+	call quickmenu#append('File blame', 'call svnhelp#tf_blame()', 'file blame')
+
+endif
+
+
 " call quickmenu#append('GNU Global')
 
 

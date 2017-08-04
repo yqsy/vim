@@ -265,12 +265,146 @@ function! svnhelp#tgit(parameters) abort
 endfunc
 
 
-function! svnhelp#tinfo()
+function! svnhelp#tinfo() abort
 	let info = {}
+	let info.mode = 0
+	let root = vimmake#get_root('%', ['.svn', '.git'])
+	let info.root = root
+	let info.filename = expand('%:t')
+	let info.filedir = expand('%:p:h')
+	let info.filepath = expand('%:p')
+	let cd = haslocaldir()? 'lcd ' : 'cd '
+	let savecwd = getcwd()
+	if root == ''
+		return info
+	endif
+	exec cd . root
+	let info.filerel = expand('%')
+	exec cd . savecwd
+	let info.filerel = substitute(info.filerel, '\\', '/', 'g')
+	if isdirectory(vimmake#path_join(root, '.svn'))
+		let info.mode = 1
+	elseif isdirectory(vimmake#path_join(root, '.git'))
+		let info.mode = 2
+	else
+		return info
+	endif
+	return info
 endfunc
 
 
 "----------------------------------------------------------------------
-" 
+" project
 "----------------------------------------------------------------------
+
+function! svnhelp#tp_update() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:update /path:'.shellescape(info.root))
+	else
+		call svnhelp#tgit('/command:pull /path:'.shellescape(info.root))
+	endif
+endfunc
+
+function! svnhelp#tp_commit() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:commit /path:'.shellescape(info.root))
+	else
+		call svnhelp#tgit('/command:commit /path:'.shellescape(info.root))
+	endif
+endfunc
+
+function! svnhelp#tp_log() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:log /path:'.shellescape(info.root))
+	else
+		call svnhelp#tgit('/command:log /path:'.shellescape(info.root))
+	endif
+endfunc
+
+
+function! svnhelp#tp_diff() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:diff /path:'.shellescape(info.root))
+	else
+		call svnhelp#tgit('/command:diff /path:'.shellescape(info.root))
+	endif
+endfunc
+
+
+"----------------------------------------------------------------------
+" file 
+"----------------------------------------------------------------------
+
+function! svnhelp#tf_diff() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:diff /path:'.shellescape(info.filepath))
+	else
+		call svnhelp#tgit('/command:diff /path:'.shellescape(info.filepath))
+	endif
+endfunc
+
+function! svnhelp#tf_log() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:log /path:'.shellescape(info.filepath))
+	else
+		call svnhelp#tgit('/command:log /path:'.shellescape(info.filepath))
+	endif
+endfunc
+
+function! svnhelp#tf_commit() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:commit /path:'.shellescape(info.filepath))
+	else
+		call svnhelp#tgit('/command:commit /path:'.shellescape(info.filepath))
+	endif
+endfunc
+
+function! svnhelp#tf_blame() abort
+	let info = svnhelp#tinfo()
+	if info.mode == 0
+		call errmsg('not in a git/svn repository')
+		return 0
+	endif
+	if info.mode == 1
+		call svnhelp#tsvn('/command:blame /path:'.shellescape(info.filepath))
+	else
+		call svnhelp#tgit('/command:blame /path:'.shellescape(info.filepath))
+	endif
+endfunc
+
 

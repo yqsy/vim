@@ -351,6 +351,8 @@ nnoremap gy :YcmCompleter GoToReferences<CR>
 "----------------------------------------------------------------------
 noremap <silent><F12> :call quickmenu#toggle(0)<cr>
 inoremap <silent><F12> <ESC>:call quickmenu#toggle(0)<cr>
+noremap <silent><F11> :call quickmenu#toggle(1)<cr>
+inoremap <silent><F11> <ESC>:call quickmenu#toggle(1)<cr>
 
 nnoremap <silent>g1 :GrepCode <C-R>=expand("<cword>")<cr><cr>
 nnoremap <silent>g2 :GrepCode! <C-R>=expand("<cword>")<cr><cr>
