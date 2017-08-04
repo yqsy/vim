@@ -83,6 +83,19 @@ function! menu#EditTool()
 	exec 'EditTool '.fnameescape(text)
 endfunc
 
+function! menu#WinOpen(what)
+	let root = expand('%:p:h')
+	let cd = haslocaldir()? 'lcd ' : 'cd '
+	let cwd = getcwd()
+	exec cd . root
+	if a:what == 'cmd'
+		exec "silent !start cmd.exe"
+	else
+		exec "silent !start /b cmd.exe /C start ."
+	endif
+	exec cd . cwd
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -113,7 +126,7 @@ call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', 'run c
 call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error errormarker_warning', 'clear error marks', 'python,c,cpp,objc,objcpp')
 
 call quickmenu#append('# SVN / GIT', '')
-call quickmenu#append("view diff", 'call svnhelp#svn_diff("%")', 'show svn/git diff side by side, ]e, [e to jump between changes')
+call quickmenu#append("view diff", 'call svnhelp#svn_diff("%")', 'show svn/git diff side by side, ]c, [c to jump between changes')
 call quickmenu#append("show log", 'call svnhelp#svn_log("%")', 'show svn/git diff in quickfix window, F10 to close/open quickfix')
 
 call quickmenu#append('# Utility', '')
@@ -128,6 +141,8 @@ call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools i
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	let s:cmd = '!start cmd.exe /C start https://wakatime.com/dashboard'
+	call quickmenu#append('Open cmd', 'call menu#WinOpen("cmd")', 'Open cmd.exe in current file directory')
+	call quickmenu#append('Open explorer', 'call menu#WinOpen("")', 'Open Windows Explorer in current file directory')
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 endif
 
