@@ -303,7 +303,7 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'wakatime') >= 0
 	if has('python')
-		Plugin 'wakatime/vim-wakatime'
+		Plugin 'skywind3000/vim-wakatime'
 	endif
 endif
 
