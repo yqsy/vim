@@ -832,6 +832,7 @@ class escope (object):
 		if mode in (0, '0', 's', 'symbol'):
 			self.config.execute('global', args + ['-d', '-e', name])
 			self.config.execute('global', args + ['-r', '-e', name])
+			self.config.execute('global', args + ['-s', '-e', name])
 		elif mode in (1, '1', 'g', 'definition'):
 			self.config.execute('global', args + ['-d', '-e', name])
 		elif mode in (3, '3', 'c', 'reference'):

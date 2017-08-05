@@ -230,6 +230,7 @@ if index(g:bundle_group, 'special') >= 0
 	"Plugin 'tpope/vim-dispatch'
 	"Plugin 'bling/vim-airline'
 	Plugin 'mh21/errormarker.vim'
+	" Plugin 'tpope/vim-projectionist'
 	Plugin 'dracula/vim'
 
 	if s:uname != 'windows2'

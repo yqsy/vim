@@ -96,6 +96,22 @@ function! menu#WinOpen(what)
 	exec cd . cwd
 endfunc
 
+function! menu#Escope(what)
+	let p = expand('%')
+	let t = expand('<cword>')
+	let m = {'g': 'definition', 'c': 'reference', 's': 'symbol'}
+	echohl Type
+	call inputsave()
+	let t = input('find '.m[a:what].' of ('. p.'): ', t)
+	call inputrestore()
+	echohl None
+	redraw | echo "" | redraw
+	if t == ''
+		return 0
+	endif
+	exec 'Es! find gtags '. a:what. ' ' . fnameescape(t) . ' %'
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -140,7 +156,7 @@ call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools i
 
 
 if has('win32') || has('win64') || has('win16') || has('win95')
-	let s:cmd = '!start cmd.exe /C start https://wakatime.com/dashboard'
+	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('Open cmd', 'call menu#WinOpen("cmd")', 'Open cmd.exe in current file directory')
 	call quickmenu#append('Open explorer', 'call menu#WinOpen("")', 'Open Windows Explorer in current file directory')
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
@@ -154,6 +170,13 @@ endif
 
 call quickmenu#current(1)
 call quickmenu#reset()
+
+call quickmenu#append('# GNU Global', '')
+call quickmenu#append('Find definition', 'call menu#Escope("g")')
+call quickmenu#append('Find reference', 'call menu#Escope("c")')
+call quickmenu#append('Find symbol', 'call menu#Escope("s")')
+call quickmenu#append('Index update', 'Es! update gtags %')
+call quickmenu#append('Reindex', 'Es! build gtags %')
 
 
 if has('win32') || has('win64') || has('win16') || has('win95')
