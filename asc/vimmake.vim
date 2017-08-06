@@ -946,9 +946,13 @@ endfunc
 "----------------------------------------------------------------------
 function! s:run(opts)
 	let l:opts = a:opts
-	let l:mode = a:opts.mode
+	let l:mode = g:vimmake_default
 	let l:command = a:opts.cmd
 	let l:retval = ''
+
+	if a:opts.mode != ''
+		let l:mode = a:opts.mode
+	endif
 
 	" process makeprg/grepprg in -program=?
 	let l:program = ""
