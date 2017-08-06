@@ -300,7 +300,7 @@ endfunc
 function! svnhelp#tp_update() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -313,7 +313,7 @@ endfunc
 function! svnhelp#tp_commit() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -326,7 +326,7 @@ endfunc
 function! svnhelp#tp_log() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -340,7 +340,7 @@ endfunc
 function! svnhelp#tp_diff() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -358,7 +358,7 @@ endfunc
 function! svnhelp#tf_diff() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -371,7 +371,7 @@ endfunc
 function! svnhelp#tf_log() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -384,7 +384,7 @@ endfunc
 function! svnhelp#tf_commit() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
@@ -397,7 +397,7 @@ endfunc
 function! svnhelp#tf_blame() abort
 	let info = svnhelp#tinfo()
 	if info.mode == 0
-		call errmsg('not in a git/svn repository')
+		call svnhelp#errmsg('not in a git/svn repository')
 		return 0
 	endif
 	if info.mode == 1
