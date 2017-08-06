@@ -86,15 +86,15 @@ def main(args = None):
 	args = [ n for n in args ]
 	if len(args) < 2:
 		name = sys.argv[0]
-		print 'usage: %s <operation> [...]'%name
-		print 'operations:'
-		print '  %s -h help [keyword] '%name
+		print('usage: %s <operation> [...]'%name)
+		print('operations:')
+		print('  %s -h help [keyword] '%name)
 		return -1
 	op = args[1].lower()
 	parameters = args[2:]
 	if op == '-h':
 		if len(parameters) < 1:
-			print 'require help file name'
+			print('require help file name')
 			return -2
 		win32 = Win32()
 		if len(parameters) == 1:
@@ -102,7 +102,7 @@ def main(args = None):
 		else:
 			win32.win_help(parameters[0], parameters[1])
 	else:
-		print 'unknow operation: %s'%op
+		print('unknow operation: %s'%op)
 	return 0
 
 
