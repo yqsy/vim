@@ -113,6 +113,21 @@ function! menu#Escope(what)
 endfunc
 
 
+function! menu#WinHelp(help)
+	let t = expand('<cword>')
+	echohl Type
+	call inputsave()
+	let t = input('win32 help of ('. fnamemodify(a:help, ':t').'): ', t)
+	call inputrestore()
+	echohl None
+	redraw | echo "" | redraw
+	if t == ''
+		return 0
+	endif
+	call asclib#open_win32_help(a:help, t)
+endfunc
+
+
 "----------------------------------------------------------------------
 " menu initialize
 "----------------------------------------------------------------------

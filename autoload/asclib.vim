@@ -1147,10 +1147,13 @@ function! asclib#open_win32_help(hlp, keyword)
 		return 2
 	endif
 	let cmd = 'WinHlp32.exe '
-	if a:keyword
-		let cmd .= '-k '.shellescape(a:keyword). ' '
+	if a:keyword != ''
+		let kw = split(a:keyword, ' ')[0]
+		if kw != ''
+			let cmd .= '-k '.kw. ' '
+		endif
 	endif
-	silent exec 'VimMake -mode=5 '.cmd. shellescape(a:hlp)
+	exec 'AsyncRun -mode=5 '.cmd. shellescape(a:hlp)
 	return 0
 endfunc
 
@@ -1160,7 +1163,7 @@ function! asclib#open_win32_chm(chm, keyword)
 		call asclib#errmsg('can not open: '.a:chm)
 		return 1
 	endif
-	if !a:keyword
+	if a:keyword == ''
 		silent exec 'VimMake -mode=5 '.shellescape(a:chm)
 		return 0
 	else
@@ -1169,7 +1172,9 @@ function! asclib#open_win32_chm(chm, keyword)
 			return 2
 		endif
 	endif
-	let cmd = 'KeyHH.exe -MyHelp -#klink '.shellescape(a:keyword).' '.a:chm
+	let chm = shellescape(a:chm)
+	let cmd = 'KeyHH.exe -\#klink '.shellescape(a:keyword).' '.chm
+	silent exec 'VimMake -mode=5 '.cmd
 endfunc
 
 
