@@ -1146,6 +1146,16 @@ function! asclib#open_win32_help(hlp, keyword)
 		call asclib#errmsg('can not find WinHlp32.exe, please install it')
 		return 2
 	endif
+	if executable('python')
+		let path = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+		let cmd = 'python '
+		let cmd .= path . '/lib/vimhelp.py -h '.shellescape(a:hlp)
+		if a:keyword != ''
+			let cmd .= ' ' . shellescape(a:keyword)
+		endif
+		exec 'VimMake -mode=5 '.cmd
+		return 0
+	endif
 	let cmd = 'WinHlp32.exe '
 	if a:keyword != ''
 		let kw = split(a:keyword, ' ')[0]
@@ -1153,7 +1163,7 @@ function! asclib#open_win32_help(hlp, keyword)
 			let cmd .= '-k '.kw. ' '
 		endif
 	endif
-	exec 'AsyncRun -mode=5 '.cmd. shellescape(a:hlp)
+	exec 'VimMake -mode=5 '.cmd. shellescape(a:hlp)
 	return 0
 endfunc
 

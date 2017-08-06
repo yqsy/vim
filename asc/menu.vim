@@ -117,14 +117,19 @@ function! menu#WinHelp(help)
 	let t = expand('<cword>')
 	echohl Type
 	call inputsave()
-	let t = input('win32 help of ('. fnamemodify(a:help, ':t').'): ', t)
+	let t = input('Search help of ('. fnamemodify(a:help, ':t').'): ', t)
 	call inputrestore()
 	echohl None
 	redraw | echo "" | redraw
 	if t == ''
 		return 0
 	endif
-	call asclib#open_win32_help(a:help, t)
+	let extname = tolower(fnamemodify(a:help, ':e'))
+	if extname == 'hlp'
+		call asclib#open_win32_help(a:help, t)
+	elseif extname == 'chm'
+		call asclib#open_win32_chm(a:help, t)
+	endif
 endfunc
 
 
