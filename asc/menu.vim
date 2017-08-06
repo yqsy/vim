@@ -174,7 +174,6 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('Open cmd', 'call menu#WinOpen("cmd")', 'Open cmd.exe in current file directory')
 	call quickmenu#append('Open explorer', 'call menu#WinOpen("")', 'Open Windows Explorer in current file directory')
-	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 endif
 
 
@@ -206,6 +205,8 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('File commit', 'call svnhelp#tf_commit()', 'file commit')
 	call quickmenu#append('File blame', 'call svnhelp#tf_blame()', 'file blame')
 
+	call quickmenu#append('# Windows', '')
+	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 endif
 
 

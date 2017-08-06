@@ -75,6 +75,15 @@ class Win32 (object):
 				return self.WinHelpA(None, help, HELP_KEY, key)
 		return 0
 
+	def chm_help (self, chm, key = None):
+		args = ['KeyHH.exe']
+		if key:
+			args += ['-#klink', key]
+		args += [chm]
+		subprocess.call(args)
+		time.sleep(0.5)
+		return 0
+
 
 
 #----------------------------------------------------------------------
@@ -89,18 +98,28 @@ def main(args = None):
 		print('usage: %s <operation> [...]'%name)
 		print('operations:')
 		print('  %s -h help [keyword] '%name)
-		return -1
+		return 1
 	op = args[1].lower()
 	parameters = args[2:]
 	if op == '-h':
 		if len(parameters) < 1:
 			print('require help file name')
-			return -2
+			return 2
+		if not os.path.exists(parameters[0]):
+			print('error file name')
+			return 3
+		extname = os.path.splitext(parameters[0])[-1].lower()
 		win32 = Win32()
-		if len(parameters) == 1:
-			win32.win_help(parameters[0], '')
+		if extname == '.hlp':
+			if len(parameters) == 1:
+				win32.win_help(parameters[0], '')
+			else:
+				win32.win_help(parameters[0], parameters[1])
 		else:
-			win32.win_help(parameters[0], parameters[1])
+			keyword = ''
+			if len(parameters) > 1:
+				keyword = parameters[1]
+			win32.chm_help(parameters[0], keyword)
 	else:
 		print('unknow operation: %s'%op)
 	return 0
@@ -113,10 +132,13 @@ if __name__ == '__main__':
 	def test1():
 		win32 = Win32()
 		# win32.win_help('d:/dev/help/win32.hlp', 'MessageBox')
-		win32.win_help(u'd:/dev/help/win32.hlp', 'MessageBox')
+		# win32.win_help(u'd:/dev/help/win32.hlp', 'MessageBox')
+		win32.chm_help(u'd:/dev/help/python2713.chm', 'print_callers')
+		# raw_input()
+		time.sleep(0.5)
 		return 0
 
-	# test1()
-	main()
+	test1()
+	# main()
 
 
