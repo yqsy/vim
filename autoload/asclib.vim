@@ -1135,6 +1135,7 @@ endfunc
 "----------------------------------------------------------------------
 " open something
 "----------------------------------------------------------------------
+let s:config = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
 
 " call winhlp32.exe to open .hlp
 function! asclib#open_win32_help(hlp, keyword)
@@ -1147,7 +1148,7 @@ function! asclib#open_win32_help(hlp, keyword)
 		return 2
 	endif
 	if executable('python')
-		let path = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+		let path = s:config
 		let cmd = 'python '
 		let cmd .= path . '/lib/vimhelp.py -h '.shellescape(a:hlp)
 		if a:keyword != ''
@@ -1184,7 +1185,7 @@ function! asclib#open_win32_chm(chm, keyword)
 	endif
 	let chm = shellescape(a:chm)
 	let cmd = 'KeyHH.exe -\#klink '.shellescape(a:keyword).' '.chm
-	silent exec 'VimMake -mode=5 '.cmd
+	silent exec '!start /b '.cmd
 endfunc
 
 

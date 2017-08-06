@@ -131,9 +131,9 @@ def main(args = None):
 if __name__ == '__main__':
 	def test1():
 		win32 = Win32()
-		# win32.win_help('d:/dev/help/win32.hlp', 'MessageBox')
+		win32.win_help('d:/dev/help/win32.hlp', 'MessageBox')
 		# win32.win_help(u'd:/dev/help/win32.hlp', 'MessageBox')
-		win32.chm_help(u'd:/dev/help/python2713.chm', 'print_callers')
+		# win32.chm_help(u'd:/dev/help/python2713.chm', 'print_callers')
 		# raw_input()
 		time.sleep(0.5)
 		return 0

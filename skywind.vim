@@ -140,8 +140,9 @@ call quickmenu#current(1)
 
 if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('Win32 Help', 'call menu#WinHelp("d:/dev/help/win32.hlp")', 'Looking up Win32 API')
-	call quickmenu#append('Python2 Help', 'call menu#WinHelp("d:/dev/help/python2713.chm")', 'Python 2 Document')
-	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/python362.chm")', 'Python 3 Document')
+	call quickmenu#append('MSDN of VC6', 'call menu#WinHelp("d:/dev/help/chm/vc.chm")', 'MSDN')
+	call quickmenu#append('Python2 Help', 'call menu#WinHelp("d:/dev/help/chm/python2713.chm")', 'Python 2 Document')
+	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/chm/python362.chm")', 'Python 3 Document')
 endif
 
 

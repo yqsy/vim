@@ -129,6 +129,8 @@ function! menu#WinHelp(help)
 		call asclib#open_win32_help(a:help, t)
 	elseif extname == 'chm'
 		call asclib#open_win32_chm(a:help, t)
+	else
+		echo "unknow filetype"
 	endif
 endfunc
 
