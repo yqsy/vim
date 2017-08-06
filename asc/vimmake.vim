@@ -1077,14 +1077,16 @@ function! s:run(opts)
 		endif
 	elseif l:mode <= 5
 		if s:vimmake_windows != 0 && (has('gui_running') || has('nvim'))
-			let l:ccc = shellescape(s:ScriptWrite(l:command, 0))
 			if l:mode == 4
+				let l:ccc = shellescape(s:ScriptWrite(l:command, 1))
 				silent exec '!start cmd /C '. l:ccc
 			else
+				let l:ccc = shellescape(s:ScriptWrite(l:command, 0))
 				silent exec '!start /b cmd /C '. l:ccc
 			endif
 			redraw
 		else
+			let l:ccc = shellescape(s:ScriptWrite(l:command, 0))
 			if l:mode == 4
 				exec '!' . escape(l:command, '%#')
 			else
