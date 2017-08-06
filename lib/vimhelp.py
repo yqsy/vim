@@ -138,7 +138,7 @@ if __name__ == '__main__':
 		time.sleep(0.5)
 		return 0
 
-	test1()
-	# main()
+	# test1()
+	main()
 
 
