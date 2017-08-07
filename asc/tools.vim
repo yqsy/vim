@@ -667,6 +667,9 @@ function! s:edit_tool(name)
 		let name = vimmake#path_join(g:vimmake_path, name . '.cmd')
 	else
 		let name = vimmake#path_join(g:vimmake_path, name)
+		if stridx(name, '~') >= 0
+			let name = expand(name)
+		endif
 		call system('touch '.shellescape(name))
 		call setfperm(name, 'rwxr-xr-x')
 	endif
