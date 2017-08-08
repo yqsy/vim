@@ -1362,8 +1362,11 @@ function! asclib#decode_cfg(string) abort
 		if pos <= 0
 			continue
 		endif
-		let name = asclib#string_strip(curline[0:pos-1])
-		let data = asclib#string_strip(curline[pos+1:])
+		let name = asclib#string_strip(strpart(curline, 0, pos))
+		let data = asclib#string_strip(strpart(curline, pos + 1))
+		if name == ''
+			continue
+		endif
 		let item[name] = data
 	endfor
 	return item
@@ -1372,7 +1375,10 @@ endfunc
 function! asclib#encode_cfg(item) 
 	let output = []
 	for name in keys(a:item)
-		let output += [name . ': ' . a:item[name]]
+		let data = a:item[name]
+		let name = substitute(name, '[\n\r]', '', 'g')
+		let data = substitute(data, '[\n\r]', '', 'g')
+		let output += [name . ': ' . data]
 	endfor
 	return join(output, "\n")
 endfunc

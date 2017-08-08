@@ -161,7 +161,6 @@ call quickmenu#append('Switch Header', 'call Open_HeaderFile(1)', 'switch header
 call quickmenu#append('Check: flake8', 'call asclib#lint_flake8("")', 'run flake8 in current document, [e to display error', 'python')
 call quickmenu#append('Check: pylint', 'call asclib#lint_pylint("")', 'run pylint in current document, [e to display error', 'python')
 call quickmenu#append('Check: cppcheck', 'call asclib#lint_cppcheck("")', 'run cppcheck, [e to display error', 'c,cpp,objc,objcpp')
-call quickmenu#append('Clear error marks', 'GuiSignRemove errormarker_error errormarker_warning', 'clear error marks', 'python,c,cpp,objc,objcpp')
 
 call quickmenu#append('# SVN / GIT', '')
 call quickmenu#append("view diff", 'call svnhelp#svn_diff("%")', 'show svn/git diff side by side, ]c, [c to jump between changes')
@@ -178,7 +177,6 @@ call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools i
 
 
 if has('win32') || has('win64') || has('win16') || has('win95')
-	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('Open cmd', 'call menu#WinOpen("cmd")', 'Open cmd.exe in current file directory')
 	call quickmenu#append('Open explorer', 'call menu#WinOpen("")', 'Open Windows Explorer in current file directory')
 endif
@@ -213,6 +211,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('File blame', 'call svnhelp#tf_blame()', 'file blame')
 
 	call quickmenu#append('# Windows', '')
+	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 endif
 

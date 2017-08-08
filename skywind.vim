@@ -127,8 +127,12 @@ endif
 let g:vimmake_mode = {}
 
 for s:i in range(10)
-	let g:vimmake_mode[s:i] = 'async'
-	let g:vimmake_mode['c'.s:i] = 'async'
+	if !has_key(g:vimmake_mode, s:i)
+		let g:vimmake_mode[s:i] = 'async'
+	endif
+	if !has_key(g:vimmake_mode, 'c'.s:i)
+		let g:vimmake_mode['c'.s:i] = 'async'
+	endif
 endfor
 
 

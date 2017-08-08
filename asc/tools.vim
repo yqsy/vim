@@ -661,23 +661,79 @@ endfunc
 command! -bang -nargs=1 PythonRun call s:run_python(<bang>0, <f-args>)
 
 
-function! s:edit_tool(name)
+function! s:edit_tool(bang, name)
 	let name = 'vimmake.'. a:name
+	if a:name == '' || a:name == '-' || a:name == '\-'
+		let name = 'vimmake'
+	endif
 	if has('win32') || has('win64') || has('win16') || has('win95')
-		let name = vimmake#path_join(g:vimmake_path, name . '.cmd')
+		let name = vimmake#path_join(g:vimmake_path, name)
+		if a:name != '' && a:name != '-' && a:name != '\-'
+			let name .= '.cmd'
+		endif
 	else
 		let name = vimmake#path_join(g:vimmake_path, name)
 		if stridx(name, '~') >= 0
 			let name = expand(name)
 		endif
-		call system('touch '.shellescape(name))
-		call setfperm(name, 'rwxr-xr-x')
+		if a:name != '' && a:name != '-' && a:name != '\-'
+			call system('touch '.shellescape(name))
+			call setfperm(name, 'rwxr-xr-x')
+		endif
 	endif
-	exec 'FileSwitch tabe '.fnameescape(name)
+	if a:bang == ''
+		exec 'FileSwitch split '.fnameescape(name)
+	else
+		exec 'FileSwitch tabe '.fnameescape(name)
+	endif
+	if a:name == '' || a:name == '-' || a:name == '\-'
+		" setlocal ft=ini
+		augroup vimmake_mode_group
+			au! 
+			autocmd BufWritePost <buffer> RefreshToolMode
+		augroup END
+	endif
 endfunc
 
 
-command! -bang -nargs=1 EditTool call s:edit_tool(<f-args>)
+command! -bang -nargs=1 EditTool call s:edit_tool('<bang>', <f-args>)
+
+
+function! s:refresh_tool_mode(bang) abort
+	let name = vimmake#path_join(g:vimmake_path, 'vimmake')
+	let name = expand(name)
+	if !filereadable(name)
+		if a:bang != '!'
+			redraw
+			echohl ErrorMsg
+			echo "can not read: ".name
+			echohl None
+		endif
+		return 0
+	endif
+	let content = readfile(name)
+	if !exists('g:vimmake_mode')
+		let g:vimmake_mode = {}
+	endif
+	for curline in content
+		let pos = stridx(curline, ':')
+		if pos <= 0
+			continue
+		endif
+		let name = strpart(curline, 0, pos)
+		let data = strpart(curline, pos + 1)
+		let name = substitute(name, '^\s*\(.\{-}\)\s*$', '\1', '')
+		let data = substitute(data, '^\s*\(.\{-}\)\s*$', '\1', '')
+		if name == ''
+			continue
+		endif
+		let g:vimmake_mode[name] = data
+	endfor
+endfunc
+
+
+command! -bang -nargs=0 RefreshToolMode call s:refresh_tool_mode('<bang>')
+
 
 
 
