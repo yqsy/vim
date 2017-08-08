@@ -80,7 +80,7 @@ function! menu#EditTool()
 	if text == ''
 		return
 	endif
-	exec 'EditTool '.fnameescape(text)
+	exec 'EditTool! '.fnameescape(text)
 endfunc
 
 function! menu#WinOpen(what)
