@@ -744,7 +744,7 @@ function! s:bottom_render(items, header)
 	let header = padding . a:header . ':'
 	let header = s:slimit(header, columns - 29, 0)
 	let start = g:quickmenu_padding_left + 7
-	call s:highlight('Statement', 'StartifySection')
+	call s:highlight('Title', 'StartifyHeader')
 	echon header. "\n"
 	for index in range(maxcount)
 		let item = a:items[index]
