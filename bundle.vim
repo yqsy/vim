@@ -308,6 +308,12 @@ if index(g:bundle_group, 'wakatime') >= 0
 	endif
 endif
 
+if index(g:bundle_group, 'vimuiex') >= 0
+	if !has('gui_running')
+		Plugin 'skywind3000/vimuiex'
+	endif
+endif
+
 
 "----------------------------------------------------------------------
 " Bundle Footer
