@@ -31,7 +31,7 @@ GOTO END
 GOTO END
 
 :RUN_PY
-python "%VIM_FILENAME%"
+d:\dev\python36\python "%VIM_FILENAME%"
 GOTO END
 
 :RUN_CMD
