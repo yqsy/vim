@@ -103,7 +103,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'easymotion/vim-easymotion'
 	Plugin 'ctrlpvim/ctrlp.vim'
 	Plugin 'KabbAmine/zeavim.vim'
-	Plugin 'lifepillar/vim-solarized8'
+	" Plugin 'lifepillar/vim-solarized8'
 	Plugin 'godlygeek/tabular'
 	Plugin 'Raimondi/delimitMate'
 	"Plugin 'sheerun/vim-polyglot'
@@ -304,7 +304,8 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'wakatime') >= 0
 	if has('python')
-		Plugin 'skywind3000/vim-wakatime'
+		" Plugin 'skywind3000/wakatime'
+		Plugin 'wakatime/vim-wakatime'
 	endif
 endif
 

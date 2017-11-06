@@ -76,6 +76,8 @@ let g:ycm_complete_in_strings=1
 let g:ycm_key_invoke_completion = '<c-z>'
 set completeopt=menu
 
+noremap <c-z> <NOP>
+
 
 "----------------------------------------------------------------------
 "- Tagbar
