@@ -1,15 +1,16 @@
------------------- bat 传递参数 --------------
-@echo off
-d:\dev\python25\python.exe d:\dev\mingw\emake.py %*
+F1 - 运行文件
+F2 - 编译：mingw32, C++11, erlang
+F3 - mingw32 emake
+F4 - 运行2：python36, scala, erlang
+
+S-F5 - pypy
+S-F6 - 运行3：python64
+S-F7 - 安卓编译 emake
+S-F8 - 安卓编译并上传
+S-F9 - 安卓运行命令行
+
+C-F2 - MinGW 64 编译
+C-F3 - VC2010 编译
+C-F4 - VC2015 编译
 
 
------------------- 右键增加 -----------------
-regedit 修改注册表：
-HKEY_CLASSES_ROOT\*\Shell 下面建立 Vim 项目（子目录）
-右边的默认字符串改为：“Open With Vim Tab”
-右边新建一个字符串值：名称为“Icon" 值为："C:\Program Files (x86)\Vim\Vim74\gvim.exe"
-代表右键菜单的图标。
-
-HKEY_CLASSES_ROOT\*\Shell\Vim 下面建立名为 command 的项目
-右边的默认字符串改为：
-"C:\Program Files (x86)\Vim\vim74\gvim.exe" -p --remote-tab-silent "%1" "%*"
