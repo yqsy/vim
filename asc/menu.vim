@@ -219,7 +219,8 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('# Other', '')
 	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
-	call quickmenu#append('Tool Help', 'call menu#ToolHelp()', 'show the help of user tools')
+	call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')
+	call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
 
 endif
 
