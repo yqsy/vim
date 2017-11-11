@@ -228,4 +228,3 @@ endif
 " call quickmenu#append('GNU Global')
 
 
-
