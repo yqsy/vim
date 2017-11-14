@@ -11,12 +11,12 @@ if "%VIM_FILEEXT%" == ".erl" GOTO COMPILE_ERLANG
 
 :COMPILE_C
 REM CD /D "%VIM_FILEDIR%"
-d:\dev\mingw32\bin\gcc -Wall -O3 "%VIM_FILEPATH%" -o "%VIM_FILEDIR%/%VIM_FILENOEXT%" -lwinmm -lstdc++ -lgdi32 -lws2_32 -msse3 -static
+d:\dev\mingw32\bin\gcc -Wall -O3 -finline-functions "%VIM_FILEPATH%" -o "%VIM_FILEDIR%/%VIM_FILENOEXT%" -lwinmm -lstdc++ -lgdi32 -lws2_32 -msse3 -static
 GOTO END
 
 :COMPILE_CPP
 REM CD /D "%VIM_FILEDIR%"
-d:\dev\mingw32\bin\gcc -Wall -O3 -std=c++11 "%VIM_FILEPATH%" -o "%VIM_FILEDIR%/%VIM_FILENOEXT%" -lwinmm -lstdc++ -lgdi32 -lws2_32 -msse3 -static
+d:\dev\mingw32\bin\gcc -Wall -O3 -finline-functions -std=c++11 "%VIM_FILEPATH%" -o "%VIM_FILEDIR%/%VIM_FILENOEXT%" -lwinmm -lstdc++ -lgdi32 -lws2_32 -msse3 -static
 GOTO END
 
 :COMPILE_ERLANG

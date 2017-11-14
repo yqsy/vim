@@ -177,8 +177,8 @@ call quickmenu#append('Function list', 'call Toggle_Tagbar()', 'show/hide tagbar
 call quickmenu#append('Compare file', 'call svnhelp#compare_ask_file()', 'use vertical diffsplit, compare current file to another (use filename)')
 call quickmenu#append('Compare buffer', 'call svnhelp#compare_ask_buffer()', 'use vertical diffsplit, compare current file to another (use buffer id)')
 call quickmenu#append('Paste mode %{&paste? "[x]" :"[ ]"}', 'call menu#TogglePaste()', 'set paste!')
+call quickmenu#append('Ignore Case %{&ignorecase? "[x]" :"[ ]"}', 'set ignorecase!', 'set ignorecase!')
 call quickmenu#append('DelimitMate %{get(b:, "delimitMate_enabled", 0)? "[x]":"[ ]"}', 'DelimitMateSwitch', 'switch DelimitMate')
-call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 call quickmenu#append('Edit tool', 'call menu#EditTool()', 'edit vimmake tools in '. g:vimmake_path)
 
 
@@ -221,6 +221,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 	call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')
 	call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
+	call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 
 endif
 
