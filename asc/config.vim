@@ -10,7 +10,7 @@ endif
 "----------------------------------------------------------------------
 " Tab Label config
 "----------------------------------------------------------------------
-if !exists('g:config_vim_gui_label')
+if !exists('g:config_vim_tab_style')
 	let g:config_vim_tab_style = 0
 endif
 
