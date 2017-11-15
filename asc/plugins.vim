@@ -64,6 +64,31 @@ let NERDTreeRespectWildIgnore = 1
 let g:vinegar_nerdtree_as_netrw = 1
 
 
+"----------------------------------------------------------------------
+" Dirvish
+"----------------------------------------------------------------------
+function! s:setup_dirvish()
+	if &buftype != 'nofile' || &filetype != 'dirvish'
+		return
+	endif
+	let text = getline('.')
+	exec 'sort ,^.*[\/],'
+	echo text
+	let name = '^' . escape(text, '.*[]~\') . '[/*|@=]\=\%($\|\s\+\)'
+	call search(name)
+endfunc
+
+
+"----------------------------------------------------------------------
+" augroup
+"----------------------------------------------------------------------
+augroup MyPluginSetup
+	autocmd!
+	autocmd FileType dirvish call s:setup_dirvish()
+augroup END
+
+
+
 "-----------------------------------------------------
 " YouCompleteMe
 "-----------------------------------------------------
