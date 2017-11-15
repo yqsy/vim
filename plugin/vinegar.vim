@@ -173,6 +173,8 @@ function! s:setup_vinegar()
 		if g:vinegar_nerdtree_as_netrw
 			nnoremap <silent><buffer> <cr> :call <SID>nerdtree_enter()<cr>
 		endif
+	elseif &ft == 'dirvish'
+		nnoremap <silent><buffer> r :Dirvish %<cr>
 	endif
 endfunc
 
@@ -184,6 +186,7 @@ augroup VinegarGroup
 	autocmd!
 	autocmd FileType netrw call s:setup_vinegar()
 	autocmd FileType nerdtree call s:setup_vinegar()
+	autocmd FileType dirvish call s:setup_vinegar()
 augroup END
 
 
