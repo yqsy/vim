@@ -42,24 +42,29 @@ endfunc
 " seek
 "----------------------------------------------------------------------
 function! s:seek(file) abort
+	let sname = fnamemodify(a:file, ':t')
 	if get(b:, 'netrw_liststyle') == 2
-		let pattern = '\%(^\|\s\+\)\zs'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
+		let pattern = '\%(^\|\s\+\)\zs'.escape(sname, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
 	elseif get(b:, 'netrw_liststyle') == 1
-		let pattern = '^'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
+		let pattern = '^'.escape(sname, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
 	else
-		let pattern = '^\%(| \)*'.escape(a:file, '.*[]~\').'[/*|@=]\=\%($\|\t\)'
+		let pattern = '^\%(| \)*'.escape(sname, '.*[]~\').'[/*|@=]\=\%($\|\t\)'
 	endif
 	if has('win32') || has('win16') || has('win95') || has('win64')
 		let savecase = &l:ignorecase
 		setlocal ignorecase
 		if &buftype == 'nofile' && &filetype == 'nerdtree'
-			let pattern = '^ *\%(▸ \)\?'.escape(a:file, '.*[]~\').'\>'
+			let pattern = '^ *\%(▸ \)\?'.escape(sname, '.*[]~\').'\>'
+		elseif &buftype == 'nofile' && &filetype == 'dirvish'
+			let pattern = '^.*\(\\\|\/\)'.escape(sname, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
 		endif
 		call search(pattern, 'wc')
 		let l:ignorecase = savecase
 	else
 		if &buftype == 'nofile' && &filetype == 'nerdtree'
-			let pattern = '^ *\%(▸ \)\?'.escape(a:file, '.*[]~\').'\>'
+			let pattern = '^ *\%(▸ \)\?'.escape(sname, '.*[]~\').'\>'
+		elseif &buftype == 'nofile' && &filetype == 'dirvish'
+			let pattern = '^.*\(\\\|\/\)'.escape(sname, '.*[]~\').'[/*|@=]\=\%($\|\s\+\)'
 		endif
 		call search(pattern, 'wc')
 	endif
@@ -72,10 +77,11 @@ endfunc
 " open upper directory
 "----------------------------------------------------------------------
 function! s:open(cmd) abort
-	let filename = expand('%:t')
+	let filename = expand('%:p')
+	let shortname = expand('%:t')
 	call s:log('[vinegar] ' . expand('%:p'))
 	if &buftype == "nofile" || &buftype == "quickfix"
-		if (&ft != 'nerdtree') && (&ft != 'netrw')
+		if (&ft != 'nerdtree') && (&ft != 'netrw') && (&ft != 'dirvish')
 			return
 		endif
 	endif
@@ -102,15 +108,17 @@ function! s:open(cmd) abort
 		let currdir = b:NERDTreeRoot.path.str()
 		exec "normal " . g:NERDTreeMapUpdir
 		call s:seek(currdir)
+	elseif &filetype ==# 'dirvish'
+		exec 'Dirvish %:p:h:h'
 	elseif &modifiable == 0 && &ft != 'help'
 		return 
-	elseif filename == ""
+	elseif shortname == ""
 		exec a:cmd '.'
 	elseif expand('%') =~# '^$\|^term:[\/][\/]'	
 		exec a:cmd '.'
 	else
 		exec a:cmd '%:p:h'
-		call s:seek(filename)
+		let hr = s:seek(filename)
 	endif
 endfunc
 
