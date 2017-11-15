@@ -53,7 +53,15 @@ function! Vim_NeatBuffer(bufnr, fullname)
 			if a:fullname 
 				return fnamemodify(l:name, ':p')
 			else
-				return fnamemodify(l:name, ':t')
+				let aname = fnamemodify(l:name, ':p')
+				let sname = fnamemodify(aname, ':t')
+				if sname == ''
+					let test = fnamemodify(aname, ':h:t')
+					if test != ''
+						return '<'. test . '>'
+					endif
+				endif
+				return sname
 			endif
 		endif
 	else

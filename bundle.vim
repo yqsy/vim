@@ -106,6 +106,7 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	" Plugin 'lifepillar/vim-solarized8'
 	Plugin 'godlygeek/tabular'
 	Plugin 'Raimondi/delimitMate'
+	Plugin 'justinmk/vim-dirvish'
 	"Plugin 'sheerun/vim-polyglot'
 
 
