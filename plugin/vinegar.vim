@@ -109,7 +109,9 @@ function! s:open(cmd) abort
 		exec "normal " . g:NERDTreeMapUpdir
 		call s:seek(currdir)
 	elseif &filetype ==# 'dirvish'
+		let currdir = expand('%:p')
 		exec 'Dirvish %:p:h:h'
+		call s:seek(currdir)
 	elseif &modifiable == 0 && &ft != 'help'
 		return 
 	elseif shortname == ""
