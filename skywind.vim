@@ -147,6 +147,8 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('MSDN of VC6', 'call menu#WinHelp("d:/dev/help/chm/vc.chm")', 'MSDN')
 	call quickmenu#append('Python2 Help', 'call menu#WinHelp("d:/dev/help/chm/python2713.chm")', 'Python 2 Document')
 	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/chm/python362.chm")', 'Python 3 Document')
+	call quickmenu#append('Open Cygwin', '!start d:/linux/bin/mintty.exe', 'open cygwin in current directoy')
+	call quickmenu#append('Open Bash', 'call asclib#wsl_bash("")', 'open bash for windows 10 in current directory')
 endif
 
 

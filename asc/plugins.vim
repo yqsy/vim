@@ -68,15 +68,27 @@ let g:vinegar_nerdtree_as_netrw = 1
 " Dirvish
 "----------------------------------------------------------------------
 function! s:setup_dirvish()
-	if &buftype != 'nofile' || &filetype != 'dirvish'
+	if &buftype != 'nofile' && &filetype != 'dirvish'
 		return
 	endif
 	let text = getline('.')
 	exec 'sort ,^.*[\/],'
-	echo text
 	let name = '^' . escape(text, '.*[]~\') . '[/*|@=]\=\%($\|\s\+\)'
 	call search(name)
 endfunc
+
+function! DirvishSetup()
+	let text = getline('.')
+	for item in split(&wildignore, ',')
+		let xp = glob2regpat(item)
+		exec 'silent keeppatterns g/'.xp.'/d'
+	endfor
+	exec 'sort ,^.*[\/],'
+	let name = '^' . escape(text, '.*[]~\') . '[/*|@=]\=\%($\|\s\+\)'
+	call search(name)
+endfunc
+
+" let g:dirvish_mode = 'call DirvishSetup()'
 
 
 "----------------------------------------------------------------------
