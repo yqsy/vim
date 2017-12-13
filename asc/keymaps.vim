@@ -178,6 +178,7 @@ if has('autocmd')
 		endif
 		nnoremap <silent><buffer> p :call asclib#preview_quickfix(0)<cr>
 		nnoremap <silent><buffer> u :call asclib#quickfix_switch(0, 'bottom')<cr>
+		setlocal nonumber
 	endfunc
 	augroup AscQuickfix
 		autocmd!

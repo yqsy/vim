@@ -99,6 +99,9 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	let cp.= "d:/dev/scala/scala-2.11.6/lib/akka-actor_2.11-2.3.4.jar"
 	let g:vimmake_extrun['scala'] = 'scala'
 	"let g:vimmake_extrun['scala'].= ' -cp '.fnameescape(cp)
+	let g:vimmake_extrun['gv'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
+	let g:vimmake_extrun['dot'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
+	let g:vimmake_ftrun['dot'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
 else
 	if executable('clisp')
 		let g:vimmake_extrun['lisp'] = 'clisp'
@@ -147,8 +150,9 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('MSDN of VC6', 'call menu#WinHelp("d:/dev/help/chm/vc.chm")', 'MSDN')
 	call quickmenu#append('Python2 Help', 'call menu#WinHelp("d:/dev/help/chm/python2713.chm")', 'Python 2 Document')
 	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/chm/python362.chm")', 'Python 3 Document')
-	call quickmenu#append('Open Cygwin', '!start d:/linux/bin/mintty.exe', 'open cygwin in current directoy')
+	call quickmenu#append('Open Cygwin', 'silent !start d:/linux/bin/mintty.exe', 'open cygwin in current directoy')
 	call quickmenu#append('Open Bash', 'call asclib#wsl_bash("")', 'open bash for windows 10 in current directory')
+	call quickmenu#append('Switch color', 'call SkywindSwitchColor()', 'switch current color scheme')
 endif
 
 
@@ -436,78 +440,8 @@ command! -bang -nargs=* -complete=file Make VimMake -program=make @ <args>
 
 
 "----------------------------------------------------------------------
-" netrw syntax
+" color scheme
 "----------------------------------------------------------------------
-
-" reset netrw's special
-function! s:netrw_special()
-	hi netrwCompress term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green  ctermbg=0 guibg=black
-	hi netrwData	  term=NONE cterm=NONE gui=NONE ctermfg=9 guifg=blue ctermbg=0 guibg=black
-	hi netrwHdr	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
-	"hi! default link netrwHdr Float
-	hi netrwLex	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
-	hi netrwYacc	  term=NONE cterm=NONE,italic gui=NONE guifg=SeaGreen1
-	hi netrwLib	  term=NONE cterm=NONE gui=NONE ctermfg=14 guifg=yellow
-	hi netrwObj	  term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-	hi netrwTilde	  term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-	hi netrwTmp	  term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-	hi netrwTags	  term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-	hi netrwDoc	  term=NONE cterm=NONE gui=NONE ctermfg=220 ctermbg=27 guifg=yellow2 guibg=Blue3
-	hi netrwSymLink  term=NONE cterm=NONE gui=NONE ctermfg=220 ctermbg=27 guifg=grey60
-endfunc
-
-function! s:netrw_highlight()
-	if !exists('g:netrw_special_syntax') || g:netrw_special_syntax == 0
-		return
-	endif
-
-	redir => x
-	silent color
-	redir END
-	syn match netrwCpp	"\(\S\+ \)*\S\+\.\%(c\|cpp\|m\|cc\|mm\|cxx\)\>" contains=netrwTreeBar,@NoSpell
-	syn match netrwSrc	"\(\S\+ \)*\S\+\.\%(py\|pyw\|java\|s\|asm\|vim\)\>" contains=netrwTreeBar,@NoSpell
-
-	if x =~ 'seoul256xxxx'
-		hi! default link netrwHdr Conditional
-		hi! default link netrwCpp Repeat
-	else
-		let mode = 1
-		if mode == 3 && &t_Co == 16 | let mode = 2 | endif
-		if mode == 0
-			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
-			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
-			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=7 guifg=#c0c0c0
-		elseif mode == 1
-			if &t_Co != 256
-				hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
-				hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
-				hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=15 guifg=#f8f8f8
-			else
-				hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
-				hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
-				hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=255 guifg=#f8f8f8
-			endif
-		elseif mode == 2
-			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
-			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
-			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=10 guifg=green
-		elseif mode == 3
-			hi netrwHdr term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
-			hi netrwCpp term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
-			hi netrwSrc term=NONE cterm=NONE gui=NONE ctermfg=117 guifg=#87ceeb
-		endif
-
-		hi netrwData term=NONE cterm=NONE gui=NONE ctermfg=9 guifg=blue
-		hi netrwLib term=NONE cterm=NONE gui=NONE ctermfg=13 guifg=magenta
-		hi netrwDoc term=NONE cterm=NONE gui=NONE ctermfg=11 guifg=yellow2
-		hi netrwObj term=NONE cterm=NONE gui=NONE ctermfg=8 guifg=#808080
-		hi netrwCompress term=NONE cterm=NONE gui=NONE ctermfg=11 guifg=yellow
-		hi netrwTilde term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-		hi netrwTmp	term=NONE cterm=NONE gui=NONE ctermfg=12 guifg=red
-		hi netrwSymLink term=NONE cterm=NONE gui=NONE ctermfg=220 ctermbg=27 guifg=grey60
-	endif
-endfunc
-
 map <leader><F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
@@ -529,5 +463,16 @@ endif
 
 nnoremap <leader><F1> :call Tools_ProfileStart('~/.vim/profile.log')<cr>
 nnoremap <leader><F2> :call Tools_ProfileStop()<cr>
+
+
+"----------------------------------------------------------------------
+" 
+"----------------------------------------------------------------------
+let s:colors = ['biogoo', 'calmbreeze', 'dawn', 'dejavu', 'eclipse2', 'paradox', 'gaea', 'github', 'greyhouse', 'habiLight', 'imperial']
+let s:colors += ['mayansmoke', 'mickeysoft', 'newspaper', 'nuvola', 'oceanlight', 'peaksea', 'pyte', 'summerfruit256', 'tomorrow']
+
+function! SkywindSwitchColor()
+	call asclib#color_switch(s:colors)
+endfunc
 
 

@@ -22,6 +22,8 @@ if "%VIM_FILEEXT%" == ".erl" GOTO RUN_ERLANG
 if "%VIM_FILEEXT%" == ".clj" GOTO RUN_CLOJURE
 if "%VIM_FILEEXT%" == ".hs" GOTO RUN_HASKELL
 
+if "%VIM_FILEEXT%" == ".dot" GOTO RUN_GRAPHVIZ
+if "%VIM_FILEEXT%" == ".gv" GOTO RUN_GRAPHVIZ
 
 echo unsupported file type %VIM_FILEEXT%
 GOTO END
@@ -62,6 +64,10 @@ GOTO END
 
 :RUN_HASKELL
 D:\Dev\ghc\ghc-8.0.1\bin\ghci.exe "%VIM_FILENAME%"
+GOTO END
+
+:RUN_GRAPHVIZ
+start %VIM_FILENOEXT%.png
 GOTO END
 
 :ERROR_NO_FILE
