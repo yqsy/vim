@@ -73,7 +73,9 @@ function! s:setup_dirvish()
 	endif
 	let text = getline('.')
 	exec 'sort ,^.*[\/],'
-	let name = '^' . escape(text, '.*[]~\') . '[/*|@=]\=\%($\|\s\+\)'
+	let name = '^' . escape(text, '.*[]~\') . '[/*|@=|\\*]\=\%($\|\s\+\)'
+	" let name = '\V\^'.escape(text, '\').'\$'
+	" echom "search: ".name
 	call search(name, 'wc')
 endfunc
 
@@ -85,6 +87,7 @@ function! DirvishSetup()
 	endfor
 	exec 'sort ,^.*[\/],'
 	let name = '^' . escape(text, '.*[]~\') . '[/*|@=]\=\%($\|\s\+\)'
+	" let name = '\V\^'.escape(text, '\').'\$'
 	call search(name, 'wc')
 endfunc
 
