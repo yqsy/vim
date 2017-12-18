@@ -134,6 +134,13 @@ if has('gui_running') || (has('nvim') && (has('win32') || has('win64')))
 	else
 		noremap <m-\|> :call Toggle_Transparency(15)<cr>
 	endif
+	if has('win32') || has('win64') || has('win16')
+		noremap <silent><m-f> :VimMake -mode=0 -cwd=<root> mingw32-make -f Makefile<cr>
+		noremap <silent><m-g> :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile test<cr>
+	else
+		noremap <silent><m-f> :VimMake -mode=0 -cwd=<root> make -f Makefile<cr>
+		noremap <silent><m-g> :VimMake -mode=4 -cwd=<root> make -f Makefile test<cr>
+	endif
 endif
 
 

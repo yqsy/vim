@@ -25,6 +25,8 @@ if "%VIM_FILEEXT%" == ".hs" GOTO RUN_HASKELL
 if "%VIM_FILEEXT%" == ".dot" GOTO RUN_GRAPHVIZ
 if "%VIM_FILEEXT%" == ".gv" GOTO RUN_GRAPHVIZ
 
+if "%VIM_FILEEXT%" == ".bxrc" GOTO RUN_BOCHS
+
 echo unsupported file type %VIM_FILEEXT%
 GOTO END
 
@@ -68,6 +70,10 @@ GOTO END
 
 :RUN_GRAPHVIZ
 start %VIM_FILENOEXT%.png
+GOTO END
+
+:RUN_BOCHS
+bochs -q -f "%VIM_FILENAME%"
 GOTO END
 
 :ERROR_NO_FILE
