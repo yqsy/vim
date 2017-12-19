@@ -156,6 +156,29 @@ noremap <space>a ggVG
 
 
 "----------------------------------------------------------------------
+" space + j : make
+"----------------------------------------------------------------------
+if executable('make')
+	noremap <silent><space>jj  :VimMake -cwd=<root> make -f Makefile<cr>
+	noremap <silent><space>jk  :VimMake -mode=4 -cwd=<root> make -f Makefile run<cr>
+	noremap <silent><space>jl  :VimMake -mode=4 -cwd=<root> make -f Makefile test<cr>
+	noremap <silent><space>j1  :VimMake -mode=4 -cwd=<root> make -f Makefile t1<cr>
+	noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> make -f Makefile t2<cr>
+	noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> make -f Makefile t3<cr>
+	noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> make -f Makefile t4<cr>
+elseif executable('mingw32-make')
+	noremap <silent><space>jj  :VimMake -cwd=<root> mingw32-make -f Makefile<cr>
+	noremap <silent><space>jk  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile run<cr>
+	noremap <silent><space>jl  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile test<cr>
+	noremap <silent><space>j1  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile t1<cr>
+	noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile t2<cr>
+	noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile t3<cr>
+	noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> mingw32-make -f Makefile t4<cr>
+endif
+
+
+
+"----------------------------------------------------------------------
 " space + t : toggle plugins
 "----------------------------------------------------------------------
 noremap <silent><space>tt :TagbarToggle<cr>
