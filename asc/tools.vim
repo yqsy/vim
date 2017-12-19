@@ -734,6 +734,11 @@ endfunc
 
 command! -bang -nargs=0 RefreshToolMode call s:refresh_tool_mode('<bang>')
 
+function! Tools_SwitchMakeFile()
+	let root = vimmake#get_root('%')
+	let name = vimmake#path_join(root, 'Makefile')
+	exec 'FileSwitch tabe '. fnameescape(name)
+endfunc
 
 
 

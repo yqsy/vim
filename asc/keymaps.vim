@@ -176,6 +176,7 @@ elseif executable('mingw32-make')
 	noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> mingw32-make t4<cr>
 endif
 
+noremap <silent><space>jm :call Tools_SwitchMakeFile()<cr>
 
 
 "----------------------------------------------------------------------
