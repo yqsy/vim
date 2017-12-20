@@ -283,7 +283,11 @@ function! s:AsyncRun_Job_CheckScroll()
 	elseif g:asyncrun_last == 1
 		let s:async_check_last = 1
 		let l:winnr = winnr()
-		noautocmd windo call s:AsyncRun_Job_Cursor()
+		" Execute AsyncRun_Job_Cursor() in quickfix
+		let l:quickfixwinnr = bufwinnr("[Quickfix List]")
+		if l:quickfixwinnr != -1  " -1 mean the buffer has no window or do not exists
+			noautocmd exec '' . l:quickfixwinnr . 'windo call s:AsyncRun_Job_Cursor()'
+		endif
 		noautocmd silent! exec ''.l:winnr.'wincmd w'
 		return s:async_check_last
 	elseif g:asyncrun_last == 2
