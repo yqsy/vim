@@ -158,27 +158,15 @@ noremap <space>a ggVG
 "----------------------------------------------------------------------
 " space + j : make
 "----------------------------------------------------------------------
-if executable('make')
-	noremap <silent><space>jj  :VimMake -cwd=<root> make<cr>
-	noremap <silent><space>jc  :VimMake -cwd=<root> make clean<cr>
-	noremap <silent><space>jk  :VimMake -mode=4 -cwd=<root> make run<cr>
-	noremap <silent><space>jl  :VimMake -mode=4 -cwd=<root> make test<cr>
-	noremap <silent><space>j1  :VimMake -mode=4 -cwd=<root> make t1<cr>
-	noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> make t2<cr>
-	noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> make t3<cr>
-	noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> make t4<cr>
-	noremap <silent><space>j5  :VimMake -mode=4 -cwd=<root> make t5<cr>
-elseif executable('mingw32-make')
-	noremap <silent><space>jj  :VimMake -cwd=<root> mingw32-make<cr>
-	noremap <silent><space>jc  :VimMake -cwd=<root> mingw32-make clean<cr>
-	noremap <silent><space>jk  :VimMake -mode=4 -cwd=<root> mingw32-make run<cr>
-	noremap <silent><space>jl  :VimMake -mode=4 -cwd=<root> mingw32-make test<cr>
-	noremap <silent><space>j1  :VimMake -mode=4 -cwd=<root> mingw32-make t1<cr>
-	noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> mingw32-make t2<cr>
-	noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> mingw32-make t3<cr>
-	noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> mingw32-make t4<cr>
-	noremap <silent><space>j5  :VimMake -mode=4 -cwd=<root> mingw32-make t5<cr>
-endif
+noremap <silent><space>jj  :VimMake -cwd=<root> make<cr>
+noremap <silent><space>jc  :VimMake -cwd=<root> make clean<cr>
+noremap <silent><space>jk  :VimMake -mode=4 -cwd=<root> make run<cr>
+noremap <silent><space>jl  :VimMake -mode=4 -cwd=<root> make test<cr>
+noremap <silent><space>j1  :VimMake -mode=4 -cwd=<root> make t1<cr>
+noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> make t2<cr>
+noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> make t3<cr>
+noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> make t4<cr>
+noremap <silent><space>j5  :VimMake -mode=4 -cwd=<root> make t5<cr>
 
 noremap <silent><space>jm :call Tools_SwitchMakeFile()<cr>
 
