@@ -167,6 +167,11 @@ noremap <silent><space>j2  :VimMake -mode=4 -cwd=<root> make t2<cr>
 noremap <silent><space>j3  :VimMake -mode=4 -cwd=<root> make t3<cr>
 noremap <silent><space>j4  :VimMake -mode=4 -cwd=<root> make t4<cr>
 noremap <silent><space>j5  :VimMake -mode=4 -cwd=<root> make t5<cr>
+noremap <silent><space>k1  :VimMake -cwd=<root> make t1<cr>
+noremap <silent><space>k2  :VimMake -cwd=<root> make t2<cr>
+noremap <silent><space>k3  :VimMake -cwd=<root> make t3<cr>
+noremap <silent><space>k4  :VimMake -cwd=<root> make t4<cr>
+noremap <silent><space>k5  :VimMake -cwd=<root> make t5<cr>
 
 noremap <silent><space>jm :call Tools_SwitchMakeFile()<cr>
 
@@ -254,7 +259,7 @@ noremap <silent><space>fl :so ~/.vim/session.txt<cr>
 set ssop-=options    " do not store global and local values in a session
 set ssop-=folds      " do not store folds
 
-for s:index in range(10)
+for s:index in range(5)
 	exec 'noremap <silent><space>f'.s:index.'s :mksession! ~/.vim/session.'.s:index.'<cr>'
 	exec 'noremap <silent><space>f'.s:index.'l :so ~/.vim/session.'.s:index.'<cr>'
 endfor
