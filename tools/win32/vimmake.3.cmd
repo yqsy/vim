@@ -7,7 +7,7 @@ REM CD /D "%VIM_FILEDIR%"
 REM CD > e:\lesson\tmp\error.log
 
 rem d:\dev\python25\python.exe d:\dev\mingw\emake.py "%VIM_FILEDIR%/%VIM_FILENAME%" 
-d:\dev\python25\python.exe d:\dev\mingw32\emake.py "%VIM_FILEDIR%/%VIM_FILENAME%" 
+d:\dev\python25\python.exe d:\dev\mingw\emake.py --cfg=mingw32 "%VIM_FILEDIR%/%VIM_FILENAME%" 
 
 GOTO END
 
