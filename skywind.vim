@@ -47,6 +47,7 @@ augroup SkywindGroup
 	au BufNewFile,BufRead *.pro setlocal filetype=prolog
 	au BufNewFile,BufRead *.es setlocal filetype=erlang
 	au BufNewFile,BufRead *.asc setlocal filetype=asciidoc
+	au BufNewFile,BufRead *.vl setlocal filetype=verilog
 	au FileType python setlocal shiftwidth=4 tabstop=4 noexpandtab
 	au FileType lisp setlocal ts=8 sts=2 sw=2 et
 	au FileType scala setlocal sts=4 sw=4 noet
@@ -102,6 +103,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	let g:vimmake_extrun['gv'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
 	let g:vimmake_extrun['dot'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
 	let g:vimmake_ftrun['dot'] = 'd:/dev/tools/graphviz/bin/dotty.exe'
+	let g:vimmake_ftrun['verilog'] = 'd:/dev/iverilog/bin/iverilog.exe'
 else
 	if executable('clisp')
 		let g:vimmake_extrun['lisp'] = 'clisp'

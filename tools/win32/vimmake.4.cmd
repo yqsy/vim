@@ -27,6 +27,9 @@ if "%VIM_FILEEXT%" == ".gv" GOTO RUN_GRAPHVIZ
 
 if "%VIM_FILEEXT%" == ".bxrc" GOTO RUN_BOCHS
 
+if "%VIM_FILEEXT%" == ".v" GOTO RUN_VERILOG
+if "%VIM_FILEEXT%" == ".vl" GOTO RUN_VERILOG
+
 echo unsupported file type %VIM_FILEEXT%
 GOTO END
 
@@ -74,6 +77,11 @@ GOTO END
 
 :RUN_BOCHS
 bochs -q -f "%VIM_FILENAME%"
+GOTO END
+
+:RUN_VERILOG
+vvp "%VIM_FILEDIR%\%VIM_FILENOEXT%.vvp"
+
 GOTO END
 
 :ERROR_NO_FILE
