@@ -222,6 +222,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')
 	call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
 	call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
+	call quickmenu#append('Paste mode line', 'PasteVimModeLine', 'paste vim mode line here')
 
 endif
 

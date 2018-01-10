@@ -741,4 +741,17 @@ function! Tools_SwitchMakeFile()
 endfunc
 
 
+function! s:paste_mode_line()
+	let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+		\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+	let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+	let l:save = @0
+	let @0 = l:modeline
+	exec 'normal! "0P'
+	let @0 = l:save
+endfunc
+
+
+command! -nargs=0 PasteVimModeLine call s:paste_mode_line()
+
 
