@@ -216,7 +216,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('File commit', 'call svnhelp#tf_commit()', 'file commit')
 	call quickmenu#append('File blame', 'call svnhelp#tf_blame()', 'file blame')
 
-	call quickmenu#append('# Other', '')
+	call quickmenu#append('# Tools', '')
 	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
 	call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')

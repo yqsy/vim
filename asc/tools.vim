@@ -744,7 +744,11 @@ endfunc
 function! s:paste_mode_line()
 	let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
 		\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
-	let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+	if &commentstring != ""
+		let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+	else
+		let l:modeline = substitute(l:modeline, '^ ', '', 'g')
+	endif
 	let l:save = @0
 	let @0 = l:modeline
 	exec 'normal! "0P'
