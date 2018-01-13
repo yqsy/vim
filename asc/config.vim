@@ -297,7 +297,7 @@ endfunc
 
 
 call Terminal_SwitchTab()
-call Terminal_MetaMode(1)
+call Terminal_MetaMode(0)
 call Terminal_FnInit(1)
 
 
