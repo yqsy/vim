@@ -48,6 +48,7 @@ let s:quickmenu_cursor = {}
 let s:quickmenu_version = 'QuickMenu 1.3.4'
 let s:quickmenu_name = '[quickmenu]'
 let s:quickmenu_line = 0
+let s:quickmenu_bid = -1
 
 
 "----------------------------------------------------------------------
