@@ -141,7 +141,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
-		" Plugin 'SirVer/ultisnips'
+		Plugin 'SirVer/ultisnips'
 	endif
 
 	noremap <space>bp :BlogPreview local<cr>
@@ -302,6 +302,12 @@ if index(g:bundle_group, 'vimuiex') >= 0
 	if !has('gui_running')
 		Plugin 'skywind3000/vimuiex'
 	endif
+endif
+
+if index(g:bundle_group, 'echodoc') >= 0
+	Plugin 'Shougo/echodoc.vim'
+	set noshowmode
+	let g:echodoc#enable_at_startup = 1
 endif
 
 

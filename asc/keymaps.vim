@@ -208,11 +208,17 @@ if has('autocmd')
 		nnoremap <silent><buffer> u :call asclib#quickfix_switch(0, 'bottom')<cr>
 		setlocal nonumber
 	endfunc
+	function! s:insert_leave()
+		if get(g:, 'echodoc#enable_at_startup') == 0
+			set showmode
+		endif
+	endfunc
 	augroup AscQuickfix
 		autocmd!
 		autocmd FileType qf call s:quickfix_keymap()
 		autocmd FileType * call s:update_tags()
-		autocmd InsertLeave * set showmode
+		autocmd InsertLeave * call s:insert_leave()
+		" autocmd InsertLeave * set showmode
 	augroup END
 endif
 
