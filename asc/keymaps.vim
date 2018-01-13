@@ -388,6 +388,9 @@ inoremap <silent><F12> <ESC>:call quickmenu#toggle(0)<cr>
 noremap <silent><F11> :call quickmenu#toggle(1)<cr>
 inoremap <silent><F11> <ESC>:call quickmenu#toggle(1)<cr>
 
+noremap <silent><c-f12> :call asclib#common#script_menu()<cr>
+inoremap <silent><c-f12> <ESC>:call asclib#common#script_menu()<cr>
+
 nnoremap <silent>g1 :GrepCode <C-R>=expand("<cword>")<cr><cr>
 nnoremap <silent>g2 :GrepCode! <C-R>=expand("<cword>")<cr><cr>
 nnoremap <silent>g3 :VimScope g <C-R>=expand("<cword>")<cr><cr>
