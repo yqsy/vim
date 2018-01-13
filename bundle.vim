@@ -112,21 +112,6 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'Raimondi/delimitMate'
 	"Plugin 'sheerun/vim-polyglot'
 
-
-	if !has('gui_running')
-		if $SSH_CONNECTION != "" || $TERM_PROGRAM == 'iTerm.app'
-			exec "set <m-i>=\e]{0}i~"
-			exec "set <m-j>=\e]{0}j~"
-			exec "set <m-k>=\e]{0}k~"
-			exec "set <m-l>=\e]{0}l~"
-		elseif has('win32unix')
-			exec "set <m-i>=\ei"
-			exec "set <m-j>=\ej"
-			exec "set <m-k>=\ek"
-			exec "set <m-l>=\el"  
-		endif
-	endif
-
 	"let g:gitgutter_enabled = 0
 
 	let g:zv_file_types = {
