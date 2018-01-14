@@ -30,7 +30,6 @@ if has('patch-7.4.500') || v:version >= 800
 	endif
 endif
 
-let g:asclib#cygwin = 'd:/linux'
 
 if has('nvim')
 	set guicursor=
@@ -58,6 +57,17 @@ augroup END
 
 
 "----------------------------------------------------------------------
+" config
+"----------------------------------------------------------------------
+let s:settings = {  
+	\ 'cygwin': 'd:/linux',
+	\ 'zeal': 'D:\Program Files\zeal-portable-0.5.0-windows-x86\zeal.exe',
+	\ }
+
+call asclib#setting#update(s:settings)
+
+
+"----------------------------------------------------------------------
 " QuickMenu
 "----------------------------------------------------------------------
 call quickmenu#current(2)
@@ -68,7 +78,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('MSDN of VC6', 'call menu#WinHelp("d:/dev/help/chm/vc.chm")', 'MSDN')
 	call quickmenu#append('Python2 Help', 'call menu#WinHelp("d:/dev/help/chm/python2713.chm")', 'Python 2 Document')
 	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/chm/python362.chm")', 'Python 3 Document')
-	call quickmenu#append('Open Cygwin', 'call asclib#terminal("mintty", "bash -i", 0)', 'open cygwin in current directoy')
+	call quickmenu#append('Open Cygwin', 'call asclib#utils#terminal("mintty", "bash -i", 0)', 'open cygwin in current directoy')
 	call quickmenu#append('Open Bash', 'call asclib#wsl_bash("")', 'open bash for windows 10 in current directory')
 	call quickmenu#append('Switch color', 'call SkywindSwitchColor()', 'switch current color scheme')
 endif
