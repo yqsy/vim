@@ -1606,3 +1606,37 @@ function! asclib#color_switch(names)
 endfunc
 
 
+"----------------------------------------------------------------------
+" call terminal 
+"----------------------------------------------------------------------
+if !exists('g:asclib#cygwin')
+	let g:asclib#cygwin = ''
+endif
+
+function! asclib#terminal(mode, cmd, wait, ...) abort
+	let script = asclib#path_join(s:scripthome, '../lib/terminal.py')
+	let script = fnamemodify(script, ':p')
+	let cmd = ''
+	if a:mode != ''
+		let cmd .= ' --terminal='.a:mode
+	endif
+	if a:wait
+		let cmd .= ' -w'
+	endif
+	if a:0 >= 1
+		let cmd .= ' --cwd='.a:1
+	endif
+	if a:0 >= 2
+		let cmd .= ' --profile='.a:2
+	endif
+	if g:asclib#cygwin != ''
+		let cmd .= ' --cygwin='.shellescape(g:asclib#cygwin)
+	endif
+	if cmd != ''
+		let cmd .= ' '
+	endif
+	let cmd = 'python '.shellescape(script). ' ' .cmd . a:cmd
+	exec 'VimMake -mode=5 '.cmd
+endfunc
+
+

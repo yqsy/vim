@@ -307,6 +307,7 @@ endif
 if index(g:bundle_group, 'echodoc') >= 0
 	Plugin 'Shougo/echodoc.vim'
 	set noshowmode
+	set shortmess+=c
 	let g:echodoc#enable_at_startup = 1
 endif
 
