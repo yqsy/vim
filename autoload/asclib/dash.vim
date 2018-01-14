@@ -44,6 +44,6 @@ let s:module.groups = {
       \ 'vim': ['vim']
       \ }
 
-let asclib#dash_group#module = s:module
+let asclib#dash#module = s:module
 
 

@@ -50,10 +50,10 @@ function! asclib#utils#dash(language, keyword)
 endfunc
 
 
-
-function! asclib#utils#dash2(keyword)
-	let groups = dash#defaults#module.groups
-	let languages = get(groups, &ft, [])
+function! asclib#utils#dash_ft(ft, keyword)
+	let groups = g:asclib#dash#module.groups
+	let langs = get(groups, a:ft, [])
+	call asclib#utils#dash(join(langs, ','), a:keyword)
 endfunc
 
 

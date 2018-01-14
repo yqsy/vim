@@ -134,6 +134,20 @@ function! menu#WinHelp(help)
 	endif
 endfunc
 
+function! menu#DashHelp()
+	let t = expand('<cword>')
+	echohl Type
+	call inputsave()
+	let t = input('Search help of ('. &ft .'): ', t)
+	call inputrestore()
+	echohl None
+	redraw | echo "" | redraw
+	if t == ''
+		return 0
+	endif
+	call asclib#utils#dash_ft(&ft, t)
+endfunc
+
 
 function! menu#ToolHelp()
 	let s:name = g:vimmake_path . '/readme.txt'
@@ -223,6 +237,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
 	call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
 	call quickmenu#append('Paste mode line', 'PasteVimModeLine', 'paste vim mode line here')
+	call quickmenu#append('Dash Help', 'call menu#DashHelp()', 'open dash or zeal to view keywords in docsets')
 
 endif
 
@@ -236,5 +251,6 @@ endif
 call quickmenu#current(2)
 call quickmenu#reset()
 
+call quickmenu#append('# Debug')
 
 
