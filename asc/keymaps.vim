@@ -355,8 +355,6 @@ noremap <silent><space>lt :call asclib#html_prettify()<cr>
 " more personal in gvim
 "----------------------------------------------------------------------
 if has('gui_running') && (has('win32') || has('win64'))
-	noremap <C-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
-	inoremap <C-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) pypy "$(VIM_FILENAME)"<cr>
 	noremap <S-F11> :VimMake -mode=4 -cwd=$(VIM_FILEDIR) -save=1 d:\\dev\\python36\\python.exe "$(VIM_FILENAME)"<cr>
 	inoremap <S-F11> <ESC>:VimMake -mode=4 -cwd=$(VIM_FILEDIR) d:\\dev\\python36\\python.exe "$(VIM_FILENAME)"<cr>
 	noremap <S-F12> :VimMake -mode=4 -save=1 -cwd=$(VIM_FILEDIR) d:\\dev\\python64\\python.exe "$(VIM_FILENAME)"<cr>
@@ -388,6 +386,10 @@ inoremap <silent><F12> <ESC>:call quickmenu#toggle(0)<cr>
 noremap <silent><F11> :call quickmenu#toggle(1)<cr>
 inoremap <silent><F11> <ESC>:call quickmenu#toggle(1)<cr>
 
+noremap <silent><c-f10> :call quickmenu#toggle(1)<cr>
+inoremap <silent><c-f10> <ESC>:call quickmenu#toggle(1)<cr>
+noremap <silent><c-f11> :call quickmenu#toggle(2)<cr>
+inoremap <silent><c-f11> <ESC>:call quickmenu#toggle(2)<cr>
 noremap <silent><c-f12> :call asclib#common#script_menu()<cr>
 inoremap <silent><c-f12> <ESC>:call asclib#common#script_menu()<cr>
 

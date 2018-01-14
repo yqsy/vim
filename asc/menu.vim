@@ -230,3 +230,11 @@ endif
 " call quickmenu#append('GNU Global')
 
 
+"----------------------------------------------------------------------
+" Third menu
+"----------------------------------------------------------------------
+call quickmenu#current(2)
+call quickmenu#reset()
+
+
+
