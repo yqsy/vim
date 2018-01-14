@@ -23,3 +23,8 @@ function! asclib#setting#script_home()
 	return s:scripthome
 endfunc
 
+function! asclib#setting#has_windows()
+	return has('win32') || has('win64') || has('win95') || has('win16')
+endfunc
+
+

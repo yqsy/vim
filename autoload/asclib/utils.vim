@@ -1,3 +1,7 @@
+
+"----------------------------------------------------------------------
+" call terminal.py
+"----------------------------------------------------------------------
 function! asclib#utils#terminal(mode, cmd, wait, ...) abort
 	let home = asclib#setting#script_home()
 	let script = asclib#path_join(home, '../../lib/terminal.py')
@@ -27,14 +31,29 @@ function! asclib#utils#terminal(mode, cmd, wait, ...) abort
 endfunc
 
 
-function! asclib#utils#zeal(language, keyword)
+
+"----------------------------------------------------------------------
+" dash / zeal
+"----------------------------------------------------------------------
+function! asclib#utils#dash(language, keyword)
 	let zeal = asclib#setting#get('zeal', 'zeal.exe')
 	if !executable(zeal)
 		call asclib#errmsg('cannot find executable: '.zeal)
 		return
 	endif
 	let url = 'dash://'.a:language.':'.a:keyword
-	silent! exec '!start '.shellescape(zeal). ' '.shellescape(url)
+	if asclib#setting#has_windows()
+		silent! exec '!start '.shellescape(zeal). ' '.shellescape(url)
+	else
+		call system('open '.shellescape(url).' &')
+	endif
+endfunc
+
+
+
+function! asclib#utils#dash2(keyword)
+	let groups = dash#defaults#module.groups
+	let languages = get(groups, &ft, [])
 endfunc
 
 
