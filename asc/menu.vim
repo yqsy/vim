@@ -251,6 +251,6 @@ endif
 call quickmenu#current(2)
 call quickmenu#reset()
 
-call quickmenu#append('# Debug')
+call quickmenu#append('# Debug', '')
 
 
