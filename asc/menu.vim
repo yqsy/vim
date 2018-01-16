@@ -158,7 +158,7 @@ function! menu#EmacsGdb()
 	if has('win32') || has('win16') || has('win64') || has('win95')
 		let name = expand('%:p:h') .'\' . expand('%:t:r') . '.exe'
 	else
-		let name = expand('%:p:h') .'\' . expand('%:t:r')
+		let name = expand('%:p:h') .'/' . expand('%:t:r')
 	endif
 	if !executable(name)
 		call asclib#errmsg('error: expect: '. name)
