@@ -21,7 +21,7 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# sourcing ~/.local/profile
+# sourcing "~/.local/profile/*.sh"
 if [ -d "$HOME/.local/login" ]; then
 	for f in $HOME/.local/login/*.sh ; do
 		[ -e $f ] && . $f
