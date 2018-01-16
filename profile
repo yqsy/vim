@@ -8,12 +8,15 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+		. "$HOME/.bashrc"
     fi
+else
+	if [ -f "$HOME/.local/etc/init.sh" ]; then
+		. "$HOME/.local/etc/init.sh"
+	fi
 fi
 
 # set PATH so it includes user's private bin if it exists
@@ -29,9 +32,24 @@ if [ -d "$HOME/.local/login" ]; then
 fi
 
 # execute local profile if it exists
-if [ -f "$HOME/.local/init.sh" ]; then
-	. "$HOME/.local/init.sh"
+if [ -f "$HOME/.local/etc/login.sh" ]; then
+	. "$HOME/.local/etc/login.sh"
 fi
 
+
+# remove duplicate path
+if [ -n "$PATH" ]; then
+  old_PATH=$PATH:; PATH=
+  while [ -n "$old_PATH" ]; do
+    x=${old_PATH%%:*}       # the first remaining entry
+    case $PATH: in
+      *:"$x":*) ;;         # already there
+      *) PATH=$PATH:$x;;    # not there yet
+    esac
+    old_PATH=${old_PATH#*:}
+  done
+  PATH=${PATH#:}
+  unset old_PATH x
+fi
 
 
