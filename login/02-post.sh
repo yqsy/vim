@@ -7,4 +7,3 @@ if [ -x $FORTUNE ]; then
 	echo ""; $FORTUNE; echo ""
 fi
 
-
