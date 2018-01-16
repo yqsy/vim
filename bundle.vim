@@ -311,6 +311,31 @@ if index(g:bundle_group, 'echodoc') >= 0
 	let g:echodoc#enable_at_startup = 1
 endif
 
+if index(g:bundle_group, 'deoplete') >= 0
+	if has('nvim')
+		Plugin 'Shougo/deoplete.nvim'
+	else
+		Plugin 'Shougo/deoplete.nvim'
+		Plugin 'roxma/nvim-yarp'
+		Plugin 'roxma/vim-hug-neovim-rpc'
+	endif
+	Plugin 'zchee/deoplete-clang'
+	let g:deoplete#enable_at_startup = 1
+	let g:deoplete#sources = {}
+	let g:deoplete#sources._ = ['buffer', 'dictionary']
+	let g:deoplete#sources.cpp = ['buffer', 'dictionary', 'libclang']
+	function! s:setup_deoplete()
+		call deoplete#initialize()
+		call deoplete#enable()
+	endfunc
+	augroup Deoplete
+		au!
+		au VimEnter * call s:setup_deoplete()
+	augroup END
+	let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
+	let g:deoplete#sources#clang#clang_header = '/usr/include'
+endif
+
 
 "----------------------------------------------------------------------
 " Bundle Footer
