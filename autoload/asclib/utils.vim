@@ -79,7 +79,7 @@ function! asclib#utils#emacs_gdb(exename)
 	if asclib#setting#has_windows()
 		let emacs = asclib#setting#get('emacs', 'runemacs.exe')
 		let gdb = asclib#setting#get('gdb', 'gdb.exe')
-		call asclib#utils#shell_invoke(0, '-E', emacs, gdb, a:exename)
+		call asclib#utils#shell_invoke(5, '-E', emacs, gdb, a:exename)
 	else
 		let emacs = asclib#setting#get('emacs', 'emacs')
 		let gdb = asclib#setting#get('gdb', 'gdb')
