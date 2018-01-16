@@ -7,5 +7,7 @@ alias nvim='/usr/local/opt/bin/vim'
 alias mvim='/usr/local/opt/bin/vim --cmd "let g:vim_startup=\"mvim\""'
 alias textadept=/usr/local/app/textadept_8.7.x86_64/textadept-curses
 
+export PATH=/usr/local/app/node-v8.9.4-linux-x64/bin:$PATH
+
 
 
