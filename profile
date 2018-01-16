@@ -21,11 +21,16 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# sourcing "~/.local/profile/*.sh"
+# execute "~/.local/profile/*.sh"
 if [ -d "$HOME/.local/login" ]; then
 	for f in $HOME/.local/login/*.sh ; do
-		[ -e $f ] && . $f
+		[ -f "$f" ] && . "$f"
 	done
+fi
+
+# execute local profile if it exists
+if [ -f "$HOME/.local/init.sh" ]; then
+	. "$HOME/.local/init.sh"
 fi
 
 
