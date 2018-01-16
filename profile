@@ -25,8 +25,8 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 # execute "~/.local/profile/*.sh"
-if [ -d "$HOME/.local/login" ]; then
-	for f in $HOME/.local/login/*.sh ; do
+if [ -d "$HOME/.local/etc/init" ]; then
+	for f in $HOME/.local/etc/init/L*.sh ; do
 		[ -f "$f" ] && . "$f"
 	done
 fi
