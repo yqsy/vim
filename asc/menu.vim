@@ -154,6 +154,25 @@ function! menu#ToolHelp()
 	exec 'FileSwitch vs '. fnameescape(s:name)
 endfunc
 
+function! menu#EmacsGdb()
+	if has('win32') || has('win16') || has('win64') || has('win95')
+		let name = expand('%:p:h') .'\' . expand('%:t:r') . '.exe'
+	else
+		let name = expand('%:p:h') .'\' . expand('%:t:r')
+	endif
+	if !executable(name)
+		call asclib#errmsg('error: expect: '. name)
+		return
+	elseif !executable(asclib#setting#get('emacs', 'emacs'))
+		call asclib#errmsg('error: not find emacs executable')
+		return
+	elseif !executable(asclib#setting#get('gdb', 'gdb'))
+		call asclib#errmsg('error: not find gdb executable')
+		return
+	endif
+	call asclib#utils#emacs_gdb(name)
+endfunc
+
 
 "----------------------------------------------------------------------
 " menu initialize
@@ -219,7 +238,6 @@ call quickmenu#append('Reindex', 'Es! build gtags %')
 
 
 if has('win32') || has('win64') || has('win16') || has('win95')
-
 	call quickmenu#append('# Tortoise SVN / GIT', '')
 	call quickmenu#append('Project update', 'call svnhelp#tp_update()', 'update current repository')
 	call quickmenu#append('Project commit', 'call svnhelp#tp_commit()', 'commit this project')
@@ -229,16 +247,20 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('File log', 'call svnhelp#tf_log()', 'file log')
 	call quickmenu#append('File commit', 'call svnhelp#tf_commit()', 'file commit')
 	call quickmenu#append('File blame', 'call svnhelp#tf_blame()', 'file blame')
+endif
 
-	call quickmenu#append('# Tools', '')
+call quickmenu#append('# Tools', '')
+
+call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')
+call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
+call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
+call quickmenu#append('Paste mode line', 'PasteVimModeLine', 'paste vim mode line here')
+call quickmenu#append('Dash Help', 'call menu#DashHelp()', 'open dash or zeal to view keywords in docsets')
+call quickmenu#append('Emacs GDB', 'call menu#EmacsGdb()', 'debug with emacs gdb-mode', 'c,cpp,objc,objcpp')
+
+if has('win32') || has('win64') || has('win16') || has('win95')
 	let s:cmd = '!start /b cmd.exe /C start https://wakatime.com/dashboard'
 	call quickmenu#append('WakaTime', 'silent! '.s:cmd, 'Goto WakaTime dashboard')
-	call quickmenu#append('Tool help', 'call menu#ToolHelp()', 'show the help of user tools')
-	call quickmenu#append('Signify refresh', 'SignifyRefresh', 'update signify')
-	call quickmenu#append('Calendar', 'Calendar', 'show Calendar')
-	call quickmenu#append('Paste mode line', 'PasteVimModeLine', 'paste vim mode line here')
-	call quickmenu#append('Dash Help', 'call menu#DashHelp()', 'open dash or zeal to view keywords in docsets')
-
 endif
 
 

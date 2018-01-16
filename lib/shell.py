@@ -10,6 +10,7 @@
 #======================================================================
 import sys, os, time
 import socket
+import ascmini
 
 UNIX = sys.platform[:3] != 'win' and 1 or 0
 
@@ -811,6 +812,48 @@ def plist_save(filename, data, binary = False):
 
 
 #----------------------------------------------------------------------
+# emacs gdb
+#----------------------------------------------------------------------
+def emacs_gdb(emacs, gdb, exename, arguments = ''):
+	import ascmini
+	import subprocess
+	args = [emacs, '--eval']
+	cmdline = ascmini.posix.pathshort(gdb) + ' -i=mi '
+	cmdline += ascmini.posix.pathshort(exename)
+	if arguments:
+		cmdline += ' ' + argument
+	cmdline = cmdline.replace('\\', '\\\\')
+	cmdline = cmdline.replace('\"', '\\\"')
+	args += ['(gdb "%s")'%cmdline]
+	subprocess.call(args)
+
+
+#----------------------------------------------------------------------
+# main
+#----------------------------------------------------------------------
+def main(args = None):
+	args = args and args or sys.argv
+	args = [n for n in args]
+	if len(args) <= 1:
+		print 'error: no operation specified (use -h for help)'
+		return 0
+	cmd = args[1]
+	if cmd in ('-h', '--help'):
+		prog = args[0]
+		print 'usage %s <operation> [...]'%prog
+		print 'operations:'
+		print '    %s {-h, --help}'%prog
+		print '    %s {-E, --emacsgdb} emacs gdb exename [arguments]'%prog
+		return 0
+	if cmd in ('-E', '--emacsgdb'):
+		if len(args) < 5:
+			print 'error: expect gdb path'
+			return 0
+		emacs_gdb(args[2], args[3], args[4], ' '.join(args[5:]))
+	return 0
+
+
+#----------------------------------------------------------------------
 # testing case
 #----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -855,7 +898,9 @@ if __name__ == '__main__':
 	# coresh.py system.py
 	# shkit.py shset.py osset.py kitos.py 
 	# oskit.py shellkit.py shellos shells.py
-	test7()
+	# test7()
+	# main(['shell', '-E', 'd:/dev/emacs/bin/runemacs.exe', 'd:/dev/mingw32/bin/gdb.exe', 'e:/lesson/kitus/test/demo gdb.exe'])
+	sys.exit(main())
 
 
 

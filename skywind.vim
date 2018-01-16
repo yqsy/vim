@@ -64,7 +64,16 @@ let s:settings = {
 	\ 'zeal': 'D:\Program Files\zeal-portable-0.5.0-windows-x86\zeal.exe',
 	\ }
 
+let s:settings_win = {
+	\ 'emacs': 'd:/dev/emacs/bin/runemacs.exe',
+	\ 'gdb' : 'd:/dev/mingw32/bin/gdb.exe',
+	\ }
+
 call asclib#setting#update(s:settings)
+
+if has('win32') || has('win64') || has('win16') || has('win95')
+	call asclib#setting#update(s:settings_win)
+endif
 
 
 "----------------------------------------------------------------------

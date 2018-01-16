@@ -57,3 +57,33 @@ function! asclib#utils#dash_ft(ft, keyword)
 endfunc
 
 
+"----------------------------------------------------------------------
+" invoke shell.py
+"----------------------------------------------------------------------
+function! asclib#utils#shell_invoke(cmd, ...)
+	let home = asclib#setting#script_home()
+	let script = asclib#path_join(home, '../../lib/shell.py')
+	let script = fnamemodify(script, ':p')
+	let cmdline = 'python ' . shellescape(script) . ' ' . a:cmd
+	for i in range(a:0)
+		let cmdline .= ' ' . shellescape(a:{i + 1})
+	endfor
+	exec 'AsyncRun -raw=1 '.cmdline
+endfunc
+
+
+"----------------------------------------------------------------------
+" shell - gdb 
+"----------------------------------------------------------------------
+function! asclib#utils#emacs_gdb(exename)
+	if asclib#setting#has_windows()
+		let emacs = asclib#setting#get('emacs', 'runemacs.exe')
+		let gdb = asclib#setting#get('gdb', 'gdb.exe')
+	else
+		let emacs = asclib#setting#get('emacs', 'emacs')
+		let gdb = asclib#setting#get('gdb', 'gdb')
+	endif
+	call asclib#utils#shell_invoke('-E', emacs, gdb, a:exename)
+endfunc
+
+

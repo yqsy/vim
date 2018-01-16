@@ -265,7 +265,8 @@ class PosixKit (object):
 		if retval <= 0:
 			return ''
 		if isinstance(path, bytes):
-			shortpath = shortpath.decode(sys.stdout.encoding, 'ignore')
+			if sys.stdout.encoding:
+				shortpath = shortpath.decode(sys.stdout.encoding, 'ignore')
 		return shortpath
 
 	def mkdir (self, path):
