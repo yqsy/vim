@@ -22,6 +22,7 @@ if sys.version_info[0] >= 3:
 	unicode = str
 	xrange = range
 
+UNIX = (sys.platform[:3] != 'win') and True or False
 
 
 #----------------------------------------------------------------------

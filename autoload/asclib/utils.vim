@@ -60,7 +60,7 @@ endfunc
 "----------------------------------------------------------------------
 " invoke shell.py
 "----------------------------------------------------------------------
-function! asclib#utils#shell_invoke(cmd, ...)
+function! asclib#utils#shell_invoke(mode, cmd, ...)
 	let home = asclib#setting#script_home()
 	let script = asclib#path_join(home, '../../lib/shell.py')
 	let script = fnamemodify(script, ':p')
@@ -68,7 +68,7 @@ function! asclib#utils#shell_invoke(cmd, ...)
 	for i in range(a:0)
 		let cmdline .= ' ' . shellescape(a:{i + 1})
 	endfor
-	exec 'AsyncRun -raw=1 '.cmdline
+	exec 'AsyncRun -raw=1 -mode='.a:mode.' '.cmdline
 endfunc
 
 
@@ -79,11 +79,12 @@ function! asclib#utils#emacs_gdb(exename)
 	if asclib#setting#has_windows()
 		let emacs = asclib#setting#get('emacs', 'runemacs.exe')
 		let gdb = asclib#setting#get('gdb', 'gdb.exe')
+		call asclib#utils#shell_invoke(0, '-E', emacs, gdb, a:exename)
 	else
 		let emacs = asclib#setting#get('emacs', 'emacs')
 		let gdb = asclib#setting#get('gdb', 'gdb')
+		call asclib#utils#shell_invoke(2, '-E', emacs, gdb, a:exename)
 	endif
-	call asclib#utils#shell_invoke('-E', emacs, gdb, a:exename)
 endfunc
 
 

@@ -818,6 +818,16 @@ def emacs_gdb(emacs, gdb, exename, arguments = ''):
 	import ascmini
 	import subprocess
 	args = [emacs, '--eval']
+	if not os.path.isabs(emacs):
+		emacs = ascmini.posix.which(emacs)
+	if not os.path.isabs(gdb):
+		gdb = ascmini.posix.which(gdb)
+	if emacs is None:
+		print 'error: can not execute: %s'%emacs
+		return -1
+	if gdb is None:
+		print 'error: can not execute: %s'%gdb
+		return -2
 	cmdline = ascmini.posix.pathshort(gdb) + ' -i=mi '
 	cmdline += ascmini.posix.pathshort(exename)
 	if arguments:
@@ -826,6 +836,7 @@ def emacs_gdb(emacs, gdb, exename, arguments = ''):
 	cmdline = cmdline.replace('\"', '\\\"')
 	args += ['(gdb "%s")'%cmdline]
 	subprocess.call(args)
+	return 0
 
 
 #----------------------------------------------------------------------
