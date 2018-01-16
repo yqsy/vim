@@ -13,5 +13,6 @@ C-F2 - MinGW 64 Брвы
 C-F3 - VC2010 Брвы
 C-F4 - VC2015 Брвы
 C-F5 - VC2017 Брвы
+C-F6 - MinGW 32 debug
 
 
