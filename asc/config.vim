@@ -280,6 +280,10 @@ function! Terminal_FnInit(mode)
 		return
 	endif
 	if a:mode == 1
+		VimKeyEscape <F1> OP
+		VimKeyEscape <F2> OQ
+		VimKeyEscape <F3> OR
+		VimKeyEscape <F4> OS
 		VimKeyEscape <S-F1> [1;2P
 		VimKeyEscape <S-F2> [1;2Q
 		VimKeyEscape <S-F3> [1;2R
