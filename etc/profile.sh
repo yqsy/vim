@@ -1,10 +1,10 @@
 # login shell will execute this
 
 if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
+	# include .bashrc if it exists
+	if [ -f "$HOME/.bashrc" ]; then
 		. "$HOME/.bashrc"
-    fi
+	fi
 else
 	if [ -f "$HOME/.local/etc/init.sh" ]; then
 		. "$HOME/.local/etc/init.sh"
