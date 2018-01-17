@@ -11,3 +11,8 @@ else
 	fi
 fi
 
+if [ -f "$HOME/.local/etc/login.sh" ]; then
+	. "$HOME/.local/etc/login.sh"
+fi
+
+
