@@ -16,7 +16,7 @@ if [ ! -d "$HOME/.local/bin" ]; then
 	mkdir -p "$HOME/.local/bin" 2> /dev/null
 fi
 
-cp "$SCRIPTPATH/*.sh" "$HOME/.local/etc/" 2> /dev/null
+cp $SCRIPTPATH/*.sh "$HOME/.local/etc/" 
 
 
 
