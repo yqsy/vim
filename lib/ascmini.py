@@ -417,8 +417,12 @@ def load_config(path):
 		if text is None:
 			return None
 		if sys.version_info[0] < 3:
+			if text[:3] == '\xef\xbb\xbf':	# remove BOM+
+				text = text[3:]
 			return json.loads(text, encoding = "utf-8")
 		else:
+			if text[:3] == b'\xef\xbb\xbf':	# remove BOM+
+				text = text[3:]
 			text = text.decode('utf-8', 'ignore')
 			return json.loads(text)
 	except:
