@@ -217,7 +217,6 @@ if index(g:bundle_group, 'special') >= 0
 	Plugin 'kshenoy/vim-signature'
 	"Plugin 'scrooloose/syntastic'
 	"Plugin 'tpope/vim-dispatch'
-	"Plugin 'bling/vim-airline'
 	Plugin 'mh21/errormarker.vim'
 	" Plugin 'tpope/vim-projectionist'
 	Plugin 'dracula/vim'
@@ -231,11 +230,6 @@ if index(g:bundle_group, 'special') >= 0
 	let g:syntastic_auto_loc_list = 0
 	let g:syntastic_check_on_open = 0
 	let g:syntastic_check_on_wq = 0
-
-	let g:airline_left_sep = ''
-	let g:airline_left_sep = ''
-	let g:airline_right_sep = ''
-	let g:airline_right_sep = ''
 
 	let g:errormarker_disablemappings = 1
 	nnoremap <silent> <leader>cm :ErrorAtCursor<CR>
@@ -334,6 +328,18 @@ if index(g:bundle_group, 'deoplete') >= 0
 	augroup END
 	let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
 	let g:deoplete#sources#clang#clang_header = '/usr/include'
+endif
+
+if index(g:bundle_group, 'airline') >= 0
+	Plugin 'bling/vim-airline'
+	Plugin 'vim-airline/vim-airline-themes'
+" 	let g:airline_left_sep = ''
+" 	let g:airline_left_sep = ''
+" 	let g:airline_right_sep = ''
+" 	let g:airline_right_sep = ''
+
+let g:airline_left_sep='>'
+  let g:airline_right_sep='<'
 endif
 
 
