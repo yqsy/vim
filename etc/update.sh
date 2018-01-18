@@ -17,6 +17,7 @@ if [ ! -d "$HOME/.local/bin" ]; then
 fi
 
 cp $SCRIPTPATH/*.sh "$HOME/.local/etc/" 
+cp $SCRIPTPATH/*.conf "$HOME/.local/etc/" 
 
 
 
