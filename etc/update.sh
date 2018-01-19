@@ -19,5 +19,7 @@ fi
 cp $SCRIPTPATH/*.sh "$HOME/.local/etc/" 
 cp $SCRIPTPATH/*.conf "$HOME/.local/etc/" 
 
+cp $SCRIPTPATH/../tools/bin/* "$HOME/.local/bin"
+
 
 

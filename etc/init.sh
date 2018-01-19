@@ -19,11 +19,6 @@ if [ -z $INIT_SH_LOADED ]; then
 		. "$HOME/.local/etc/local.sh"
 	fi
 
-	# set PATH so it includes personal tools
-	if [ -d "$HOME/.vim/vim/tools/bin" ]; then
-		export PATH="$HOME/.vim/vim/tools/bin:$PATH"
-	fi
-	
 	# remove duplicate path
 	if [ -n "$PATH" ]; then
 	  old_PATH=$PATH:; PATH=
