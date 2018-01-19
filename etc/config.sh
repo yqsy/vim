@@ -34,7 +34,11 @@ if [ -d "$HOME/.vim/vim/cheat" ]; then
 	export DEFAULT_CHEAT_DIR=~/.vim/vim/cheat
 fi
 
-c_listcolor() {
+
+#----------------------------------------------------------------------
+# quick functions
+#----------------------------------------------------------------------
+q_listcolor() {
 	# for i in {0..255}; do
 	# 	printf "\x1b[38;5;${i}mcolour${i}\x1b[0m\n"
 	# done;
@@ -48,7 +52,7 @@ c_listcolor() {
 
 gdbtool () { emacs --eval "(gdb \"gdb --annotate=3 -i=mi $*\")";}
 
-c_update_rc() {
+q_update_rc() {
 	LAST=`pwd`
 	cd ~/.vim/vim
 	git pull
