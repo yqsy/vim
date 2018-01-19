@@ -83,4 +83,6 @@ if [[ "$TERM" =~ "xterm" ]]; then
 	export GROFF_NO_SGR=1         # For Konsole and Gnome-terminal
 fi
 
+export MANWIDTH=80
+
 
