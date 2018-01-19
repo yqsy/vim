@@ -1,3 +1,5 @@
-"init" should be linked to ~/.local/etc/init
-"login" should be linked to ~/.local/etc/login
+init.sh   - shell init config, add to your ~/.bashrc or ~/.profile or ~/.zshrc
+login.sh  - shell login config, add to your ~/.profile or ~/.bash_profile
+
+
 
