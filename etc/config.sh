@@ -38,28 +38,7 @@ fi
 #----------------------------------------------------------------------
 # quick functions
 #----------------------------------------------------------------------
-q_listcolor() {
-	# for i in {0..255}; do
-	# 	printf "\x1b[38;5;${i}mcolour${i}\x1b[0m\n"
-	# done;
-	for i in {0..255}; do 
-		printf "\x1b[38;5;${i}mcolour%-5i\x1b[0m" $i 
-		if ! (( ($i + 1 ) % 8 )); then 
-			echo ""
-		fi 
-	done
-}
-
 gdbtool () { emacs --eval "(gdb \"gdb --annotate=3 -i=mi $*\")";}
-
-q_update_rc() {
-	LAST=`pwd`
-	cd ~/.vim/vim
-	git pull
-	cd ~/.vim/vim/etc
-	sh update.sh
-	cd "$LAST"
-}
 
 
 
