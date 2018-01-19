@@ -222,9 +222,8 @@ if has('autocmd')
 	augroup END
 endif
 
-nnoremap <silent><m-q> :call asclib#function_echo(0)<cr>
-inoremap <silent><m-q> <c-\><c-o>:call asclib#function_echo(1)<cr>
-" inoremap <silent><m-q> <c-r>=asclib#function_echo(1)<cr>
+nnoremap <silent><m-a> :call asclib#function_echo(0)<cr>
+inoremap <silent><m-a> <c-\><c-o>:call asclib#function_echo(1)<cr>
 "inoremap <silent><c-^> <c-\><c-o>:call asclib#function_echo(1)<cr>
 "nnoremap <silent><m-/> :call asclib#function_echo()<cr>
 

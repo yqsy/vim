@@ -145,14 +145,10 @@ endif
 
 " fast file/tab actions in gui
 if has('gui_running')
-	noremap <silent><m-o> :tabnew<cr>
-	inoremap <silent><m-o> <ESC>:tabnew<cr>
 	noremap <silent><m-t> :tabnew<cr>
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
 	noremap <silent><m-w> :tabclose<cr>
 	inoremap <silent><m-w> <ESC>:tabclose<cr>
-	noremap <silent><m-e> :tabclose<cr>
-	inoremap <silent><m-e> <ESC>:tabclose<cr>
 	noremap <m-s> :w<cr>
 	inoremap <m-s> <esc>:w<cr>
 endif

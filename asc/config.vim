@@ -209,14 +209,10 @@ function! Terminal_SwitchTab()
 		exec "noremap <silent><M-".i."> :tabn ".x."<cr>"
 		exec "inoremap <silent><M-".i."> <ESC>:tabn ".x."<cr>"
 	endfor
-	noremap <silent><m-o> :tabnew<cr>
-	inoremap <silent><m-o> <ESC>:tabnew<cr>
 	noremap <silent><m-t> :tabnew<cr>
 	inoremap <silent><m-t> <ESC>:tabnew<cr>
 	noremap <silent><m-w> :tabclose<cr>
 	inoremap <silent><m-w> <ESC>:tabclose<cr>
-	noremap <silent><m-e> :tabclose<cr>
-	inoremap <silent><m-e> <ESC>:tabclose<cr>
 	noremap <m-s> :w<cr>
 	inoremap <m-s> <esc>:w<cr>
 endfunc
