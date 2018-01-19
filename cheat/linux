@@ -1,0 +1,6 @@
+- Hot keys
+
+  <c-s>        - start stream flow
+  <c-s><c-q>   - stop stream flow
+
+
