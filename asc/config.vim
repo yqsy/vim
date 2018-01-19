@@ -250,10 +250,10 @@ function! Terminal_MetaMode(mode)
 			call s:metacode(a:mode, c)
 		endfor
 	endif
-	if &ttimeout == 0
-		set ttimeout
-	endif
-	if &ttimeoutlen > 80 || &ttimeoutlen <= 0
+	set ttimeout
+	if $TMUX != ''
+		set ttimeoutlen=30
+	elseif &ttimeoutlen > 80 || &ttimeoutlen <= 0
 		set ttimeoutlen=80
 	endif
 endfunc
