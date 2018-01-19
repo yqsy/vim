@@ -253,8 +253,8 @@ function! Terminal_MetaMode(mode)
 	if &ttimeout == 0
 		set ttimeout
 	endif
-	if &ttimeoutlen <= 0
-		set ttimeoutlen=100
+	if &ttimeoutlen > 80 || &ttimeoutlen <= 0
+		set ttimeoutlen=80
 	endif
 endfunc
 
