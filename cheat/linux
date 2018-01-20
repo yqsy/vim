@@ -6,6 +6,7 @@
 - Oh my zsh:
 
   install: sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  antigen: curl -L git.io/antigen > antigen.zsh
   autojump: https://github.com/wting/autojump
   syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting
   fish-suggestion: https://github.com/zsh-users/zsh-autosuggestions
