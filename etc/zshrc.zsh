@@ -65,6 +65,14 @@ antigen bundle zsh-users/zsh-completions
 [ -f "$HOME/.local/etc/local.zsh" ] && source "$HOME/.local/etc/local.zsh"
 
 
+
+# check login shell
+if [[ $- == *i* ]]; then
+	[ -f "$HOME/.local/etc/login.sh" ] && source "$HOME/.local/etc/login.sh"
+	[ -f "$HOME/.local/etc/login.zsh" ] && source "$HOME/.local/etc/login.zsh"
+	[ -f "$HOME/.local/etc/fortune.sh" ] && source "$HOME/.local/etc/fortune.sh"
+fi
+
 antigen apply
 
 
