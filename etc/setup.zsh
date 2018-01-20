@@ -1,17 +1,26 @@
 # Antigen home
-ANTIGEN="$HOME/.local/zsh/antigen"
+ANTIGEN="$HOME/.local/bin/antigen.zsh"
 
 # Check and install antigen if not exist
-if [ ! -f "$ANTIGEN/antigen.zsh" ]; then
+if [ ! -f "$ANTIGEN" ]; then
 	echo "Installing antigen ..."
 	[ ! -d "$HOME/.local" ] && mkdir -p "$HOME/.local" 2> /dev/null
-	[ ! -d "$HOME/.local/zsh" ] && mkdir -p "$HOME/.local/zsh" 2> /dev/null
+	[ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin" 2> /dev/null
 	[ ! -f "$HOME/.z" ] && touch "$HOME/.z"
-	git clone https://github.com/zsh-users/antigen.git "$HOME/.local/zsh/antigen" 
-	if [ ! -f "$ANTIGEN/antigen.zsh" ]; then
-		echo "can not find antigen, check $0 please"
-		exit
+	URL="http://git.io/antigen"
+	TMPFILE="/tmp/antigen.zsh"
+	if [ -x "$(which wget)" ]; then
+		wget "$URL" -O "$TMPFILE" 
+	else
+		curl -L "$URL" -o "$TMPFILE" 
 	fi
+	if [ ! $? -eq 0 ]; then
+		echo ""
+		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
+		exit
+	fi;
+	echo "move $TMPFILE to $ANTIGEN"
+	mv "$TMPFILE" "$ANTIGEN"
 fi
 
 
@@ -19,9 +28,9 @@ fi
 export PS1="%n@%m:%~%# "
 
 # Initialize antigen
-source "$ANTIGEN/antigen.zsh"
+source "$ANTIGEN"
 
-# Initialize default bash/zsh settings
+# Initialize local bash/zsh settings
 [ -f "$HOME/.local/etc/init.sh" ] && source "$HOME/.local/etc/init.sh"
 [ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
 
@@ -53,6 +62,5 @@ antigen bundle zsh-users/zsh-completions
 
 
 antigen apply
-
 
 
