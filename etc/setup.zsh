@@ -2,7 +2,7 @@
 ANTIGEN="$HOME/.local/zsh/antigen"
 
 # Check and install antigen if not exist
-if [ ! -d "$HOME/.local/zsh/antigen" ]; then
+if [ ! -f "$ANTIGEN/antigen.zsh" ]; then
 	echo "Installing antigen ..."
 	[ ! -d "$HOME/.local" ] && mkdir -p "$HOME/.local" 2> /dev/null
 	[ ! -d "$HOME/.local/zsh" ] && mkdir -p "$HOME/.local/zsh" 2> /dev/null
