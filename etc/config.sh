@@ -10,6 +10,7 @@ alias mvim='/usr/local/opt/bin/vim --cmd "let g:vim_startup=\"mvim\""'
 # term color
 export TERM=xterm-256color
 
+
 # setup for go if it exists
 if [ -d "$HOME/.local/go" ]; then
 	export GOPATH="$HOME/.local/go"
@@ -32,6 +33,15 @@ fi
 # setup for cheat
 if [ -d "$HOME/.vim/vim/cheat" ]; then
 	export DEFAULT_CHEAT_DIR=~/.vim/vim/cheat
+fi
+
+# load z.sh
+if [ -n "$BASH_VERSION" ]; then
+	LOCAL="$HOME/.local"
+	[ ! -d "$LOCAL" ] && mkdir -p "$LOCAL" > /dev/null 2>&1
+	[ ! -d "$LOCAL/var" ] && mkdir -p "$LOCAL/var" > /dev/null 2>&1
+	_Z_DATA="$LOCAL/var/z"
+	[ -f "$HOME/.local/etc/z.sh" ] && . "$HOME/.local/etc/z.sh"
 fi
 
 
