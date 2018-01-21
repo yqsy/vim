@@ -35,14 +35,11 @@ source "$ANTIGEN"
 
 # Load local bash/zsh compatible settings
 [ -f "$HOME/.local/etc/init.sh" ] && source "$HOME/.local/etc/init.sh"
-[ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
 
 
 # Initialize oh-my-zsh
 antigen use oh-my-zsh
 
-# check local packages
-[ -f "$HOME/.local/etc/local.zsh" ] && source "$HOME/.local/etc/local.zsh"
 
 # default bundles
 # visit https://github.com/unixorn/awesome-zsh-plugins
@@ -100,6 +97,10 @@ ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=009
 ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=009
 ZSH_HIGHLIGHT_STYLES[assign]=none
 
+# load local config
+[ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
+[ -f "$HOME/.local/etc/local.zsh" ] && source "$HOME/.local/etc/local.zsh"
+
 # enable syntax highlighting
 antigen bundle zsh-users/zsh-syntax-highlighting
 
@@ -118,7 +119,8 @@ bindkey '\eL' forward-word
 bindkey '\eJ' beginning-of-line
 bindkey '\eK' end-of-line
 
-bindkey -s '\e,' 'cd ..\n'
+bindkey -s '\eo' 'cd ..\n'
+bindkey -s '\e;' 'ls -l\n'
 
 bindkey '\e[1;3D' backward-word
 bindkey '\e[1;3C' forward-word
