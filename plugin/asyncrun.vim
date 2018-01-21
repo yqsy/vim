@@ -1405,8 +1405,12 @@ function! asyncrun#execute(mode, cwd, save)
 				let cmd = 'ruby'
 			elseif &ft == 'php'
 				let cmd = 'php'
+			elseif l:ext == 'vbs'
+				let l:cmd = 'cscript -nologo'
 			elseif l:ext == 'ps1'
-				let cmd = 'powershell'
+				let cmd = 'powershell -file'
+			elseif l:ext == 'zsh'
+				let cmd = 'zsh'
 			elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
 				let cmd = 'osascript'
 			endif
@@ -1436,6 +1440,8 @@ function! asyncrun#execute(mode, cwd, save)
 			exec '!ruby ' . shellescape(expand("%"))
 		elseif &ft == 'php'
 			exec '!php ' . shellescape(expand("%"))
+		elseif &ft == 'zsh'
+			exec '!zsh ' . shellescape(expand("%"))
 		elseif index(['osa', 'scpt', 'applescript'], l:ext) >= 0
 			exec '!osascript '. shellescape(expand('%'))
 		else
