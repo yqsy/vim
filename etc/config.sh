@@ -39,7 +39,7 @@ fi
 # keymap
 #----------------------------------------------------------------------
 if [ -n "$ZSH_VERSION" ]; then
-	bindkey -s '\el' 'll\n'
+	bindkey -s '\e;' 'll\n'
 fi
 
 

@@ -37,11 +37,6 @@ source "$ANTIGEN"
 [ -f "$HOME/.local/etc/init.sh" ] && source "$HOME/.local/etc/init.sh"
 [ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
 
-# config keymap
-bindkey -s '\ee' 'vim\n'
-bindkey '\ej' backward-word
-bindkey '\ek' forward-word
-bindkey '\eo' undo
 
 # Initialize oh-my-zsh
 antigen use oh-my-zsh
@@ -109,5 +104,24 @@ ZSH_HIGHLIGHT_STYLES[assign]=none
 antigen bundle zsh-users/zsh-syntax-highlighting
 
 antigen apply
+
+
+# default keymap
+bindkey -s '\ee' 'vim\n'
+bindkey '\eh' backward-char
+bindkey '\el' forward-char
+bindkey '\ej' down-line-or-history
+bindkey '\ek' up-line-or-history
+bindkey '\eu' undo
+bindkey '\eH' backward-word
+bindkey '\eL' forward-word
+bindkey '\eJ' beginning-of-line
+bindkey '\eK' end-of-line
+
+bindkey '\e[1;3D' backward-word
+bindkey '\e[1;3C' forward-word
+bindkey '\e[1;3A' beginning-of-line
+bindkey '\e[1;3B' end-of-line
+
 
 
