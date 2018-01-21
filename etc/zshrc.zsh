@@ -61,7 +61,7 @@ antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-completions
 
 # uncomment the line below to enable theme
-# antigen theme robbyrussell
+# antigen theme fishy
 
 
 # check login shell
@@ -117,6 +117,8 @@ bindkey '\eH' backward-word
 bindkey '\eL' forward-word
 bindkey '\eJ' beginning-of-line
 bindkey '\eK' end-of-line
+
+bindkey -s '\e,' 'cd ..\n'
 
 bindkey '\e[1;3D' backward-word
 bindkey '\e[1;3C' forward-word
