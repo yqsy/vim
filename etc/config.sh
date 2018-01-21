@@ -36,6 +36,7 @@ if [ -d "$HOME/.vim/vim/cheat" ]; then
 fi
 
 # load z.sh
+# https://github.com/rupa/z
 if [ -n "$BASH_VERSION" ]; then
 	LOCAL="$HOME/.local"
 	[ ! -d "$LOCAL" ] && mkdir -p "$LOCAL" > /dev/null 2>&1
