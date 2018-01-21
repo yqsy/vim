@@ -30,6 +30,6 @@ export LESS_TERMCAP_ZV=""
 export LESS_TERMCAP_so=$'\E[1m\E[33m\E[44m'
 
 export GROFF_NO_SGR=1         # For Konsole and Gnome-terminal
-export MANPAGER='less -s -M +Gg'
+# export MANPAGER='less -s -M +Gg'
 
 
