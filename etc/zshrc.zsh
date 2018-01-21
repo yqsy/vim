@@ -37,6 +37,12 @@ source "$ANTIGEN"
 [ -f "$HOME/.local/etc/init.sh" ] && source "$HOME/.local/etc/init.sh"
 [ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
 
+# config keymap
+bindkey -s '\ee' 'vim\n'
+bindkey '\ej' backward-word
+bindkey '\ek' forward-word
+bindkey '\eo' undo
+
 # Initialize oh-my-zsh
 antigen use oh-my-zsh
 
