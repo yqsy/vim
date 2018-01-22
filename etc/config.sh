@@ -45,15 +45,37 @@ if [ -n "$BASH_VERSION" ]; then
 	if [ -z "$(type -t _z)" ]; then
 		[ -f "$HOME/.local/etc/z.sh" ] && . "$HOME/.local/etc/z.sh"
 	fi
+
+
 fi
 
 
 #----------------------------------------------------------------------
 # keymap
 #----------------------------------------------------------------------
-if [ -n "$ZSH_VERSION" ]; then
+
+# default bash key binding
+if [ -n "$BASH_VERSION" ]; then
+
+	bind '"\eh":"\C-b"'
+	bind '"\el":"\C-f"'
+	bind '"\ej":"\C-n"'
+	bind '"\ek":"\C-p"'
+
+	bind '"\eH":"\eb"'
+	bind '"\eL":"\ef"'
+	bind '"\eJ":"\C-a"'
+	bind '"\eK":"\C-e"'
+
+	bind '"\e;":"ll\n"'
+	bind '"\eo":"cd ..\n"'
+
+elif [ -n "$ZSH_VERSION" ]; then
+
 	bindkey -s '\e;' 'll\n'
+
 fi
+
 
 
 #----------------------------------------------------------------------
