@@ -42,7 +42,9 @@ if [ -n "$BASH_VERSION" ]; then
 	[ ! -d "$LOCAL" ] && mkdir -p "$LOCAL" > /dev/null 2>&1
 	[ ! -d "$LOCAL/var" ] && mkdir -p "$LOCAL/var" > /dev/null 2>&1
 	_Z_DATA="$LOCAL/var/z"
-	[ -f "$HOME/.local/etc/z.sh" ] && . "$HOME/.local/etc/z.sh"
+	if [ ! -f "/etc/profile.d/z.sh" ]; then
+		[ -f "$HOME/.local/etc/z.sh" ] && . "$HOME/.local/etc/z.sh"
+	fi
 fi
 
 
