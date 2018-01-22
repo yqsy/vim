@@ -1,12 +1,17 @@
 # vim
-个人 Vim 配置，十分个人化，不一定每人都喜欢，选择你需要的整合到自己配置中。
+个人 Vim 配置，十分个人化，不一定每人都喜欢，选择你需要的整合到自己配置中，部分演示见：
+
+https://www.zhihu.com/question/20833248/answer/186085007
+
+主要功能都放到了 F12，F11 呼出的菜单里了。
+
 
 ## Install
 
 默认安装:
 
 ```bash
-cd ~github
+cd ~/github
 git clone https://github.com/skywind3000/vim.git
 echo "source '~/github/vim/asc.vim'" >> ~/.vimrc
 ```
@@ -82,57 +87,25 @@ echo "source '~/github/vim/skywind.vim'" >> ~/.vimrc
 | TAB n | 下一个标签页，同 `:tabnext` |
 | TAB p | 上一个标签页，同 `:tabprev` |
 
-还可以使用 ALT+SHIFT+1 到 ALT+SHIFT+0 来切换，前提是终端软件需要配置一下，将 ALT+SHIFT+1-9 配置成发送字符串：`\033]{0}1~` 到 `\033]{0}0~` 等几个不同字符串，其中 `\033` 是 ESC键的编码。
+还可以使用 ALT+1 到 ALT+9 来切换，前提是终端软件需要配置一下，有些终端 ALT_1 到 ALT_9 被用来切换 connection 的 tab，那么可以把 ALT+SHIFT+1-9 配置成发送字符串：`\0331` 到 `\0339` 等几个不同字符串，其中 `\033` 是 ESC键的编码，这样不影响终端软件的 ALT_1-9 情况下，用 ALT_SHIFT_1-9 来代替。
 
 
-### 编译运行
+### 通用按键
 
 | 按键    | 说 明                                                                     |
 | :-----: | ------                                                                    |
 | F5      | 运行当前程序，自动检测 C/Python/Ruby/Shell/JavaScript，并调用正确命令运行 |
 | F7      | 调用 emake 编译当前项目， $PATH 中需要有 emake 可执行                     |
 | F9      | 调用 gcc 编译当前 C/C++ 程序，$PATH 中需要有 gcc可执行，编译到当前目录下  |
-| S-F10   | 打开/关闭 Tagbar 插件（查看文件内函数和类定义列表）                       |
+| F10   | 打开/关闭 quickfix                        |
+| F11   | 打开【开发者目录】 |
+| F12/S-F10 | 打开【主目录】|
 
 
-### GrepCode
-
-添加 GrepCode 命令，用于搜索代码（只搜索 C/C++/Python/Java/... 等代码文件不搜索其他），并且在 Quickfix 窗口中显示结果，同时配置了下面几个快捷键：
-
-| 按键 | 说明 |
-|:----:|------|
-|  F10  | 打开/关闭 Quickfix 窗口       |
-|  F11  | 再当前目录下 grep 光标下面的单词，并且将结果显示在 Quickfix中 |
-|  F12  | 在当前项目目录中 grep 光标下面的单词，并且将结果现实在 Quickfix中 |
-
-如何确定文件的 **项目目录**？依靠项目标志文件（project marker）来确定，项目标志文件由一个列表：
-
-	let g:vimmake_rootmarks = [".svn", ".git", ".project", ".hg", ".root"] 
-
-来描述，可以配置修改，即查找当前文件目录是否包含上面任意一个**标志**，有的话当前目录就是项目目录，没有的话，往上一级目录查找，直到找到**标志**，如果向上搜索到根目录都没有找到**标志**的话，就以退回来以文件所在路径为项目文件。
-
-假设正在编辑文件为 /home/me/code/project1/src/abc.txt, 先扫描 /home/me/code/project1/src目录下是否有**标志**；没有的话，又查找 /home/me/code/project1，这时发现下面有 .svn 的文件夹，则认为：
-
-    /home/me/code/project1 
-
-为项目目录，如果一直向上搜索到根目录都没有找到**标志**的话，那么 abc.txt文件所在目录：
-
-    /home/me/code/project1/src
-
-就被当作当前文件的项目文件夹。项目标志文件用列表描述，默认为 `[".svn", ".git", ".project"]` 三个元素，可以在配置文件中修改添加。
-
-### Quickfix
-
-按 F10 可以打开/关闭 Quickfix 窗口，上面很多 GrepCode/编译 之类的操作都会把结果显示到 Quickfix窗口中去，在 Quickfix窗口中，有如下只能在 Quickfix窗口里使用的快捷键：
-
-| 按键 | 说明 |
-|:----:|------|
-|  u  | 在上方打开文件  |
-|  p  | 在预览窗口中打开文件 |
 
 ### 文件浏览
 
-该功能主要是使用 Vim 自带的 netrw 被编辑文件的目录，方便各种方式切换文件
+该功能主要是使用 Vim 自带的 dirvish/netrw 被编辑文件的目录，方便各种方式切换文件
 
 | 按键 | 说明 |
 |:----:|------|
