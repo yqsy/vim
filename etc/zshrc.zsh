@@ -56,7 +56,7 @@ antigen bundle z
 
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-completions
-antigen bundle supercrabtree/k
+# antigen bundle supercrabtree/k
 
 # uncomment the line below to enable theme
 # antigen theme fishy
