@@ -121,7 +121,7 @@ bindkey '\eJ' beginning-of-line
 bindkey '\eK' end-of-line
 
 bindkey -s '\eo' 'cd ..\n'
-bindkey -s '\e;' 'ls -l\n'
+bindkey -s '\e;' 'lk\n'
 
 bindkey '\e[1;3D' backward-word
 bindkey '\e[1;3C' forward-word
