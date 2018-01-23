@@ -45,8 +45,6 @@ if [ -n "$BASH_VERSION" ]; then
 	if [ -z "$(type -t _z)" ]; then
 		[ -f "$HOME/.local/etc/z.sh" ] && . "$HOME/.local/etc/z.sh"
 	fi
-
-
 fi
 
 
@@ -73,6 +71,8 @@ if [ -n "$BASH_VERSION" ]; then
 elif [ -n "$ZSH_VERSION" ]; then
 
 	bindkey -s '\e;' 'll\n'
+	alias ll='k --no-vcs'
+	alias lk='k --no-vcs'
 
 fi
 
