@@ -914,7 +914,7 @@ class LazyRequests (object):
 			r.status_code = -1
 			r.text = 'RetryError'
 			r.error = e
-		except requests.exceptions.BaseHTTPError:
+		except requests.exceptions.BaseHTTPError as e:
 			r = requests.Response()
 			r.status_code = -2
 			r.text = 'BaseHTTPError'

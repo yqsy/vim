@@ -141,7 +141,7 @@ if index(g:bundle_group, 'inter') >= 0 || s:bundle_all
 				
 	if has('python')
 		Plugin 'skywind3000/vimpress'
-		Plugin 'SirVer/ultisnips'
+		" Plugin 'SirVer/ultisnips'
 	endif
 
 	noremap <space>bp :BlogPreview local<cr>

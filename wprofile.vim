@@ -18,26 +18,30 @@ function! MonitorInit()
 	silent! call mkdir(expand('~/.vim/profile'), "p", 0755)
 	silent! call ProfileStop()
 	call ProfileInit(name)
-	profile pause
-	function! <SID>PressF5()
-		profile continue
-		VimExecute run
+	if 0
 		profile pause
-	endfunc
-	function! <SID>PressF9()
-		profile continue
-		VimBuild gcc
-		profile pause
-	endfunc
-	noremap <silent><F5> :call <SID>PressF5()<cr>
-	noremap <silent><F9> :call <SID>PressF9()<cr>
+		function! <SID>PressF5()
+			profile continue
+			VimExecute run
+			profile pause
+		endfunc
+		function! <SID>PressF9()
+			profile continue
+			VimBuild gcc
+			profile pause
+		endfunc
+		noremap <silent><F5> :call <SID>PressF5()<cr>
+		noremap <silent><F9> :call <SID>PressF9()<cr>
+	endif
 endfunc
 
 
 function! MonitorExit()
 	call ProfileStop()
-	noremap <silent><F5> :VimExecute run<cr>
-	noremap <silent><F9> :VimBuild gcc<cr>
+	if 0
+		noremap <silent><F5> :VimExecute run<cr>
+		noremap <silent><F9> :VimBuild gcc<cr>
+	endif
 endfunc
 
 
