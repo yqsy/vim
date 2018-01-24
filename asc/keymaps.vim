@@ -334,6 +334,7 @@ noremap <silent><space>g" :call asclib#preview_goto('tab')<cr>
 
 if has('win32') || has('win64')
 	noremap <space>gc :silent !start cmd.exe<cr>
+	noremap <space>gs :silent !start powershell.exe<cr>
 	noremap <space>ge :silent !start /b cmd.exe /C start .<cr>
 else
 endif

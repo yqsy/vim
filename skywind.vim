@@ -89,6 +89,7 @@ if has('win32') || has('win64') || has('win16') || has('win95')
 	call quickmenu#append('Python3 Help', 'call menu#WinHelp("d:/dev/help/chm/python362.chm")', 'Python 3 Document')
 	call quickmenu#append('Open Cygwin', 'call asclib#utils#terminal("mintty", "bash -i", 0)', 'open cygwin in current directoy')
 	call quickmenu#append('Open Bash', 'call asclib#wsl_bash("")', 'open bash for windows 10 in current directory')
+	call quickmenu#append('Open PowerShell', '!start powershell', 'open bash for windows 10 in current directory')
 	call quickmenu#append('Switch color', 'call SkywindSwitchColor()', 'switch current color scheme')
 endif
 
