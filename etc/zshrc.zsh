@@ -47,7 +47,7 @@ antigen bundle git
 antigen bundle heroku
 antigen bundle pip
 antigen bundle svn-fast-info
-antigen bundle command-not-find
+# antigen bundle command-not-find
 
 antigen bundle colorize
 antigen bundle github
@@ -57,6 +57,7 @@ antigen bundle z
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-completions
 antigen bundle supercrabtree/k
+antigen bundle Vifon/deer
 
 # uncomment the line below to enable theme
 # antigen theme fishy
@@ -107,6 +108,9 @@ antigen bundle zsh-users/zsh-syntax-highlighting
 
 antigen apply
 
+# setup for deer
+autoload -U deer
+zle -N deer
 
 # default keymap
 bindkey -s '\ee' 'vim\n'
@@ -127,6 +131,8 @@ bindkey '\e[1;3D' backward-word
 bindkey '\e[1;3C' forward-word
 bindkey '\e[1;3A' beginning-of-line
 bindkey '\e[1;3B' end-of-line
+
+bindkey '\ev' deer
 
 alias lk='k --no-vcs'
 
