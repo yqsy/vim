@@ -345,13 +345,16 @@ def display(text):
 			colors = cheat_colors.split(',')
 		c_main = 7
 		c_code = 14
+		c_high = 15
 		c_comment = 10
 		if len(colors) > 0 and colors[0].isdigit():
 			c_main = int(colors[0])
 		if len(colors) > 1 and colors[1].isdigit():
 			c_code = int(colors[1])
 		if len(colors) > 2 and colors[2].isdigit():
-			c_comment = int(colors[1])
+			c_high = int(colors[2])
+		if len(colors) > 3 and colors[3].isdigit():
+			c_comment = int(colors[3])
 		current = c_main
 		set_color(current)
 		for line in text.split('\n'):
@@ -362,6 +365,8 @@ def display(text):
 					color = c_comment
 			elif char == '#':
 				color = c_comment
+			elif char == '-':
+				color = c_high
 			else:
 				color = c_main
 			if color != current:
@@ -510,12 +515,12 @@ if __name__ == '__main__':
 
 	def test4():
 		os.environ['EDITOR'] = 'vim'
-		os.environ['CHEATCOLORS'] = 'bash'
+		os.environ['CHEATCOLORS'] = 'true'
 		args = ['tar']
 		args = ['-d']
 		args = ['-e', 'tar']
 		args = ['-s', 'sed']
-		args = ['tar']
+		args = ['cut']
 		# args = ['-v']
 		main(sys.argv[:1] + args)
 		return 0
