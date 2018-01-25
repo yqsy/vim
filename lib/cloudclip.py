@@ -284,6 +284,7 @@ class CloudClip (object):
 	def login (self, token, gistid):
 		self.set_token(token)
 		self.set_id(gistid)
+		create_gist = False
 		if (not gistid) or (gistid == '-'):
 			files = {}
 			text = 'CloudClip:\n'
@@ -295,13 +296,19 @@ class CloudClip (object):
 			r = self.api.create('<Clipboard of CloudClip>', files)
 			gistid = r['id']
 			self.set_id(gistid)
-			print 'create a new gist with id: ' + gistid
+			print 'New gist created with id: ' + gistid
+			create_gist = True
 		gist = self.api.gist_get(self.gistid)
 		with open(self.ininame, 'w') as fp:
 			fp.write('[default]\n')
 			fp.write('token=%s\n'%self.get_token())
 			fp.write('id=%s\n'%self.get_id())
-		print 'config updated: %s'%self.ininame
+		print 'Configuration updated in: %s'%self.ininame
+		if create_gist:
+			print ''
+			print 'Use the command below in other systems to initialize'
+			print 'cloudclip.py -i %s %s'%(token, gistid)
+		print ''
 		return True
 
 	def error (self, code, message):
@@ -311,7 +318,7 @@ class CloudClip (object):
 
 	def check (self):
 		nm = sys.argv[0]
-		if not os.path.exists(self.ininame):
+		if not os.path.exists(self.ininame) and False:
 			text = "Authorization token and gist-id are required, see %s -h"%nm
 			self.error(1, text)
 		if not self.config['token']:
@@ -446,7 +453,16 @@ def main(args = None):
 
 	cp = CloudClip('~/.config/cloudclip.conf')
 
-	if (not os.path.exists(cp.ininame)) or (not cp.config['token']):
+	# check token/id from system environ
+	env_token = os.environ.get('CLOUDCLIP_TOKEN', '')
+	env_gistid = os.environ.get('CLOUDCLIP_ID', '')
+
+	if env_token:
+		cp.set_token(env_token)
+	if env_gistid:
+		cp.set_id(env_gistid)
+
+	if (not os.path.exists(cp.ininame)) and (not cp.config['token']):
 		if not cmd in ('-i', '--init'):
 			text = 'uses "%s -i" to initialize your token\n'%program
 			text += 'get a new token from: https://github.com/settings/tokens'
