@@ -26,6 +26,8 @@
 
   cut -d' ' -f3-7
 
+- More examples:
 
+  ps | tr -s " " | cut -d " " -f 2,3,4
 
 
