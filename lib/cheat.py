@@ -496,7 +496,7 @@ def main(args = None):
 #----------------------------------------------------------------------
 if __name__ == '__main__':
 
-	os.environ['DEFAULT_CHEAT_DIR'] = 'd:/acm/github/vim/cheat'
+	# os.environ['DEFAULT_CHEAT_DIR'] = 'd:/acm/github/vim/cheat'
 
 	def test1():
 		print(utils.search_cheat())
