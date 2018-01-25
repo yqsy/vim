@@ -76,6 +76,33 @@ elif [ -n "$ZSH_VERSION" ]; then
 fi
 
 
+#----------------------------------------------------------------------
+# detect vim folder
+#----------------------------------------------------------------------
+if [ -n "$VIM_CONFIG" ]; then
+	[ ! -d "$VIM_CONFIG/etc" ] && VIM_CONFIG=""
+fi
+
+if [ -z "$VIM_CONFIG" ]; then
+	if [ -d "$HOME/.vim/vim/etc" ]; then
+		VIM_CONFIG="$HOME/.vim/vim"
+	elif [ -d "/mnt/d/ACM/github/vim/etc" ]; then
+		VIM_CONFIG="/mnt/d/ACM/github/vim"
+	elif [ -d "/d/ACM/github/vim/etc" ]; then
+		VIM_CONFIG="/d/ACM/github/vim/etc"
+	elif [ -d "/cygdrive/d/ACM/github/vim/etc" ]; then
+		VIM_CONFIG="/cygdrive/d/ACM/github/vim"
+	fi
+fi
+
+[ -z "$VIM_CONFIG" ] && VIM_CONFIG="$HOME/.vim/vim"
+
+export VIM_CONFIG
+
+[ -d "$VIM_CONFIG/cheat" ] && export DEFAULT_CHEAT_DIR="$VIM_CONFIG/cheat"
+
+export CHEATCOLORS=true
+
 
 #----------------------------------------------------------------------
 # quick functions

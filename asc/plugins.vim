@@ -274,6 +274,7 @@ let g:ycm_filetype_whitelist = {
 			\ "conf":1,
 			\ "config":1,
 			\ "zimbu":1,
+			\ "ps1":1,
 			\ }
 
 

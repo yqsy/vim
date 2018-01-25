@@ -335,7 +335,7 @@ def display(text):
 			return 0
 		if cheat_colors.lower() in ('yes', 'bash', '1'):
 			if sys.platform[:3] != 'win':
-				utils.colorize(text)
+				print(utils.colorize(text))
 				return 0
 			else:
 				print(text)
@@ -343,7 +343,7 @@ def display(text):
 		colors = []
 		if ',' in cheat_colors:
 			colors = cheat_colors.split(',')
-		c_main = 7
+		c_main = -1
 		c_code = 14
 		c_high = 15
 		c_comment = 10
@@ -372,6 +372,7 @@ def display(text):
 			if color != current:
 				set_color(color)
 				current = color
+			# print('color', color)
 			print(line)
 		set_color(-1)
 		return 0

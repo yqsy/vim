@@ -169,6 +169,7 @@ endif
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'opt') >= 0
 	Plugin 'thinca/vim-quickrun'
+	Plugin 'pprovost/vim-ps1'
 	" Plugin 'luzhlon/popup.vim'
 	if has('python')
 		"Plugin 'mgedmin/pythonhelper.vim'
