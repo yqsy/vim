@@ -23,6 +23,7 @@ class CheatUtils (object):
 
 	def __init__ (self):
 		self.name = 'utils'
+		self.isatty = sys.stdout.isatty()
 
 	def colorize (self, sheet_content):
 		""" Colorizes cheatsheet content if so configured """
@@ -101,6 +102,43 @@ class CheatUtils (object):
 			available.append(path)
 		return available
 
+	def set_color (self, color):
+		if not self.isatty:
+			return 0
+		if sys.platform[:3] == 'win':
+			try: import ctypes
+			except: return 0
+			kernel32 = ctypes.windll.LoadLibrary('kernel32.dll')
+			GetStdHandle = kernel32.GetStdHandle
+			SetConsoleTextAttribute = kernel32.SetConsoleTextAttribute
+			GetStdHandle.argtypes = [ ctypes.c_uint32 ]
+			GetStdHandle.restype = ctypes.c_size_t
+			SetConsoleTextAttribute.argtypes = [ ctypes.c_size_t, ctypes.c_uint16 ]
+			SetConsoleTextAttribute.restype = ctypes.c_long
+			handle = GetStdHandle(0xfffffff5)
+			if color < 0: color = 7
+			result = 0
+			if (color & 1): result |= 4
+			if (color & 2): result |= 2
+			if (color & 4): result |= 1
+			if (color & 8): result |= 8
+			if (color & 16): result |= 64
+			if (color & 32): result |= 32
+			if (color & 64): result |= 16
+			if (color & 128): result |= 128
+			SetConsoleTextAttribute(handle, result)
+		else:
+			if color >= 0:
+				foreground = color & 7
+				background = (color >> 4) & 7
+				bold = color & 8
+				sys.stdout.write(" \033[%s3%d;4%dm"%(bold and "01;" or "", foreground, background))
+				sys.stdout.flush()
+			else:
+				sys.stdout.write(" \033[0m")
+				sys.stdout.flush()
+		return 0
+	
 
 #----------------------------------------------------------------------
 # local utils
@@ -108,6 +146,7 @@ class CheatUtils (object):
 utils = CheatUtils()
 die = utils.die
 warn = utils.warn
+set_color = utils.set_color
 
 
 #----------------------------------------------------------------------
@@ -289,7 +328,50 @@ cheatsheet = CheatSheet()
 # display text
 #----------------------------------------------------------------------
 def display(text):
+	cheat_colors = os.environ.get('CHEATCOLORS', '')
+	if cheat_colors and sys.stdout.isatty():
+		if cheat_colors in ('0', 'no', 'disable', ''):
+			print(text)
+			return 0
+		if cheat_colors.lower() in ('yes', 'bash', '1'):
+			if sys.platform[:3] != 'win':
+				utils.colorize(text)
+				return 0
+			else:
+				print(text)
+				return 0
+		colors = []
+		if ',' in cheat_colors:
+			colors = cheat_colors.split(',')
+		c_main = 7
+		c_code = 14
+		c_comment = 10
+		if len(colors) > 0 and colors[0].isdigit():
+			c_main = int(colors[0])
+		if len(colors) > 1 and colors[1].isdigit():
+			c_code = int(colors[1])
+		if len(colors) > 2 and colors[2].isdigit():
+			c_comment = int(colors[1])
+		current = c_main
+		set_color(current)
+		for line in text.split('\n'):
+			char = line[:1]
+			if char.isspace():
+				color = c_code
+				if line.lstrip('\r\n\t ')[:1] == '#':
+					color = c_comment
+			elif char == '#':
+				color = c_comment
+			else:
+				color = c_main
+			if color != current:
+				set_color(color)
+				current = color
+			print(line)
+		set_color(-1)
+		return 0
 	print(text)
+	return 0
 
 
 #----------------------------------------------------------------------
@@ -428,15 +510,17 @@ if __name__ == '__main__':
 
 	def test4():
 		os.environ['EDITOR'] = 'vim'
+		os.environ['CHEATCOLORS'] = 'bash'
 		args = ['tar']
 		args = ['-d']
 		args = ['-e', 'tar']
 		args = ['-s', 'sed']
-		args = ['sed']
-		args = ['-v']
+		args = ['tar']
+		# args = ['-v']
 		main(sys.argv[:1] + args)
 		return 0
 
-	test4()
+	# test4()
+	sys.exit(main())
 
 
