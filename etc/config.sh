@@ -9,6 +9,7 @@ alias mvim='/usr/local/opt/bin/vim --cmd "let g:vim_startup=\"mvim\""'
 
 # term color
 export TERM=xterm-256color
+export EDITOR=vim
 
 
 # setup for go if it exists
