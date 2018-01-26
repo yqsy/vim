@@ -164,6 +164,24 @@ let g:ctrlp_root_markers = ['.project', '.root']
 let g:ctrlp_working_path = 0
 
 
+"----------------------------------------------------------------------
+" LeaderF
+"----------------------------------------------------------------------
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WindowHeight = 0.30
+let g:Lf_CacheDiretory = expand('~/.vim/cache')
+
+let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git','.hg'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+			\ }
+
+let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak']
+let g:Lf_MruMaxFiles = 2048
+let g:Lf_StlColorscheme = 'powerline'
+
+
 
 "----------------------------------------------------------------------
 " UltiSnips

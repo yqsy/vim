@@ -105,7 +105,8 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 	Plugin 'lambdalisue/vim-gista'
 	Plugin 'mhinz/vim-startify'
 	Plugin 'easymotion/vim-easymotion'
-	Plugin 'ctrlpvim/ctrlp.vim'
+	" Plugin 'ctrlpvim/ctrlp.vim'
+	Plugin 'Yggdroot/LeaderF'
 	Plugin 'KabbAmine/zeavim.vim'
 	" Plugin 'lifepillar/vim-solarized8'
 	Plugin 'godlygeek/tabular'
@@ -123,6 +124,10 @@ if index(g:bundle_group, 'basic') >= 0 || s:bundle_all
 
 	noremap <space>ht :Startify<cr>
 	noremap <space>hy :tabnew<cr>:Startify<cr> 
+
+	let g:Lf_ShortcutF = '<c-p>'
+	noremap <c-n> :LeaderfMru<cr>
+	noremap <m-m> :LeaderfTag<cr>
 endif
 
 

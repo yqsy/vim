@@ -3900,6 +3900,7 @@ function! s:ExecuteCtags(ctags_cmd) abort
                 endif
             endif
         endif
+        let ts1 = reltimefloat(reltime())
         if use_python == 0
             silent let ctags_output = system(a:ctags_cmd)
         else
@@ -3919,6 +3920,16 @@ function! s:ExecuteCtags(ctags_cmd) abort
                 py t = t.replace('\\', '\\\\').replace('"', '\\"') 
                 py t = t.replace('\n', '\\n')
                 py vim.command('let ctags_output = "%s"'%t)
+            endif
+        endif
+        let ts1 = reltimefloat(reltime()) - ts1
+        if ts1 >= 1.0
+            redraw! | echo "" | redraw!
+            echohl ErrorMsg
+            echom "takes too long to call ctags: " . string(ts1) .'s'
+            echohl None
+            if exists('*LogWrite')
+                call LogWrite('takes too long to call ctags: '.string(ts1). 's')
             endif
         endif
     endif
