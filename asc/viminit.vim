@@ -27,7 +27,7 @@ set ruler
 set nopaste
 
 if has('multi_byte')
-	set fileencodings=utf-8,gb2312,gbk,gb18030,big5
+	set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,latin1
 	set fenc=utf-8
 	set enc=utf-8
 endif
